@@ -375,7 +375,7 @@ function buildMaster(parentDir) {
       <td><span class="chip ${statusClass(p.status)}">${escapeHtml(p.status)}</span></td>
       <td>${p.reports}</td>
       <td>${p.claims}</td>
-      <td><a href="${urlPath(p.name)}">open project</a></td>
+      <td><a href="${urlPath(p.name, "dashboard.html")}">open dashboard</a></td>
     </tr>`).join("");
 
   const body = projects.length
