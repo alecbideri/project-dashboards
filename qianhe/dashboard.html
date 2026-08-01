@@ -158,33 +158,48 @@
   <div class="hdr-line"><div class="search"><input id="q" type="search" placeholder="Filter sections…"></div><div class="search-count" id="qcount"></div></div>
 </header>
 <div class="layout">
-  <nav class="side-nav"><a href="#sec-ledger" data-nav="sec-ledger">Evidence Ledger</a><a href="#sec-doc-0" data-nav="sec-doc-0">Opportunities</a><a href="#sec-doc-1" data-nav="sec-doc-1">Research Qianhe</a></nav>
+  <nav class="side-nav"><a href="#sec-ledger" data-nav="sec-ledger">Evidence Ledger</a><a href="#sec-doc-0" data-nav="sec-doc-0">Opportunities</a><a href="#sec-doc-1" data-nav="sec-doc-1">Research Embeddedlend</a><a href="#sec-doc-2" data-nav="sec-doc-2">Research Qianhe</a></nav>
   <main class="content">
     
       <div class="grid">
-        <div class="card accent"><h3>Project</h3><p class="big">qianhe</p><p class="card-sub">2 report docs</p></div>
-        <div class="card"><h3>Claims</h3><p class="big">6</p><p class="card-sub">graded ledger entries</p><svg class="spark" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true">
-    <polygon points="0,34 30,34 60,34 90,34 120,34 0,2 30,17 60,2 90,17 120,32" fill="rgba(122,162,255,.12)"/>
-    <polyline points="0,2 30,17 60,2 90,17 120,32" fill="none" stroke="#6fd98a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        <div class="card accent"><h3>Project</h3><p class="big">qianhe</p><p class="card-sub">3 report docs</p></div>
+        <div class="card"><h3>Claims</h3><p class="big">18</p><p class="card-sub">graded ledger entries</p><svg class="spark" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true">
+    <polygon points="0,34 30,34 60,34 90,34 120,34 0,2 30,20 60,26 90,26 120,32" fill="rgba(122,162,255,.12)"/>
+    <polyline points="0,2 30,20 60,26 90,26 120,32" fill="none" stroke="#6fd98a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
   </svg></div>
-        <div class="card"><h3>Confirmed</h3><p class="big">2</p><p class="card-sub">primary-source facts</p></div>
+        <div class="card"><h3>Confirmed</h3><p class="big">10</p><p class="card-sub">primary-source facts</p></div>
         <div class="card"><h3>Unverified</h3><p class="big">2</p><p class="card-sub">untested / loot-drop claims</p></div>
         <div class="card"><h3>Prototype</h3><p class="big">Found</p><p class="card-sub">scanned for artifacts</p></div>
       </div>
     
     
     <details class="panel" open id="sec-handoff"><summary><span class="panel-title">Handoff Context</span></summary><div class="panel-body"><div class="handoff"><ul>
-<li>Stage: autopsy</li>
-<li>Company: Qianhe (千和投)</li>
-<li>Sector: Financials / Fintech</li>
-<li>Cash burned: $100.0M (loot-drop claim, unverified)</li>
-<li>Years active: 2014–2019</li>
-<li>Cause of death: Regulatory crackdown on P2P lending + regulatory arbitrage + unsustainable unit economics</li>
-<li>Rebuild concept: B2B embedded-lending infrastructure (AI underwriting APIs for licensed banks + vertical SaaS platforms)</li>
-<li>Source: https://www.loot-drop.io/startup/2545-qianhe + primary sources</li>
-<li>Generated for: (pending — user idea to be validated via vibe-research)</li>
+<li>Stage: research</li>
+<li>App name: EmbeddedLend (working title — rename at PRD)</li>
+<li>User level: B (Developer)</li>
+<li>Target platform: web / API-first</li>
+<li>Budget: side-project scale (~$200–800/mo running)</li>
+<li>Timeline: open; MVP ~3–4 months part-time</li>
+<li>Stack: Node/TypeScript</li>
+<li>Target market: Rwanda → EAC</li>
+<li>Source files: research-embeddedlend.md, research-qianhe.md (autopsy), opportunities.md</li>
 </ul>
-<p>---</p></div></div></details>
+<p>---</p>
+<h4>Claims ledger (evidence grading)</h4>
+<table><thead><tr><th>Claim</th><th>Source</th><th>Grade</th></tr></thead><tbody>
+<tr><td>Rwanda formal MSME financing shortfall ≈ $1.2B/yr</td><td>Kayko funding coverage (TechBuild/AFR), allAfrica</td><td>🟡 Secondary</td></tr>
+<tr><td>Africa MSME financing gap ≈ $331B</td><td>TechCabal / African Exponent, CreditChek coverage</td><td>🟡 Secondary</td></tr>
+<tr><td>Rwanda financial inclusion 96% (2024), banked adults only 22%</td><td>BNR National Financial Inclusion Roadmap 2026-2030</td><td>✅ Observed</td></tr>
+<tr><td>60% of Rwandan MSMEs borrowed nothing in past 12 months</td><td>AFR Rwanda MSME FinMap 2024</td><td>✅ Observed</td></tr>
+<tr><td>Collateral demands up to 5x loan amount block SME credit</td><td>RSSB/Enko $100M SME Fund announcement (FSD Africa)</td><td>✅ Observed</td></tr>
+<tr><td>80+ licensed lending NDFSPs in Rwanda; several licenses revoked Oct 2025</td><td>BNR Licensed NDFSPs list (Nov 2025) + revoked list</td><td>✅ Observed</td></tr>
+<tr><td>BNR regulatory sandbox open to local + foreign fintechs, ~3-month licensing</td><td>BNR sandbox page; Finhive Africa Fintech Regulation Guide (June 2026)</td><td>✅ Observed</td></tr>
+<tr><td>Rwandan fintechs: Kayko ($1.2M seed, 8,500 merchants), Numida entered Mar 2026</td><td>TechBuild, New Times</td><td>✅ Observed</td></tr>
+<tr><td>PEMiG = causal-AI scoring API, 5 partner lenders, $250K loans, B2B SaaS + per-assessment</td><td>Disrupt Africa (May 2026), PEMiG Medium engineering posts</td><td>✅ Observed</td></tr>
+<tr><td>Lendsqr pricing: from ~$127/mo (Pro) to ~$3,810/yr (Business) + $1,900 setup</td><td>Lendsqr blog cost breakdowns</td><td>✅ Observed</td></tr>
+<tr><td>Building lending tech from scratch in Africa ≈ $9,500–31,700, 6–18 months</td><td>Lendsqr blog</td><td>🟡 Secondary</td></tr>
+<tr><td>&quot;Lenders would pay for underwriting/origination APIs in Rwanda&quot;</td><td>No interviews conducted yet</td><td>❓ Assumption</td></tr>
+</table></div></div></details>
     <details class="panel" open id="sec-proto"><summary><span class="panel-title">Prototype</span></summary><div class="panel-body"><div class="proto"></div></div></details>
     <details class="panel" open id="sec-ledger">
       <summary><span class="panel-title">Evidence Ledger</span></summary>
@@ -193,19 +208,79 @@
     <svg width="80" height="80" viewBox="0 0 80 80" aria-hidden="true">
       <circle r="34" cx="40" cy="40" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="11"/>
       <circle r="34" cx="40" cy="40" fill="none" stroke="#6fd98a" stroke-width="11"
-      stroke-dasharray="71.21 142.42" stroke-dashoffset="0.00"
+      stroke-dasharray="118.68 94.95" stroke-dashoffset="0.00"
       transform="rotate(-90 40 40)"/><circle r="34" cx="40" cy="40" fill="none" stroke="#e0c06a" stroke-width="11"
-      stroke-dasharray="35.60 178.02" stroke-dashoffset="-71.21"
+      stroke-dasharray="47.47 166.16" stroke-dashoffset="-118.68"
       transform="rotate(-90 40 40)"/><circle r="34" cx="40" cy="40" fill="none" stroke="#e07a7a" stroke-width="11"
-      stroke-dasharray="71.21 142.42" stroke-dashoffset="-106.81"
+      stroke-dasharray="23.74 189.89" stroke-dashoffset="-166.16"
       transform="rotate(-90 40 40)"/><circle r="34" cx="40" cy="40" fill="none" stroke="#b18ae8" stroke-width="11"
-      stroke-dasharray="35.60 178.02" stroke-dashoffset="-178.02"
+      stroke-dasharray="23.74 189.89" stroke-dashoffset="-189.89"
       transform="rotate(-90 40 40)"/>
-      <text x="40" y="45" text-anchor="middle" fill="#e8eaf0" font-size="17" font-weight="700">6</text>
+      <text x="40" y="45" text-anchor="middle" fill="#e8eaf0" font-size="17" font-weight="700">18</text>
     </svg>
-    <div class="donut-legend"><span><span class="dot" style="background:#6fd98a"></span>Observed — 2</span><span><span class="dot" style="background:#e0c06a"></span>Secondary — 1</span><span><span class="dot" style="background:#e07a7a"></span>Unverified — 2</span><span><span class="dot" style="background:#b18ae8"></span>Assumption — 1</span></div>
+    <div class="donut-legend"><span><span class="dot" style="background:#6fd98a"></span>Observed — 10</span><span><span class="dot" style="background:#e0c06a"></span>Secondary — 4</span><span><span class="dot" style="background:#e07a7a"></span>Unverified — 2</span><span><span class="dot" style="background:#b18ae8"></span>Assumption — 2</span></div>
   </div>
         <table><thead><tr><th>Claim</th><th>Source</th><th>Grade</th></tr></thead><tbody>
+      <tr>
+        <td>Rwanda formal MSME financing shortfall ≈ $1.2B/yr</td>
+        <td class="muted">Kayko funding coverage (TechBuild/AFR), allAfrica</td>
+        <td><span class="grade g-secondary">secondary</span></td>
+      </tr>
+      <tr>
+        <td>Africa MSME financing gap ≈ $331B</td>
+        <td class="muted">TechCabal / African Exponent, CreditChek coverage</td>
+        <td><span class="grade g-secondary">secondary</span></td>
+      </tr>
+      <tr>
+        <td>Rwanda financial inclusion 96% (2024), banked adults only 22%</td>
+        <td class="muted">BNR National Financial Inclusion Roadmap 2026-2030</td>
+        <td><span class="grade g-observed">observed</span></td>
+      </tr>
+      <tr>
+        <td>60% of Rwandan MSMEs borrowed nothing in past 12 months</td>
+        <td class="muted">AFR Rwanda MSME FinMap 2024</td>
+        <td><span class="grade g-observed">observed</span></td>
+      </tr>
+      <tr>
+        <td>Collateral demands up to 5x loan amount block SME credit</td>
+        <td class="muted">RSSB/Enko $100M SME Fund announcement (FSD Africa)</td>
+        <td><span class="grade g-observed">observed</span></td>
+      </tr>
+      <tr>
+        <td>80+ licensed lending NDFSPs in Rwanda; several licenses revoked Oct 2025</td>
+        <td class="muted">BNR Licensed NDFSPs list (Nov 2025) + revoked list</td>
+        <td><span class="grade g-observed">observed</span></td>
+      </tr>
+      <tr>
+        <td>BNR regulatory sandbox open to local + foreign fintechs, ~3-month licensing</td>
+        <td class="muted">BNR sandbox page; Finhive Africa Fintech Regulation Guide (June 2026)</td>
+        <td><span class="grade g-observed">observed</span></td>
+      </tr>
+      <tr>
+        <td>Rwandan fintechs: Kayko ($1.2M seed, 8,500 merchants), Numida entered Mar 2026</td>
+        <td class="muted">TechBuild, New Times</td>
+        <td><span class="grade g-observed">observed</span></td>
+      </tr>
+      <tr>
+        <td>PEMiG = causal-AI scoring API, 5 partner lenders, $250K loans, B2B SaaS + per-assessment</td>
+        <td class="muted">Disrupt Africa (May 2026), PEMiG Medium engineering posts</td>
+        <td><span class="grade g-observed">observed</span></td>
+      </tr>
+      <tr>
+        <td>Lendsqr pricing: from ~$127/mo (Pro) to ~$3,810/yr (Business) + $1,900 setup</td>
+        <td class="muted">Lendsqr blog cost breakdowns</td>
+        <td><span class="grade g-observed">observed</span></td>
+      </tr>
+      <tr>
+        <td>Building lending tech from scratch in Africa ≈ $9,500–31,700, 6–18 months</td>
+        <td class="muted">Lendsqr blog</td>
+        <td><span class="grade g-secondary">secondary</span></td>
+      </tr>
+      <tr>
+        <td>&quot;Lenders would pay for underwriting/origination APIs in Rwanda&quot;</td>
+        <td class="muted">No interviews conducted yet</td>
+        <td><span class="grade g-assumption">assumption</span></td>
+      </tr>
       <tr>
         <td>A Chinese P2P platform 千和投 (qianhetou.com) existed</td>
         <td class="muted">Chinadaily, March 2015</td>
@@ -270,6 +345,93 @@
       </div>
     </details>
     <details class="panel" open id="sec-doc-1">
+      <summary>
+        <span class="panel-title">Research Embeddedlend</span>
+        <span class="panel-file">research-embeddedlend.md</span>
+      </summary>
+      <div class="panel-body">
+        <div class="meta"><span class="meta-item"><b>Stage</b>: research</span><span class="meta-item"><b>App name</b>: EmbeddedLend (working title — rename at PRD)</span><span class="meta-item"><b>User level</b>: B (Developer)</span><span class="meta-item"><b>Target platform</b>: web / API-first</span><span class="meta-item"><b>Budget</b>: side-project scale (~$200–800/mo running)</span><span class="meta-item"><b>Timeline</b>: open; MVP ~3–4 months part-time</span></div>
+        <p><strong>EmbeddedLend (working title)</strong> — an API-first embedded-lending infrastructure for East Africa: AI underwriting, loan origination, and servicing APIs sold to licensed banks, microfinance institutions (MFIs), SACCOs, and vertical SaaS platforms, with an initial focus on <strong>Rwanda and the EAC</strong>. We sell the technology layer, never the lending (the Qianhe lesson).</p>
+<p>What it is: a B2B2C API platform. Licensed lenders integrate our REST APIs to originate, underwrite, disburse, and service digital loans. We never take deposits, never hold a loan book, never touch consumer funds directly — the lender remains the regulated entity.</p>
+<p>Problem it solves: East Africa has a deep SME credit gap but lenders lack the underwriting tech to serve it profitably. In Rwanda, formal MSMEs face an estimated <strong>~$1.2B annual financing shortfall</strong>; Africa-wide the MSME gap is <strong>~$331B</strong>. Borrowers are &quot;thin-file&quot; (no collateral history), banks demand collateral of up to <strong>5x the loan amount</strong>, and MFI/SACCO tech is legacy.</p>
+<p>Why now: three converging tailwinds —</p>
+<p>1. <strong>Policy push:</strong> Rwanda's FSDS 2025-29, the RSSB-anchored <strong>$100M Rwanda SME Growth Fund</strong>, the <strong>BNR regulatory sandbox</strong> (open to local and foreign fintechs, ~3-month licensing path), and Kigali International Financial Centre explicitly target SME credit and fintech.</p>
+<p>2. <strong>Data now exists:</strong> 96% financial inclusion in Rwanda, mobile money ubiquity (MTN MoMo, Airtel), RwandaPay rails, and real-time payments (eKash) make alternative-data underwriting viable.</p>
+<p>3. <strong>Market shift:</strong> East African fintech is moving from payments toward &quot;data-as-a-service&quot; that feeds credit decisions — the exact wedge our API occupies.</p>
+<p>Primary (who pays):</p>
+<ul>
+<li><strong>Licensed digital lenders / NDFSPs in Rwanda</strong> — BNR lists 80+ licensed lending NDFSPs (Zamuka, IWACU, EXUUS, Flow Rwanda, Manzi, Novacore…). Most are small, tech-poor, and need plug-and-play origination + scoring.</li>
+<li><strong>MFIs &amp; SACCOs</strong> — the sector extends credit heavily to women and micro-enterprises but runs on field-officer apps and paper.</li>
+<li><strong>Vertical SaaS platforms</strong> (e-commerce, logistics, agritech, retail POS) that want embedded working capital for their merchants — e.g. the Kayko micro-ERP corridor.</li>
+</ul>
+<p>Secondary (channel partners):</p>
+<ul>
+<li>Regional banks (Bank of Kigali, Ecobank Rwanda, I&amp;M) that prefer white-label APIs over building in-house.</li>
+<li>Digital lenders expanding into Rwanda (Numida entered March 2026, collateral-free SME loans).</li>
+</ul>
+<p>Pain points: no verifiable borrower records; manual underwriting; days-long approvals; high default fear blocking thin-file lending; legacy core banking (Temenos T24, Mambu, Musoni) with no clean API layer.</p>
+<p>Directional only — deep architecture is the Tech Design step. Given your <strong>Node/TypeScript</strong> stack:</p>
+<ul>
+<li><strong>Architecture:</strong> API-first microservice integration layer. The lender's core banking system stays the system of record; our services sit beside it (origination flow, scoring engine, decisioning, servicing webhooks) — the PEMiG pattern (single <code>POST /v1/score</code> returning a score + explanation + risk signals).</li>
+<li><strong>Integrations:</strong> mobile money (MTN MoMo / Airtel via RwandaPay or direct), bank/mobile statements, credit bureaus (TransUnion, Metropol, Creditinfo Kenya), KYC/KYB + AML vendors (Xcobean, Zeeh, Oystr TH), digital ID.</li>
+<li><strong>Model:</strong> a hybrid rules engine + ML scoring over alternative data (transaction telemetry, cash-flow signals) rather than pure bureau scoring — thin-file friendly.</li>
+<li><strong>Compliance as code:</strong> consent-first data pulls, audit logging, tamper-proof decision traces, data residency in the jurisdiction (Rwanda's Law 058/2021 + NCSA expectations).</li>
+<li><strong>Integrations timeline benchmark:</strong> PEMiG reports 6–10 weeks contract→pilot for API-capable lenders.</li>
+</ul>
+<p>The landscape splits into four groups — all are potential co-opetition, and there is no dominant Rwanda-native API-underwriting player yet:</p>
+<table><thead><tr><th>Player</th><th>Model</th><th>Region</th><th>Gap/lesson</th></tr></thead><tbody>
+<tr><td><strong>PEMiG</strong> (Philex Labs)</td><td>Causal-AI scoring API, B2B SaaS + per-assessment fees</td><td>Kenya → expanding EA/Rwanda</td><td>Closest analogue; proves lender appetite + pricing (subscription + volume fees). Weakness: scoring-only, no origination/servicing.</td></tr>
+<tr><td><strong>CreditChek</strong></td><td>Credit intelligence/income verification APIs, pay-as-you-go</td><td>Nigeria → KE/UG/RW (raised $600K, June 2026)</td><td>Validates the data-infra wedge and the Rwanda entry thesis.</td></tr>
+<tr><td><strong>Kayko</strong></td><td>Micro-ERP capturing merchant data → bankable signals, $1.2M seed</td><td>Rwanda (8,500 merchants)</td><td>Local data-layer competitor; validates the informal-merchant corridor.</td></tr>
+<tr><td><strong>Pezesha / Patascore</strong></td><td>AI scoring API + marketplace, CBK-licensed DCP</td><td>Kenya (500K+ MSMEs, $2M+/mo)</td><td>Proves alternative-data scoring at scale (&lt;3% claimed default).</td></tr>
+<tr><td><strong>KwaWingu</strong></td><td>Full loan-management infra for MFIs/SACCOs, ISO 27001</td><td>Tanzania/Kenya/Uganda/Rwanda (847+ FIs)</td><td>Strong full-stack rival; compliance-first.</td></tr>
+<tr><td><strong>CreditOS</strong></td><td>All-in-one loan management, API-first</td><td>Uganda/KE/NG (50+ lenders)</td><td>Full lifecycle competitor, multi-country.</td></tr>
+<tr><td><strong>Credit Forest</strong></td><td>API-first LOS + LMS, &quot;compliance as code&quot;</td><td>Ghana first</td><td>The template for a regulator-constraint-first build.</td></tr>
+<tr><td><strong>Lendsqr</strong></td><td>Loan management SaaS + Adjutor APIs</td><td>Nigeria/Kenya, 190+ countries</td><td>Pricing benchmark; cheaper than Mambu/Turnkey/Thought Machine.</td></tr>
+<tr><td><strong>Kukopa</strong></td><td>Embedded lending with own capital + revenue share</td><td>Kenya</td><td>Distribution + capital play; benchmark for partner economics.</td></tr>
+<tr><td><strong>Migo</strong></td><td>Embedded lending, custom ML, own underwriting</td><td>Nigeria/global</td><td>&quot;Launch in 30 days&quot; claim; capital-heavy model.</td></tr>
+<tr><td><strong>Oystr</strong></td><td>Micro-credit APIs (Float/Credit/TH)</td><td>Pan-Africa</td><td>Bundled origination+KYC+scoring APIs.</td></tr>
+<tr><td><strong>Xcobean, Kamoa, Zeeh</strong></td><td>KYC/CRB/score/statement-parsing APIs</td><td>Kenya/pan-Africa</td><td>Best-of-breed point APIs we'd integrate with or beat on bundling.</td></tr>
+</table>
+<p><strong>What users love/hate:</strong> lenders love speed (approvals in minutes), thin-file coverage, and regulatory-ready audit trails. They hate long integration timelines, opaque black-box scores, and platform lock-in. Our differentiation angle: <strong>Rwanda/EAC-first compliance-as-code, transparent decision traces, and a fast, developer-friendly Node/TS integration</strong> — bundled underwriting + origination rather than scoring-only.</p>
+<p><strong>The gap:</strong> no one is the &quot;Rwanda-native, API-first underwriting + origination layer&quot; for the 80+ licensed local lenders and SaaS platforms — but PEMiG, CreditChek, and CreditOS are all moving east, so speed to a Rwanda beachhead matters.</p>
+<ul>
+<li><strong>Build-from-scratch baseline (Nigeria benchmark, Lendsqr):</strong> ~$9,500–$31,700 and 6–18 months to build lending tech in-house; enterprise platforms (Mambu, Turnkey, Thought Machine) &quot;eat a seed round.&quot;</li>
+<li><strong>As a side project with an existing dev:</strong> MVP cost is realistically <strong>development time + ~$200–800/mo</strong> in infra/data (Postgres + Node/TS host, bureau + KYC API usage fees, mobile-money gateway fees). Leverage free tiers where possible.</li>
+<li><strong>Pricing model to target:</strong> B2B SaaS subscription + per-assessment/per-loan fees (PEMiG pattern), or revenue-share on loan fee (Kukopa sample: partner earns ~KES 13,500/client/year at 15% of a 10% fee on 3 loans/yr of KES 300k).</li>
+<li><strong>Timeline:</strong> MVP (origination + scoring + one bureau + one disbursement rail) ~3–4 months part-time; pilot with 1–2 lenders is the real milestone.</li>
+</ul>
+<p>&lt;!-- Machine-readable summary for the next workflow step. Do not delete; the next prompt in the workflow reads this block. --&gt;</p>
+<ul>
+<li>Stage: research</li>
+<li>App name: EmbeddedLend (working title — rename at PRD)</li>
+<li>User level: B (Developer)</li>
+<li>Target platform: web / API-first</li>
+<li>Budget: side-project scale (~$200–800/mo running)</li>
+<li>Timeline: open; MVP ~3–4 months part-time</li>
+<li>Stack: Node/TypeScript</li>
+<li>Target market: Rwanda → EAC</li>
+<li>Source files: research-embeddedlend.md, research-qianhe.md (autopsy), opportunities.md</li>
+</ul>
+<p>---</p>
+<h4>Claims ledger (evidence grading)</h4>
+<table><thead><tr><th>Claim</th><th>Source</th><th>Grade</th></tr></thead><tbody>
+<tr><td>Rwanda formal MSME financing shortfall ≈ $1.2B/yr</td><td>Kayko funding coverage (TechBuild/AFR), allAfrica</td><td>🟡 Secondary</td></tr>
+<tr><td>Africa MSME financing gap ≈ $331B</td><td>TechCabal / African Exponent, CreditChek coverage</td><td>🟡 Secondary</td></tr>
+<tr><td>Rwanda financial inclusion 96% (2024), banked adults only 22%</td><td>BNR National Financial Inclusion Roadmap 2026-2030</td><td>✅ Observed</td></tr>
+<tr><td>60% of Rwandan MSMEs borrowed nothing in past 12 months</td><td>AFR Rwanda MSME FinMap 2024</td><td>✅ Observed</td></tr>
+<tr><td>Collateral demands up to 5x loan amount block SME credit</td><td>RSSB/Enko $100M SME Fund announcement (FSD Africa)</td><td>✅ Observed</td></tr>
+<tr><td>80+ licensed lending NDFSPs in Rwanda; several licenses revoked Oct 2025</td><td>BNR Licensed NDFSPs list (Nov 2025) + revoked list</td><td>✅ Observed</td></tr>
+<tr><td>BNR regulatory sandbox open to local + foreign fintechs, ~3-month licensing</td><td>BNR sandbox page; Finhive Africa Fintech Regulation Guide (June 2026)</td><td>✅ Observed</td></tr>
+<tr><td>Rwandan fintechs: Kayko ($1.2M seed, 8,500 merchants), Numida entered Mar 2026</td><td>TechBuild, New Times</td><td>✅ Observed</td></tr>
+<tr><td>PEMiG = causal-AI scoring API, 5 partner lenders, $250K loans, B2B SaaS + per-assessment</td><td>Disrupt Africa (May 2026), PEMiG Medium engineering posts</td><td>✅ Observed</td></tr>
+<tr><td>Lendsqr pricing: from ~$127/mo (Pro) to ~$3,810/yr (Business) + $1,900 setup</td><td>Lendsqr blog cost breakdowns</td><td>✅ Observed</td></tr>
+<tr><td>Building lending tech from scratch in Africa ≈ $9,500–31,700, 6–18 months</td><td>Lendsqr blog</td><td>🟡 Secondary</td></tr>
+<tr><td>&quot;Lenders would pay for underwriting/origination APIs in Rwanda&quot;</td><td>No interviews conducted yet</td><td>❓ Assumption</td></tr>
+</table>
+      </div>
+    </details>
+    <details class="panel" open id="sec-doc-2">
       <summary>
         <span class="panel-title">Research Qianhe</span>
         <span class="panel-file">research-qianhe.md</span>
