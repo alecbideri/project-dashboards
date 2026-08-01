@@ -1,21 +1,16 @@
-name: Deploy dashboards to GitHub Pages
+name: Deploy dashboards to Netlify
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 concurrency:
-  group: pages
+  group: netlify
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -39,17 +34,11 @@ jobs:
         shell: bash
         run: node generate-dashboard.js --master .
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-
-      - name: Print page URL
-        run: echo "Dashboard live at ${{ steps.deployment.outputs.page_url }}"
+      - name: Deploy to Netlify
+        run: netlify deploy --prod --dir . --site "$NETLIFY_SITE_ID" --auth "$NETLIFY_AUTH_TOKEN"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
