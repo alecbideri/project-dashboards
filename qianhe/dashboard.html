@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>qianhe — Project Dashboard</title>
+<style>
+  :root {
+    --bg: #0f1115; --panel: #171a21; --panel2: #1d212b; --border: #2a2f3a;
+    --text: #e6e9ef; --muted: #8b93a3; --accent: #6ea8ff; --chip: #232834;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.6 -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { padding: 24px 32px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg, #14161c, #0f1115); }
+  header h1 { margin: 0 0 4px; font-size: 22px; }
+  .muted { color: var(--muted); }
+  main { padding: 24px 32px; max-width: 1100px; margin: 0 auto; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  .card h3 { margin: 0 0 2px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .card .big { font-size: 26px; font-weight: 700; margin: 2px 0; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+  .panel summary { padding: 12px 16px; cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center; gap: 12px; background: var(--panel2); list-style: none; }
+  .panel summary::-webkit-details-marker { display: none; }
+  .panel summary::after { content: "+"; color: var(--accent); font-weight: 700; font-size: 18px; }
+  .panel[open] summary::after { content: "-"; }
+  .panel-title { font-size: 15px; }
+  .panel-file { font-size: 12px; font-weight: 400; }
+  .panel-body { padding: 14px 16px; }
+  .panel-body h3, .panel-body h4 { margin-top: 16px; }
+  .panel-body p, .panel-body ul, .panel-body ol { margin: 8px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  code { background: var(--chip); border-radius: 4px; padding: 1px 5px; font-size: 13px; }
+  pre { background: #0a0c10; border: 1px solid var(--border); border-radius: 8px; padding: 12px; overflow-x: auto; }
+  a { color: var(--accent); }
+  .chip { display: inline-block; background: var(--chip); border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px; font-size: 12px; margin-right: 6px; }
+  .grade { border-radius: 6px; padding: 1px 8px; font-size: 12px; white-space: nowrap; }
+  .g-observed { background: #16301f; color: #6fd98a; }
+  .g-secondary { background: #2f2a14; color: #e0c06a; }
+  .g-unverified { background: #331a1a; color: #e07a7a; }
+  .g-assumption { background: #231633; color: #b18ae8; }
+  .g-unknown { background: var(--chip); color: var(--muted); }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .meta-item { background: var(--chip); border-radius: 6px; padding: 3px 8px; font-size: 12px; }
+  .handoff { white-space: pre-wrap; }
+  .verdict { border-left: 3px solid var(--accent); padding-left: 12px; }
+  @media print { body { background: #fff; color: #000; } .panel { border-color: #ccc; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>qianhe — Project Dashboard</h1>
+  <div class="muted">C:\Users\BIDERI ALEC\Downloads\projects\new products\qianhe</div>
+  
+</header>
+<main>
+  
+      <div class="grid">
+        <div class="card"><h3>Reports</h3><p class="big">2</p><p class="muted">docs loaded</p></div>
+        <div class="card"><h3>Claims</h3><p class="big">6</p><p class="muted">graded ledger entries</p></div>
+        <div class="card"><h3>Prototype</h3><p class="big">Found</p><p class="muted">scanned for artifacts</p></div>
+      </div>
+      <details class="panel"><summary>Handoff Context</summary><div class="panel-body"><div class="handoff"><ul>
+<li>Stage: autopsy</li>
+<li>Company: Qianhe (千和投)</li>
+<li>Sector: Financials / Fintech</li>
+<li>Cash burned: $100.0M (loot-drop claim, unverified)</li>
+<li>Years active: 2014–2019</li>
+<li>Cause of death: Regulatory crackdown on P2P lending + regulatory arbitrage + unsustainable unit economics</li>
+<li>Rebuild concept: B2B embedded-lending infrastructure (AI underwriting APIs for licensed banks + vertical SaaS platforms)</li>
+<li>Source: https://www.loot-drop.io/startup/2545-qianhe + primary sources</li>
+<li>Generated for: (pending — user idea to be validated via vibe-research)</li>
+</ul>
+<p>---</p></div></div></details>
+      <div class="proto"></div>
+    
+  
+      <details class="panel" open>
+        <summary><span class="panel-title">Evidence Ledger</span></summary>
+        <div class="panel-body"><table><thead><tr><th>Claim</th><th>Source</th><th>Grade</th></tr></thead><tbody>
+      <tr>
+        <td>A Chinese P2P platform 千和投 (qianhetou.com) existed</td>
+        <td class="muted">Chinadaily, March 2015</td>
+        <td><span class="grade g-observed">observed</span></td>
+      </tr>
+      <tr>
+        <td>China's P2P industry purged 2019–2020 (6,000+ platforms → ~0)</td>
+        <td class="muted">TechCrunch / Crowdfund Insider / industry coverage</td>
+        <td><span class="grade g-observed">observed</span></td>
+      </tr>
+      <tr>
+        <td>Qianhe burned $100M</td>
+        <td class="muted">loot-drop.io (no primary source found)</td>
+        <td><span class="grade g-unverified">unverified</span></td>
+      </tr>
+      <tr>
+        <td>Founded in 2014</td>
+        <td class="muted">loot-drop.io (no primary source found)</td>
+        <td><span class="grade g-unverified">unverified</span></td>
+      </tr>
+      <tr>
+        <td>SME financing gap ≈ $2.5T/yr in China</td>
+        <td class="muted">Industry reports</td>
+        <td><span class="grade g-secondary">secondary</span></td>
+      </tr>
+      <tr>
+        <td>&quot;Lenders would pay for underwriting APIs&quot;</td>
+        <td class="muted">No interviews conducted yet</td>
+        <td><span class="grade g-assumption">assumption</span></td>
+      </tr></tbody></table></div>
+      </details>
+      
+      
+    <details class="panel" open>
+      <summary>
+        <span class="panel-title">Opportunities</span>
+        <span class="panel-file muted">opportunities.md</span>
+      </summary>
+      <div class="panel-body">
+        <div class="meta"><span class="meta-item"><b>Regular check</b>: every few autopsies, review if any Shortlisted idea repeats — repeated gaps = stronger signal.</span></div>
+        <ul>
+<li><strong>New</strong> — autopsy done, not yet evaluated</li>
+<li><strong>Shortlisted</strong> — gap is real, worth deeper research</li>
+<li><strong>Pursuing</strong> — active project (vibe-research → build)</li>
+<li><strong>Dropped</strong> — ruled out, with reason</li>
+</ul>
+<p>---</p>
+<table><thead><tr><th>Company</th><th>Sector</th><th>Gap Found</th><th>Rebuild Concept</th><th>Potential</th><th>Status</th><th>Autopsy Doc</th><th>Date</th></tr></thead><tbody>
+<tr><td>Qianhe (千和投)</td><td>Fintech / P2P lending</td><td>Regulatory crackdown killed direct P2P; SME financing gap (~$2.5T/yr) persists</td><td>B2B embedded-lending infrastructure (AI underwriting APIs for licensed banks + vertical SaaS)</td><td>Medium-High</td><td>New</td><td><code>research-qianhe.md</code></td><td>2026-08-01</td></tr>
+</table>
+<p>---</p>
+<ul>
+<li>Each row starts as <strong>New</strong> after an autopsy; move to Shortlisted when the rebuild concept survives the &quot;does this gap exist today&quot; check.</li>
+<li>When promoted to Pursuing, run <code>vibe-research</code> (autopsy lessons feed in automatically via the Handoff Context block).</li>
+<li>Regular check: every few autopsies, review if any Shortlisted idea repeats — repeated gaps = stronger signal.</li>
+</ul>
+<p><em>(to be filled as loot-drop finds come in)</em></p>
+<ul>
+<li>Weidai (same P2P regulatory death, $110M)</li>
+</ul>
+      </div>
+    </details>
+    <details class="panel" open>
+      <summary>
+        <span class="panel-title">Research Qianhe</span>
+        <span class="panel-file muted">research-qianhe.md</span>
+      </summary>
+      <div class="panel-body">
+        <div class="meta"><span class="meta-item"><b>Stage</b>: autopsy</span><span class="meta-item"><b>Company</b>: Qianhe (千和投)</span><span class="meta-item"><b>Sector</b>: Financials / Fintech</span><span class="meta-item"><b>Cash burned</b>: $100.0M (loot-drop claim, unverified)</span><span class="meta-item"><b>Years active</b>: 2014–2019</span><span class="meta-item"><b>Cause of death</b>: Regulatory crackdown on P2P lending + regulatory arbitrage + unsustainable unit economics</span></div>
+        <p>Chinese <strong>peer-to-peer (P2P) lending platform</strong> connecting individual lenders with underbanked SMEs.</p>
+<ul>
+<li><strong>Sector:</strong> Financials / Fintech</li>
+<li><strong>Country:</strong> China</li>
+<li><strong>Years active:</strong> 2014–2019 (loot-drop claim — founding year unverified; platform confirmed active by March 2015)</li>
+<li><strong>Total cash burned:</strong> $100.0M (loot-drop claim — NOT confirmed by primary sources)</li>
+<li><strong>Product type:</strong> Financial &amp; Fintech</li>
+</ul>
+<p>1. <strong>Regulatory crackdown</strong> — China's 2019–2020 government purge of the P2P industry (from ~6,000 platforms at peak to near zero).</p>
+<p>2. <strong>Regulatory arbitrage, not a moat</strong> — the model depended on operating in a licensing gray zone with immature risk management.</p>
+<p>3. <strong>Unsustainable unit economics</strong> — required continuous growth to work; systemic fraud and defaults compounded.</p>
+<ul>
+<li><strong>Then (2014–2017):</strong> China's underbanked SME sector, risk-averse banks, mobile internet adoption. P2P market reached ~$200B+ transactions at 2017 peak, 3,383+ platforms active (Jan 2016).</li>
+<li><strong>Now:</strong> Consumer-facing P2P lending is effectively dead post-2019. The SME financing gap (~$2.5T/yr) remains, but credit is channeled through licensed banks, microlenders, and fintech infrastructure. The winner path is <strong>embedded/B2B lending</strong>, not direct platforms.</li>
+</ul>
+<p>1. <strong>Regulatory arbitrage is not a moat — it's a time bomb.</strong> In financial services, if your edge is a loophole, a government can close it overnight.</p>
+<p>2. <strong>Unvalidated underwriting at scale = systemic defaults.</strong> Growth-based models collapse when the funding treadmill stops.</p>
+<p>3. <strong>Separate capital supply from technology</strong> — partner with licensed lenders; don't lend directly without a license.</p>
+<p>4. <strong>Sell to platforms, not consumers</strong> — sidestepping regulatory risk while capturing the same market demand.</p>
+<p>Loot-drop's proposed &quot;ChainCredit&quot;: a <strong>B2B embedded-lending infrastructure</strong> platform providing AI-driven underwriting, loan origination, and servicing APIs to licensed banks/microlenders and vertical SaaS platforms (e-commerce, logistics, agriculture). Revenue: per-API-call fees + risk-sharing on interest spread + SaaS subscriptions. My read: directionally sound and mirrors how the Chinese fintech market actually consolidated post-2019.</p>
+<p>Claims ledger — every fact graded by evidence strength.</p>
+<table><thead><tr><th>Claim</th><th>Source</th><th>Grade</th></tr></thead><tbody>
+<tr><td>A Chinese P2P platform 千和投 (qianhetou.com) existed</td><td>Chinadaily, March 2015</td><td>✅ Observed</td></tr>
+<tr><td>China's P2P industry purged 2019–2020 (6,000+ platforms → ~0)</td><td>TechCrunch / Crowdfund Insider / industry coverage</td><td>✅ Observed</td></tr>
+<tr><td>Qianhe burned $100M</td><td>loot-drop.io (no primary source found)</td><td>⚠️ Unverified</td></tr>
+<tr><td>Founded in 2014</td><td>loot-drop.io (no primary source found)</td><td>⚠️ Unverified</td></tr>
+<tr><td>SME financing gap ≈ $2.5T/yr in China</td><td>Industry reports</td><td>🟡 Secondary</td></tr>
+<tr><td>&quot;Lenders would pay for underwriting APIs&quot;</td><td>No interviews conducted yet</td><td>❓ Assumption</td></tr>
+</table>
+<p><strong>Name ambiguity:</strong> &quot;Qianhe&quot; also matches unrelated active companies (Qianhe Condiment 603027.SS, Shanghai Qianhe consulting). This autopsy refers to the P2P lending platform.</p>
+<ul>
+<li><strong>Weidai</strong> ($110M, same regulatory death) — loot-drop.io/startup/2548-weidai</li>
+<li><strong>Nirvana</strong> (insurance infra, no market need)</li>
+<li><strong>Sleek</strong> (SMB cards, competition)</li>
+</ul>
+<p>---</p>
+<p>&lt;!-- Machine-readable summary for the next workflow step. Do not delete; vibe-research reads this block. --&gt;</p>
+<ul>
+<li>Stage: autopsy</li>
+<li>Company: Qianhe (千和投)</li>
+<li>Sector: Financials / Fintech</li>
+<li>Cash burned: $100.0M (loot-drop claim, unverified)</li>
+<li>Years active: 2014–2019</li>
+<li>Cause of death: Regulatory crackdown on P2P lending + regulatory arbitrage + unsustainable unit economics</li>
+<li>Rebuild concept: B2B embedded-lending infrastructure (AI underwriting APIs for licensed banks + vertical SaaS platforms)</li>
+<li>Source: https://www.loot-drop.io/startup/2545-qianhe + primary sources</li>
+<li>Generated for: (pending — user idea to be validated via vibe-research)</li>
+</ul>
+<p>---</p>
+      </div>
+    </details>
+      
+    
+</main>
+</body>
+</html>

@@ -1,0 +1,10 @@
+# Nested repo — keep its own git history
+vibe-coding-prompt-template/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Node (if any tooling lands later)
+node_modules/
+.env
