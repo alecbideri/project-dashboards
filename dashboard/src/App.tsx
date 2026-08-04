@@ -256,8 +256,8 @@ function MasterGrid({
         table={table}
         recordCount={projects.length}
         onRowClick={(row: TreeRow) => {
-          if (row.kind === "project") onSelect(projects.find((p) => p.name === row.name)!)
-          if (row.kind === "stream" && row.link) window.open(row.link, "_blank", "noopener")
+          if (row.kind === "project") return
+          if (row.kind === "stream") onSelect(projects.find((p) => p.name === row.projectName)!)
         }}
         tableLayout={{
           headerSticky: true,
@@ -384,6 +384,7 @@ function DocBlock({ doc }: { doc: ProjectDoc }) {
       >
         {doc.sections
           .filter((s) => s.body.replace(/\s/g, "").length > 0)
+          .filter((s) => !/handoff/i.test(s.title || ""))
           .map((s, i) => {
             const isCandidates = candidatesSection === s
             return (
@@ -621,7 +622,7 @@ export default function App() {
             <MasterGrid projects={projects} onSelect={setSelected} />
 
             <div className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground">
-              <ListTree className="size-3.5" /> Click a stream to open its report · a project row opens the project
+              <ListTree className="size-3.5" /> Click a stream to open the project · the Open button routes to its report
             </div>
           </div>
         )}
