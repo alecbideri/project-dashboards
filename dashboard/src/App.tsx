@@ -1,18 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import {
   getCoreRowModel,
-  getSortedRowModel,
+  getExpandedRowModel,
   useReactTable,
   type ColumnDef,
-  type SortingState,
 } from "@tanstack/react-table"
 import {
   ArrowLeft,
-  ArrowUpDown,
   ClipboardList,
   FolderGit2,
   FileText,
   Gauge,
+  ListTree,
   Scale,
 } from "lucide-react"
 
@@ -20,7 +19,10 @@ import {
   DataGrid,
   DataGridContainer,
 } from "@/components/reui/data-grid/data-grid"
-import { DataGridTable } from "@/components/reui/data-grid/data-grid-table"
+import {
+  DataGridTable,
+  DataGridTableRowExpand,
+} from "@/components/reui/data-grid/data-grid-table"
 import { Badge } from "@/components/reui/badge"
 import {
   Select,
@@ -38,6 +40,7 @@ import {
   type Project,
   type ProjectDoc,
   type Claim,
+  type TaskGroup,
 } from "@/lib/data"
 import { Markdown } from "@/lib/markdown"
 import { cn } from "@/lib/utils"
@@ -97,51 +100,154 @@ function StatCard({
   )
 }
 
-function MasterGrid({ projects, onSelect }: { projects: Project[]; onSelect: (p: Project) => void }) {
-  const [sorting, setSorting] = useState<SortingState>([])
+type TreeRow =
+  | {
+      kind: "project"
+      id: string
+      name: string
+      status: string
+      docsCount: number
+      claimsCount: number
+      subRows: TreeRow[]
+    }
+  | {
+      kind: "stream"
+      id: string
+      stream: string
+      done: number
+      total: number
+      subRows: TreeRow[]
+    }
+  | {
+      kind: "step"
+      id: string
+      step: string
+      status: string
+      date: string
+      notes: string
+    }
 
-  const columns = useMemo<ColumnDef<Project>[]>(
+function buildTree(projects: Project[]): TreeRow[] {
+  return projects.map((p) => {
+    const subRows: TreeRow[] = p.tasks.map((g: TaskGroup) => {
+      const total = g.steps.length
+      const done = g.steps.filter((s) => /done/i.test(s.status)).length
+      return {
+        kind: "stream",
+        id: `${p.name}::${g.stream}`,
+        stream: g.stream,
+        done,
+        total,
+        subRows: g.steps.map((s, i) => ({
+          kind: "step",
+          id: `${p.name}::${g.stream}::${i}`,
+          step: s.step,
+          status: s.status,
+          date: s.date,
+          notes: s.notes,
+        })),
+      }
+    })
+    return {
+      kind: "project",
+      id: p.name,
+      name: p.name,
+      status: p.status,
+      docsCount: p.docs.length,
+      claimsCount: p.totalClaims,
+      subRows,
+    }
+  })
+}
+
+function MasterGrid({ projects, onSelect }: { projects: Project[]; onSelect: (p: Project) => void }) {
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({})
+
+  const data = useMemo(() => buildTree(projects), [projects])
+  const columns = useMemo<ColumnDef<TreeRow>[]>(
     () => [
       {
         accessorKey: "name",
-        header: "Project",
-        cell: ({ row }) => (
-          <div className="flex items-center gap-2 font-medium text-foreground">
-            <FolderGit2 className="size-4 text-primary" />
-            {row.original.name}
-          </div>
-        ),
+        header: "Project / Task",
+        cell: ({ row }) => {
+          const r = row.original
+          return (
+            <div className="flex items-center gap-2">
+              <DataGridTableRowExpand row={row} indent={24} />
+              {r.kind === "project" && (
+                <>
+                  <FolderGit2 className="size-4 text-primary" />
+                  <span className="font-medium text-foreground">{r.name}</span>
+                </>
+              )}
+              {r.kind === "stream" && (
+                <>
+                  <ListTree className="size-4 text-muted-foreground" />
+                  <span className="font-semibold text-foreground">{r.stream}</span>
+                  <span className="text-xs text-muted-foreground">
+                    ({r.done}/{r.total} done)
+                  </span>
+                </>
+              )}
+              {r.kind === "step" && (
+                <span className="text-muted-foreground">{r.step}</span>
+              )}
+            </div>
+          )
+        },
       },
       {
         accessorKey: "status",
         header: "Status",
-        cell: ({ row }) => <StatusBadge status={row.original.status} />,
+        cell: ({ row }) => {
+          const r = row.original
+          if (r.kind === "project") return <StatusBadge status={r.status} />
+          if (r.kind === "stream") return <span className="text-xs text-muted-foreground">stream</span>
+          return <StatusBadge status={r.status} />
+        },
       },
       {
-        accessorKey: "docs",
-        header: "Docs",
-        cell: ({ row }) => (
-          <span className="text-muted-foreground">{row.original.docs.length}</span>
-        ),
+        accessorKey: "date",
+        header: "Date",
+        cell: ({ row }) => {
+          const r = row.original
+          if (r.kind === "step") return <span className="text-xs text-muted-foreground">{r.date}</span>
+          if (r.kind === "project") return <span className="text-muted-foreground">{r.docsCount} docs</span>
+          return <span className="text-xs text-muted-foreground">—</span>
+        },
       },
       {
-        accessorKey: "totalClaims",
+        accessorKey: "claimsCount",
         header: "Claims",
-        cell: ({ row }) => (
-          <span className="text-muted-foreground">{row.original.totalClaims}</span>
-        ),
+        cell: ({ row }) => {
+          const r = row.original
+          if (r.kind === "project") return <span className="text-muted-foreground">{r.claimsCount}</span>
+          return null
+        },
+      },
+      {
+        accessorKey: "notes",
+        header: "Notes",
+        cell: ({ row }) => {
+          const r = row.original
+          if (r.kind === "step" && r.notes)
+            return <span className="line-clamp-1 text-xs text-muted-foreground">{r.notes}</span>
+          return null
+        },
       },
     ],
     [],
   )
 
   const table = useReactTable({
-    data: projects,
+    data,
     columns,
-    state: { sorting },
-    onSortingChange: setSorting,
+    state: { expanded },
+    onExpandedChange: setExpanded as (updater: unknown) => void,
+    getRowId: (row) => row.id,
+    getSubRows: (row) => ("subRows" in row ? row.subRows : undefined),
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
   })
 
   return (
@@ -149,7 +255,9 @@ function MasterGrid({ projects, onSelect }: { projects: Project[]; onSelect: (p:
       <DataGrid
         table={table}
         recordCount={projects.length}
-        onRowClick={onSelect}
+        onRowClick={(row: TreeRow) => {
+          if (row.kind === "project") onSelect(projects.find((p) => p.name === row.name)!)
+        }}
         tableLayout={{
           headerSticky: true,
           headerBackground: true,
@@ -515,7 +623,7 @@ export default function App() {
             <MasterGrid projects={projects} onSelect={setSelected} />
 
             <div className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground">
-              <ArrowUpDown className="size-3.5" /> Click a header to sort · click a row to open
+              <ListTree className="size-3.5" /> Click a stream to expand tasks · click a project row to open
             </div>
           </div>
         )}

@@ -103,6 +103,39 @@ function extractKv(md) {
   return kv
 }
 
+function parseTasks(md) {
+  // Reads an "Action Log" markdown table into a hierarchy: parent rows are
+  // Stream values, child rows are the individual Steps indented beneath.
+  const tables = parseTables(md)
+  const taskTable = tables.find(
+    (t) => t.header.some((h) => /stream/i.test(h)) && t.header.some((h) => /step/i.test(h))
+  )
+  if (!taskTable) return []
+
+  const streamIdx = taskTable.header.findIndex((h) => /stream/i.test(h))
+  const stepIdx = taskTable.header.findIndex((h) => /step/i.test(h))
+  const statusIdx = taskTable.header.findIndex((h) => /status/i.test(h))
+  const dateIdx = taskTable.header.findIndex((h) => /date/i.test(h))
+  const notesIdx = taskTable.header.findIndex((h) => /notes/i.test(h))
+
+  const byStream = new Map()
+  for (const row of taskTable.rows) {
+    const stream = (streamIdx >= 0 ? row[streamIdx] : "Misc") || "Misc"
+    if (!byStream.has(stream)) byStream.set(stream, [])
+    byStream.get(stream).push({
+      step: stepIdx >= 0 ? row[stepIdx] : "",
+      status: statusIdx >= 0 ? row[statusIdx] : "",
+      date: dateIdx >= 0 ? row[dateIdx] : "",
+      notes: notesIdx >= 0 ? row[notesIdx] : "",
+    })
+  }
+
+  return [...byStream.entries()].map(([stream, steps]) => ({
+    stream,
+    steps,
+  }))
+}
+
 const projects = []
 
 for (const entry of fs.readdirSync(repoRoot)) {
@@ -150,10 +183,16 @@ for (const entry of fs.readdirSync(repoRoot)) {
     })
   }
 
+  const tasksFile = path.join(docsDir, "tasks.md")
+  const tasks = fs.existsSync(tasksFile)
+    ? parseTasks(fs.readFileSync(tasksFile, "utf8"))
+    : []
+
   projects.push({
     name: entry,
     status,
     docs,
+    tasks,
     totalClaims: docs.reduce((a, d) => a + d.claims.length, 0),
   })
 }

@@ -3,6 +3,19 @@ export type Project = {
   status: string
   totalClaims: number
   docs: ProjectDoc[]
+  tasks: TaskGroup[]
+}
+
+export type TaskGroup = {
+  stream: string
+  steps: TaskStep[]
+}
+
+export type TaskStep = {
+  step: string
+  status: string
+  date: string
+  notes: string
 }
 
 export type ProjectDoc = {

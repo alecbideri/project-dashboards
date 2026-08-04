@@ -382,6 +382,127 @@
             "v": "Regulatory crackdown on P2P lending + regulatory arbitrage + unsustainable unit economics"
           }
         ]
+      },
+      {
+        "file": "tasks.md",
+        "title": "Tasks",
+        "claims": [],
+        "handoff": null,
+        "verdict": null,
+        "sections": [],
+        "kv": []
+      }
+    ],
+    "tasks": [
+      {
+        "stream": "Research",
+        "steps": [
+          {
+            "step": "Qianhe autopsy (startup-autopsy skill)",
+            "status": "Done",
+            "date": "2026-08-01",
+            "notes": "Learned: never hold the loan book"
+          },
+          {
+            "step": "EmbeddedLend deep research (vibe-research)",
+            "status": "Done",
+            "date": "2026-08-01",
+            "notes": "12 graded claims; Handoff Context block"
+          },
+          {
+            "step": "Competitor sweep: PEMiG, CreditChek, CreditOS, Lendsqr, Migo, Oystr",
+            "status": "Done",
+            "date": "2026-08-01",
+            "notes": "Full-stack infra + point-API rivals"
+          },
+          {
+            "step": "Rwanda/EAC market sizing (MSME gap, BNR sandbox)",
+            "status": "Done",
+            "date": "2026-08-01",
+            "notes": "$1.2B/yr shortfall, 96% inclusion"
+          }
+        ]
+      },
+      {
+        "stream": "Design",
+        "steps": [
+          {
+            "step": "ReUI dashboard conversion (Path B, free tier)",
+            "status": "Done",
+            "date": "2026-08-04",
+            "notes": "React + Vite + Tailwind v4 + shadcn"
+          },
+          {
+            "step": "Master overview + project detail views",
+            "status": "Done",
+            "date": "2026-08-04",
+            "notes": "Data-grid, stat cards, framed sections"
+          },
+          {
+            "step": "Dark/light mode toggle",
+            "status": "Done",
+            "date": "2026-08-04",
+            "notes": "Persisted to localStorage"
+          },
+          {
+            "step": "Opportunities Kanban board (drag-and-drop)",
+            "status": "Done",
+            "date": "2026-08-04",
+            "notes": "Grouped by Status column"
+          }
+        ]
+      },
+      {
+        "stream": "Implementation",
+        "steps": [
+          {
+            "step": "ReUI MCP server + Agent Skill install",
+            "status": "Done",
+            "date": "2026-08-04",
+            "notes": "mcp.reui.io"
+          },
+          {
+            "step": "Data-grid, kanban, stepper, timeline primitives",
+            "status": "Done",
+            "date": "2026-08-04",
+            "notes": "Via shadcn @reui registry"
+          },
+          {
+            "step": "docs → JSON build pipeline",
+            "status": "Done",
+            "date": "2026-08-04",
+            "notes": "scripts/generate-data.mjs"
+          },
+          {
+            "step": "GitHub Actions → Netlify auto-deploy",
+            "status": "Done",
+            "date": "2026-08-04",
+            "notes": "project-dashboards-122.netlify.app"
+          },
+          {
+            "step": "Action log tree rows in master grid",
+            "status": "In progress",
+            "date": "2026-08-04",
+            "notes": "Expandable sub-tasks per project"
+          }
+        ]
+      },
+      {
+        "stream": "Field",
+        "steps": [
+          {
+            "step": "(to be filled — interviews, user research)",
+            "status": "Planned",
+            "date": "—",
+            "notes": "Validate \"lenders pay for APIs\""
+          },
+          {
+            "step": "(to be filled — pilot lender conversations)",
+            "status": "Planned",
+            "date": "—",
+            "notes": "80+ licensed NDFSPs"
+          }
+        ]
       }
     ],
     "totalClaims": 18
