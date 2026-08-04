@@ -402,127 +402,28 @@
             "status": "Done",
             "date": "2026-08-01",
             "notes": "Learned: never hold the loan book",
-            "link": "research-qianhe.md"
+            "link": "https://github.com/alecbideri/project-dashboards/blob/main/qianhe/docs/research-qianhe.md"
           },
           {
             "step": "EmbeddedLend deep research (vibe-research)",
             "status": "Done",
             "date": "2026-08-01",
             "notes": "12 graded claims; Handoff Context block",
-            "link": "research-embeddedlend.md"
+            "link": "https://github.com/alecbideri/project-dashboards/blob/main/qianhe/docs/research-embeddedlend.md"
           },
           {
             "step": "Competitor sweep: PEMiG, CreditChek, CreditOS, Lendsqr, Migo, Oystr",
             "status": "Done",
             "date": "2026-08-01",
             "notes": "Full-stack infra + point-API rivals",
-            "link": "research-embeddedlend.md"
+            "link": "https://github.com/alecbideri/project-dashboards/blob/main/qianhe/docs/research-embeddedlend.md"
           },
           {
             "step": "Rwanda/EAC market sizing (MSME gap, BNR sandbox)",
             "status": "Done",
             "date": "2026-08-01",
             "notes": "$1.2B/yr shortfall, 96% inclusion",
-            "link": "research-embeddedlend.md"
-          }
-        ]
-      },
-      {
-        "stream": "Design",
-        "steps": [
-          {
-            "step": "Loan-origination API flow & lender UX",
-            "status": "Done",
-            "date": "2026-08-04",
-            "notes": "Product architecture: lender-facing API design",
-            "link": "—"
-          },
-          {
-            "step": "ReUI dashboard conversion (Path B, free tier)",
-            "status": "Done",
-            "date": "2026-08-04",
-            "notes": "React + Vite + Tailwind v4 + shadcn",
-            "link": "https://reui.io"
-          },
-          {
-            "step": "Master overview + project detail views",
-            "status": "Done",
-            "date": "2026-08-04",
-            "notes": "Data-grid, stat cards, framed sections",
-            "link": "https://project-dashboards-122.netlify.app"
-          },
-          {
-            "step": "Dark/light mode toggle",
-            "status": "Done",
-            "date": "2026-08-04",
-            "notes": "Persisted to localStorage",
-            "link": "https://project-dashboards-122.netlify.app"
-          },
-          {
-            "step": "Opportunities Kanban board (drag-and-drop)",
-            "status": "Done",
-            "date": "2026-08-04",
-            "notes": "Grouped by Status column",
-            "link": "https://project-dashboards-122.netlify.app"
-          },
-          {
-            "step": "docs → JSON build pipeline",
-            "status": "Done",
-            "date": "2026-08-04",
-            "notes": "scripts/generate-data.mjs",
-            "link": "dashboard/scripts/generate-data.mjs"
-          },
-          {
-            "step": "GitHub Actions → Netlify auto-deploy",
-            "status": "Done",
-            "date": "2026-08-04",
-            "notes": "project-dashboards-122.netlify.app",
-            "link": "https://github.com/alecbideri/project-dashboards"
-          }
-        ]
-      },
-      {
-        "stream": "Implementation",
-        "steps": [
-          {
-            "step": "Scaffold EmbeddedLend core (lender-facing API)",
-            "status": "Planned",
-            "date": "—",
-            "notes": "Next: module skeleton + routing",
-            "link": "—"
-          },
-          {
-            "step": "BNR sandbox integration",
-            "status": "Planned",
-            "date": "—",
-            "notes": "Regulatory sandbox for testing",
-            "link": "—"
-          },
-          {
-            "step": "Lender onboarding & KYC flow",
-            "status": "Planned",
-            "date": "—",
-            "notes": "Portal for NDFSPs to sign up",
-            "link": "—"
-          }
-        ]
-      },
-      {
-        "stream": "Field",
-        "steps": [
-          {
-            "step": "Pilot lender interviews",
-            "status": "Planned",
-            "date": "—",
-            "notes": "Validate \"lenders pay for APIs\"",
-            "link": "—"
-          },
-          {
-            "step": "Outreach to 80+ licensed NDFSPs",
-            "status": "Planned",
-            "date": "—",
-            "notes": "Rwanda registered institutions",
-            "link": "—"
+            "link": "https://github.com/alecbideri/project-dashboards/blob/main/qianhe/docs/research-embeddedlend.md"
           }
         ]
       }
