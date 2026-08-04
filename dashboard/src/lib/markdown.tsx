@@ -118,7 +118,7 @@ export function Markdown({ text }: { text: string }) {
       continue
     }
 
-    if (/^\s*(\|.*\|)\s*$/.test(line) && lines[lines.indexOf(raw) + 1]?.replace(/\r$/, "").match(/^\s*\|[\s:-|]+\|\s*$/)) {
+    if (/^\s*(\|.*\|)\s*$/.test(line) && lines[lines.indexOf(raw) + 1]?.replace(/\r$/, "").match(/^\s*\|[\s:\-|]+\|\s*$/)) {
       flushList()
       tableLines = [line]
       continue

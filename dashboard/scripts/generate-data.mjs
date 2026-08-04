@@ -67,6 +67,33 @@ function parseTables(body) {
   return tables
 }
 
+function isClaimsLedger(header) {
+  return /claim|evidence/i.test(header.join(" ")) && /grade/i.test(header.join(" "))
+}
+
+function removeClaimsLedger(body) {
+  const lines = body.split(/\r?\n/)
+  const out = []
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i]
+    const next = lines[i + 1] || ""
+    if (
+      /^\s*\|.*\|\s*$/.test(l) &&
+      /^\s*\|[\s:\-|]+\|\s*$/.test(next)
+    ) {
+      const cells = (s) => s.replace(/^\||\|$/g, "").split("|").map((c) => c.trim())
+      if (isClaimsLedger(cells(l))) {
+        i += 2
+        while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) i++
+        i--
+        continue
+      }
+    }
+    out.push(l)
+  }
+  return out.join("\n")
+}
+
 function extractKv(md) {
   const kv = {}
   for (const line of md.split(/\r?\n/)) {
@@ -110,11 +137,15 @@ for (const entry of fs.readdirSync(repoRoot)) {
       claims,
       handoff,
       verdict,
-      sections: sections.map((s) => ({
-        title: s.title,
-        body: s.body.join("\n"),
-        tables: parseTables(s.body.join("\n")),
-      })),
+      sections: sections.map((s) => {
+        const body = s.body.join("\n")
+        const cleaned = removeClaimsLedger(body)
+        return {
+          title: s.title,
+          body: cleaned,
+          tables: parseTables(cleaned),
+        }
+      }),
       kv: Object.entries(kv).slice(0, 6).map(([k, v]) => ({ k, v })),
     })
   }

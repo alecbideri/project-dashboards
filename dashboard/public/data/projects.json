@@ -246,78 +246,8 @@
           },
           {
             "title": "7. Handoff Context",
-            "body": "\n<!-- Machine-readable summary for the next workflow step. Do not delete; the next prompt in the workflow reads this block. -->\n- Stage: research\n- App name: EmbeddedLend (working title — rename at PRD)\n- User level: B (Developer)\n- Target platform: web / API-first\n- Budget: side-project scale (~$200–800/mo running)\n- Timeline: open; MVP ~3–4 months part-time\n- Stack: Node/TypeScript\n- Target market: Rwanda → EAC\n- Source files: research-embeddedlend.md, research-qianhe.md (autopsy), opportunities.md\n---\n\n### Claims ledger (evidence grading)\n\n| Claim | Source | Grade |\n|---|---|---|\n| Rwanda formal MSME financing shortfall ≈ $1.2B/yr | Kayko funding coverage (TechBuild/AFR), allAfrica | 🟡 Secondary |\n| Africa MSME financing gap ≈ $331B | TechCabal / African Exponent, CreditChek coverage | 🟡 Secondary |\n| Rwanda financial inclusion 96% (2024), banked adults only 22% | BNR National Financial Inclusion Roadmap 2026-2030 | ✅ Observed |\n| 60% of Rwandan MSMEs borrowed nothing in past 12 months | AFR Rwanda MSME FinMap 2024 | ✅ Observed |\n| Collateral demands up to 5x loan amount block SME credit | RSSB/Enko $100M SME Fund announcement (FSD Africa) | ✅ Observed |\n| 80+ licensed lending NDFSPs in Rwanda; several licenses revoked Oct 2025 | BNR Licensed NDFSPs list (Nov 2025) + revoked list | ✅ Observed |\n| BNR regulatory sandbox open to local + foreign fintechs, ~3-month licensing | BNR sandbox page; Finhive Africa Fintech Regulation Guide (June 2026) | ✅ Observed |\n| Rwandan fintechs: Kayko ($1.2M seed, 8,500 merchants), Numida entered Mar 2026 | TechBuild, New Times | ✅ Observed |\n| PEMiG = causal-AI scoring API, 5 partner lenders, $250K loans, B2B SaaS + per-assessment | Disrupt Africa (May 2026), PEMiG Medium engineering posts | ✅ Observed |\n| Lendsqr pricing: from ~$127/mo (Pro) to ~$3,810/yr (Business) + $1,900 setup | Lendsqr blog cost breakdowns | ✅ Observed |\n| Building lending tech from scratch in Africa ≈ $9,500–31,700, 6–18 months | Lendsqr blog | 🟡 Secondary |\n| \"Lenders would pay for underwriting/origination APIs in Rwanda\" | No interviews conducted yet | ❓ Assumption |\n",
-            "tables": [
-              {
-                "header": [
-                  "Claim",
-                  "Source",
-                  "Grade"
-                ],
-                "rows": [
-                  [
-                    "Rwanda formal MSME financing shortfall ≈ $1.2B/yr",
-                    "Kayko funding coverage (TechBuild/AFR), allAfrica",
-                    "🟡 Secondary"
-                  ],
-                  [
-                    "Africa MSME financing gap ≈ $331B",
-                    "TechCabal / African Exponent, CreditChek coverage",
-                    "🟡 Secondary"
-                  ],
-                  [
-                    "Rwanda financial inclusion 96% (2024), banked adults only 22%",
-                    "BNR National Financial Inclusion Roadmap 2026-2030",
-                    "✅ Observed"
-                  ],
-                  [
-                    "60% of Rwandan MSMEs borrowed nothing in past 12 months",
-                    "AFR Rwanda MSME FinMap 2024",
-                    "✅ Observed"
-                  ],
-                  [
-                    "Collateral demands up to 5x loan amount block SME credit",
-                    "RSSB/Enko $100M SME Fund announcement (FSD Africa)",
-                    "✅ Observed"
-                  ],
-                  [
-                    "80+ licensed lending NDFSPs in Rwanda; several licenses revoked Oct 2025",
-                    "BNR Licensed NDFSPs list (Nov 2025) + revoked list",
-                    "✅ Observed"
-                  ],
-                  [
-                    "BNR regulatory sandbox open to local + foreign fintechs, ~3-month licensing",
-                    "BNR sandbox page; Finhive Africa Fintech Regulation Guide (June 2026)",
-                    "✅ Observed"
-                  ],
-                  [
-                    "Rwandan fintechs: Kayko ($1.2M seed, 8,500 merchants), Numida entered Mar 2026",
-                    "TechBuild, New Times",
-                    "✅ Observed"
-                  ],
-                  [
-                    "PEMiG = causal-AI scoring API, 5 partner lenders, $250K loans, B2B SaaS + per-assessment",
-                    "Disrupt Africa (May 2026), PEMiG Medium engineering posts",
-                    "✅ Observed"
-                  ],
-                  [
-                    "Lendsqr pricing: from ~$127/mo (Pro) to ~$3,810/yr (Business) + $1,900 setup",
-                    "Lendsqr blog cost breakdowns",
-                    "✅ Observed"
-                  ],
-                  [
-                    "Building lending tech from scratch in Africa ≈ $9,500–31,700, 6–18 months",
-                    "Lendsqr blog",
-                    "🟡 Secondary"
-                  ],
-                  [
-                    "\"Lenders would pay for underwriting/origination APIs in Rwanda\"",
-                    "No interviews conducted yet",
-                    "❓ Assumption"
-                  ]
-                ]
-              }
-            ]
+            "body": "\n<!-- Machine-readable summary for the next workflow step. Do not delete; the next prompt in the workflow reads this block. -->\n- Stage: research\n- App name: EmbeddedLend (working title — rename at PRD)\n- User level: B (Developer)\n- Target platform: web / API-first\n- Budget: side-project scale (~$200–800/mo running)\n- Timeline: open; MVP ~3–4 months part-time\n- Stack: Node/TypeScript\n- Target market: Rwanda → EAC\n- Source files: research-embeddedlend.md, research-qianhe.md (autopsy), opportunities.md\n---\n\n### Claims ledger (evidence grading)\n\n",
+            "tables": []
           }
         ],
         "kv": [
@@ -412,48 +342,8 @@
           },
           {
             "title": "6. Verification Notes",
-            "body": "\nClaims ledger — every fact graded by evidence strength.\n\n| Claim | Source | Grade |\n|---|---|---|\n| A Chinese P2P platform 千和投 (qianhetou.com) existed | Chinadaily, March 2015 | ✅ Observed |\n| China's P2P industry purged 2019–2020 (6,000+ platforms → ~0) | TechCrunch / Crowdfund Insider / industry coverage | ✅ Observed |\n| Qianhe burned $100M | loot-drop.io (no primary source found) | ⚠️ Unverified |\n| Founded in 2014 | loot-drop.io (no primary source found) | ⚠️ Unverified |\n| SME financing gap ≈ $2.5T/yr in China | Industry reports | 🟡 Secondary |\n| \"Lenders would pay for underwriting APIs\" | No interviews conducted yet | ❓ Assumption |\n\n**Name ambiguity:** \"Qianhe\" also matches unrelated active companies (Qianhe Condiment 603027.SS, Shanghai Qianhe consulting). This autopsy refers to the P2P lending platform.\n",
-            "tables": [
-              {
-                "header": [
-                  "Claim",
-                  "Source",
-                  "Grade"
-                ],
-                "rows": [
-                  [
-                    "A Chinese P2P platform 千和投 (qianhetou.com) existed",
-                    "Chinadaily, March 2015",
-                    "✅ Observed"
-                  ],
-                  [
-                    "China's P2P industry purged 2019–2020 (6,000+ platforms → ~0)",
-                    "TechCrunch / Crowdfund Insider / industry coverage",
-                    "✅ Observed"
-                  ],
-                  [
-                    "Qianhe burned $100M",
-                    "loot-drop.io (no primary source found)",
-                    "⚠️ Unverified"
-                  ],
-                  [
-                    "Founded in 2014",
-                    "loot-drop.io (no primary source found)",
-                    "⚠️ Unverified"
-                  ],
-                  [
-                    "SME financing gap ≈ $2.5T/yr in China",
-                    "Industry reports",
-                    "🟡 Secondary"
-                  ],
-                  [
-                    "\"Lenders would pay for underwriting APIs\"",
-                    "No interviews conducted yet",
-                    "❓ Assumption"
-                  ]
-                ]
-              }
-            ]
+            "body": "\nClaims ledger — every fact graded by evidence strength.\n\n\n**Name ambiguity:** \"Qianhe\" also matches unrelated active companies (Qianhe Condiment 603027.SS, Shanghai Qianhe consulting). This autopsy refers to the P2P lending platform.\n",
+            "tables": []
           },
           {
             "title": "7. Cross-References",
