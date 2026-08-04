@@ -453,11 +453,6 @@ function DocBlock({ doc }: { doc: ProjectDoc }) {
         </SectionCard>
       )}
 
-      {doc.handoff && (
-        <SectionCard title="Handoff Context" icon={<ClipboardList className="size-4" />}>
-          <Markdown text={doc.handoff} />
-        </SectionCard>
-      )}
     </div>
   )
 }
