@@ -73,23 +73,14 @@ function StatCard({
   icon,
   label,
   value,
-  tone = "neutral",
 }: {
   icon: React.ReactNode
   label: string
   value: number | string
-  tone?: "primary" | "success" | "warning" | "info" | "neutral"
 }) {
-  const tones: Record<string, string> = {
-    primary: "bg-primary/10 text-primary",
-    success: "bg-success/10 text-success",
-    warning: "bg-warning/10 text-warning",
-    info: "bg-info/10 text-info",
-    neutral: "bg-muted/60 text-muted-foreground",
-  }
   return (
     <div className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-shadow hover:shadow-lg">
-      <div className={cn("flex size-10 shrink-0 items-center justify-center rounded-lg", tones[tone])}>
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted/60 text-muted-foreground">
         {icon}
       </div>
       <div className="min-w-0">
@@ -462,9 +453,9 @@ function ProjectView({
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <StatCard icon={<FileText className="size-5" />} label="Docs" value={project.docs.length} />
-        <StatCard icon={<Scale className="size-5" />} label="Claims" value={totalClaims} tone="info" />
-        <StatCard icon={<Gauge className="size-5" />} label="Observed" value={gradeCounts.observed} tone="success" />
-        <StatCard icon={<Gauge className="size-5" />} label="Secondary" value={gradeCounts.secondary} tone="warning" />
+        <StatCard icon={<Scale className="size-5" />} label="Claims" value={totalClaims} />
+        <StatCard icon={<Gauge className="size-5" />} label="Observed" value={gradeCounts.observed} />
+        <StatCard icon={<Gauge className="size-5" />} label="Secondary" value={gradeCounts.secondary} />
       </div>
 
       {project.docs.map((doc) => (
