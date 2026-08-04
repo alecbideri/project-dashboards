@@ -20,25 +20,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
 
-      - name: Generate project dashboards
-        shell: bash
-        run: |
-          for dir in */; do
-            if [ -d "${dir}docs" ]; then
-              node generate-dashboard.js --project "${dir%/}"
-            fi
-          done
+      - name: Install dependencies
+        working-directory: dashboard
+        run: npm ci
 
-      - name: Generate master overview
-        shell: bash
-        run: node generate-dashboard.js --master .
+      - name: Build dashboard (generates data + vite build)
+        working-directory: dashboard
+        run: npm run build
 
       - name: Install Netlify CLI
         run: npm install -g netlify-cli
 
       - name: Deploy to Netlify
-        run: netlify deploy --prod --dir . --site "$NETLIFY_SITE_ID" --auth "$NETLIFY_AUTH_TOKEN"
+        working-directory: dashboard
+        run: netlify deploy --prod --dir dist --site "$NETLIFY_SITE_ID" --auth "$NETLIFY_AUTH_TOKEN"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

@@ -1,0 +1,262 @@
+[
+  {
+    "name": "qianhe",
+    "status": "New",
+    "docs": [
+      {
+        "file": "opportunities.md",
+        "title": "Opportunities",
+        "claims": [],
+        "handoff": null,
+        "verdict": null,
+        "sections": [
+          {
+            "title": "Status Legend",
+            "body": "- **New** — autopsy done, not yet evaluated\n- **Shortlisted** — gap is real, worth deeper research\n- **Pursuing** — active project (vibe-research → build)\n- **Dropped** — ruled out, with reason\n\n---\n"
+          },
+          {
+            "title": "Candidates",
+            "body": "\n| Company | Sector | Gap Found | Rebuild Concept | Potential | Status | Autopsy Doc | Date |\n|---|---|---|---|---|---|---|---|\n| Qianhe (千和投) | Fintech / P2P lending | Regulatory crackdown killed direct P2P; SME financing gap (~$2.5T/yr) persists | B2B embedded-lending infrastructure (AI underwriting APIs for licensed banks + vertical SaaS) | Medium-High | New | `research-qianhe.md` | 2026-08-01 |\n\n---\n"
+          },
+          {
+            "title": "Notes",
+            "body": "- Each row starts as **New** after an autopsy; move to Shortlisted when the rebuild concept survives the \"does this gap exist today\" check.\n- When promoted to Pursuing, run `vibe-research` (autopsy lessons feed in automatically via the Handoff Context block).\n- Regular check: every few autopsies, review if any Shortlisted idea repeats — repeated gaps = stronger signal.\n"
+          },
+          {
+            "title": "Maybe Worth Autopsying Next",
+            "body": "*(to be filled as loot-drop finds come in)*\n- Weidai (same P2P regulatory death, $110M)\n"
+          }
+        ],
+        "kv": [
+          {
+            "k": "Regular check",
+            "v": "every few autopsies, review if any Shortlisted idea repeats — repeated gaps = stronger signal."
+          }
+        ]
+      },
+      {
+        "file": "research-embeddedlend.md",
+        "title": "Research Embeddedlend",
+        "claims": [
+          {
+            "claim": "Rwanda formal MSME financing shortfall ≈ $1.2B/yr",
+            "source": "Kayko funding coverage (TechBuild/AFR), allAfrica",
+            "grade": "secondary"
+          },
+          {
+            "claim": "Africa MSME financing gap ≈ $331B",
+            "source": "TechCabal / African Exponent, CreditChek coverage",
+            "grade": "secondary"
+          },
+          {
+            "claim": "Rwanda financial inclusion 96% (2024), banked adults only 22%",
+            "source": "BNR National Financial Inclusion Roadmap 2026-2030",
+            "grade": "observed"
+          },
+          {
+            "claim": "60% of Rwandan MSMEs borrowed nothing in past 12 months",
+            "source": "AFR Rwanda MSME FinMap 2024",
+            "grade": "observed"
+          },
+          {
+            "claim": "Collateral demands up to 5x loan amount block SME credit",
+            "source": "RSSB/Enko $100M SME Fund announcement (FSD Africa)",
+            "grade": "observed"
+          },
+          {
+            "claim": "80+ licensed lending NDFSPs in Rwanda; several licenses revoked Oct 2025",
+            "source": "BNR Licensed NDFSPs list (Nov 2025) + revoked list",
+            "grade": "observed"
+          },
+          {
+            "claim": "BNR regulatory sandbox open to local + foreign fintechs, ~3-month licensing",
+            "source": "BNR sandbox page; Finhive Africa Fintech Regulation Guide (June 2026)",
+            "grade": "observed"
+          },
+          {
+            "claim": "Rwandan fintechs: Kayko ($1.2M seed, 8,500 merchants), Numida entered Mar 2026",
+            "source": "TechBuild, New Times",
+            "grade": "observed"
+          },
+          {
+            "claim": "PEMiG = causal-AI scoring API, 5 partner lenders, $250K loans, B2B SaaS + per-assessment",
+            "source": "Disrupt Africa (May 2026), PEMiG Medium engineering posts",
+            "grade": "observed"
+          },
+          {
+            "claim": "Lendsqr pricing: from ~$127/mo (Pro) to ~$3,810/yr (Business) + $1,900 setup",
+            "source": "Lendsqr blog cost breakdowns",
+            "grade": "observed"
+          },
+          {
+            "claim": "Building lending tech from scratch in Africa ≈ $9,500–31,700, 6–18 months",
+            "source": "Lendsqr blog",
+            "grade": "secondary"
+          },
+          {
+            "claim": "\"Lenders would pay for underwriting/origination APIs in Rwanda\"",
+            "source": "No interviews conducted yet",
+            "grade": "assumption"
+          }
+        ],
+        "handoff": "- Stage: research\n- App name: EmbeddedLend (working title — rename at PRD)\n- User level: B (Developer)\n- Target platform: web / API-first\n- Budget: side-project scale (~$200–800/mo running)\n- Timeline: open; MVP ~3–4 months part-time\n- Stack: Node/TypeScript\n- Target market: Rwanda → EAC\n- Source files: research-embeddedlend.md, research-qianhe.md (autopsy), opportunities.md\n---\n\n### Claims ledger (evidence grading)\n\n| Claim | Source | Grade |\n|---|---|---|\n| Rwanda formal MSME financing shortfall ≈ $1.2B/yr | Kayko funding coverage (TechBuild/AFR), allAfrica | 🟡 Secondary |\n| Africa MSME financing gap ≈ $331B | TechCabal / African Exponent, CreditChek coverage | 🟡 Secondary |\n| Rwanda financial inclusion 96% (2024), banked adults only 22% | BNR National Financial Inclusion Roadmap 2026-2030 | ✅ Observed |\n| 60% of Rwandan MSMEs borrowed nothing in past 12 months | AFR Rwanda MSME FinMap 2024 | ✅ Observed |\n| Collateral demands up to 5x loan amount block SME credit | RSSB/Enko $100M SME Fund announcement (FSD Africa) | ✅ Observed |\n| 80+ licensed lending NDFSPs in Rwanda; several licenses revoked Oct 2025 | BNR Licensed NDFSPs list (Nov 2025) + revoked list | ✅ Observed |\n| BNR regulatory sandbox open to local + foreign fintechs, ~3-month licensing | BNR sandbox page; Finhive Africa Fintech Regulation Guide (June 2026) | ✅ Observed |\n| Rwandan fintechs: Kayko ($1.2M seed, 8,500 merchants), Numida entered Mar 2026 | TechBuild, New Times | ✅ Observed |\n| PEMiG = causal-AI scoring API, 5 partner lenders, $250K loans, B2B SaaS + per-assessment | Disrupt Africa (May 2026), PEMiG Medium engineering posts | ✅ Observed |\n| Lendsqr pricing: from ~$127/mo (Pro) to ~$3,810/yr (Business) + $1,900 setup | Lendsqr blog cost breakdowns | ✅ Observed |\n| Building lending tech from scratch in Africa ≈ $9,500–31,700, 6–18 months | Lendsqr blog | 🟡 Secondary |\n| \"Lenders would pay for underwriting/origination APIs in Rwanda\" | No interviews conducted yet | ❓ Assumption |",
+        "verdict": null,
+        "sections": [
+          {
+            "title": "1. Project name",
+            "body": "\n**EmbeddedLend (working title)** — an API-first embedded-lending infrastructure for East Africa: AI underwriting, loan origination, and servicing APIs sold to licensed banks, microfinance institutions (MFIs), SACCOs, and vertical SaaS platforms, with an initial focus on **Rwanda and the EAC**. We sell the technology layer, never the lending (the Qianhe lesson).\n"
+          },
+          {
+            "title": "2. Core concept",
+            "body": "\nWhat it is: a B2B2C API platform. Licensed lenders integrate our REST APIs to originate, underwrite, disburse, and service digital loans. We never take deposits, never hold a loan book, never touch consumer funds directly — the lender remains the regulated entity.\n\nProblem it solves: East Africa has a deep SME credit gap but lenders lack the underwriting tech to serve it profitably. In Rwanda, formal MSMEs face an estimated **~$1.2B annual financing shortfall**; Africa-wide the MSME gap is **~$331B**. Borrowers are \"thin-file\" (no collateral history), banks demand collateral of up to **5x the loan amount**, and MFI/SACCO tech is legacy.\n\nWhy now: three converging tailwinds —\n1. **Policy push:** Rwanda's FSDS 2025-29, the RSSB-anchored **$100M Rwanda SME Growth Fund**, the **BNR regulatory sandbox** (open to local and foreign fintechs, ~3-month licensing path), and Kigali International Financial Centre explicitly target SME credit and fintech.\n2. **Data now exists:** 96% financial inclusion in Rwanda, mobile money ubiquity (MTN MoMo, Airtel), RwandaPay rails, and real-time payments (eKash) make alternative-data underwriting viable.\n3. **Market shift:** East African fintech is moving from payments toward \"data-as-a-service\" that feeds credit decisions — the exact wedge our API occupies.\n"
+          },
+          {
+            "title": "3. Target users",
+            "body": "\nPrimary (who pays):\n- **Licensed digital lenders / NDFSPs in Rwanda** — BNR lists 80+ licensed lending NDFSPs (Zamuka, IWACU, EXUUS, Flow Rwanda, Manzi, Novacore…). Most are small, tech-poor, and need plug-and-play origination + scoring.\n- **MFIs & SACCOs** — the sector extends credit heavily to women and micro-enterprises but runs on field-officer apps and paper.\n- **Vertical SaaS platforms** (e-commerce, logistics, agritech, retail POS) that want embedded working capital for their merchants — e.g. the Kayko micro-ERP corridor.\n\nSecondary (channel partners):\n- Regional banks (Bank of Kigali, Ecobank Rwanda, I&M) that prefer white-label APIs over building in-house.\n- Digital lenders expanding into Rwanda (Numida entered March 2026, collateral-free SME loans).\n\nPain points: no verifiable borrower records; manual underwriting; days-long approvals; high default fear blocking thin-file lending; legacy core banking (Temenos T24, Mambu, Musoni) with no clean API layer.\n"
+          },
+          {
+            "title": "4. Technical decisions (if any)",
+            "body": "\nDirectional only — deep architecture is the Tech Design step. Given your **Node/TypeScript** stack:\n- **Architecture:** API-first microservice integration layer. The lender's core banking system stays the system of record; our services sit beside it (origination flow, scoring engine, decisioning, servicing webhooks) — the PEMiG pattern (single `POST /v1/score` returning a score + explanation + risk signals).\n- **Integrations:** mobile money (MTN MoMo / Airtel via RwandaPay or direct), bank/mobile statements, credit bureaus (TransUnion, Metropol, Creditinfo Kenya), KYC/KYB + AML vendors (Xcobean, Zeeh, Oystr TH), digital ID.\n- **Model:** a hybrid rules engine + ML scoring over alternative data (transaction telemetry, cash-flow signals) rather than pure bureau scoring — thin-file friendly.\n- **Compliance as code:** consent-first data pulls, audit logging, tamper-proof decision traces, data residency in the jurisdiction (Rwanda's Law 058/2021 + NCSA expectations).\n- **Integrations timeline benchmark:** PEMiG reports 6–10 weeks contract→pilot for API-capable lenders.\n"
+          },
+          {
+            "title": "5. Competitor insights",
+            "body": "\nThe landscape splits into four groups — all are potential co-opetition, and there is no dominant Rwanda-native API-underwriting player yet:\n\n| Player | Model | Region | Gap/lesson |\n|---|---|---|---|\n| **PEMiG** (Philex Labs) | Causal-AI scoring API, B2B SaaS + per-assessment fees | Kenya → expanding EA/Rwanda | Closest analogue; proves lender appetite + pricing (subscription + volume fees). Weakness: scoring-only, no origination/servicing. |\n| **CreditChek** | Credit intelligence/income verification APIs, pay-as-you-go | Nigeria → KE/UG/RW (raised $600K, June 2026) | Validates the data-infra wedge and the Rwanda entry thesis. |\n| **Kayko** | Micro-ERP capturing merchant data → bankable signals, $1.2M seed | Rwanda (8,500 merchants) | Local data-layer competitor; validates the informal-merchant corridor. |\n| **Pezesha / Patascore** | AI scoring API + marketplace, CBK-licensed DCP | Kenya (500K+ MSMEs, $2M+/mo) | Proves alternative-data scoring at scale (<3% claimed default). |\n| **KwaWingu** | Full loan-management infra for MFIs/SACCOs, ISO 27001 | Tanzania/Kenya/Uganda/Rwanda (847+ FIs) | Strong full-stack rival; compliance-first. |\n| **CreditOS** | All-in-one loan management, API-first | Uganda/KE/NG (50+ lenders) | Full lifecycle competitor, multi-country. |\n| **Credit Forest** | API-first LOS + LMS, \"compliance as code\" | Ghana first | The template for a regulator-constraint-first build. |\n| **Lendsqr** | Loan management SaaS + Adjutor APIs | Nigeria/Kenya, 190+ countries | Pricing benchmark; cheaper than Mambu/Turnkey/Thought Machine. |\n| **Kukopa** | Embedded lending with own capital + revenue share | Kenya | Distribution + capital play; benchmark for partner economics. |\n| **Migo** | Embedded lending, custom ML, own underwriting | Nigeria/global | \"Launch in 30 days\" claim; capital-heavy model. |\n| **Oystr** | Micro-credit APIs (Float/Credit/TH) | Pan-Africa | Bundled origination+KYC+scoring APIs. |\n| **Xcobean, Kamoa, Zeeh** | KYC/CRB/score/statement-parsing APIs | Kenya/pan-Africa | Best-of-breed point APIs we'd integrate with or beat on bundling. |\n\n**What users love/hate:** lenders love speed (approvals in minutes), thin-file coverage, and regulatory-ready audit trails. They hate long integration timelines, opaque black-box scores, and platform lock-in. Our differentiation angle: **Rwanda/EAC-first compliance-as-code, transparent decision traces, and a fast, developer-friendly Node/TS integration** — bundled underwriting + origination rather than scoring-only.\n\n**The gap:** no one is the \"Rwanda-native, API-first underwriting + origination layer\" for the 80+ licensed local lenders and SaaS platforms — but PEMiG, CreditChek, and CreditOS are all moving east, so speed to a Rwanda beachhead matters.\n"
+          },
+          {
+            "title": "6. Budget/timeline",
+            "body": "\n- **Build-from-scratch baseline (Nigeria benchmark, Lendsqr):** ~$9,500–$31,700 and 6–18 months to build lending tech in-house; enterprise platforms (Mambu, Turnkey, Thought Machine) \"eat a seed round.\"\n- **As a side project with an existing dev:** MVP cost is realistically **development time + ~$200–800/mo** in infra/data (Postgres + Node/TS host, bureau + KYC API usage fees, mobile-money gateway fees). Leverage free tiers where possible.\n- **Pricing model to target:** B2B SaaS subscription + per-assessment/per-loan fees (PEMiG pattern), or revenue-share on loan fee (Kukopa sample: partner earns ~KES 13,500/client/year at 15% of a 10% fee on 3 loans/yr of KES 300k).\n- **Timeline:** MVP (origination + scoring + one bureau + one disbursement rail) ~3–4 months part-time; pilot with 1–2 lenders is the real milestone.\n"
+          },
+          {
+            "title": "7. Handoff Context",
+            "body": "\n<!-- Machine-readable summary for the next workflow step. Do not delete; the next prompt in the workflow reads this block. -->\n- Stage: research\n- App name: EmbeddedLend (working title — rename at PRD)\n- User level: B (Developer)\n- Target platform: web / API-first\n- Budget: side-project scale (~$200–800/mo running)\n- Timeline: open; MVP ~3–4 months part-time\n- Stack: Node/TypeScript\n- Target market: Rwanda → EAC\n- Source files: research-embeddedlend.md, research-qianhe.md (autopsy), opportunities.md\n---\n\n### Claims ledger (evidence grading)\n\n| Claim | Source | Grade |\n|---|---|---|\n| Rwanda formal MSME financing shortfall ≈ $1.2B/yr | Kayko funding coverage (TechBuild/AFR), allAfrica | 🟡 Secondary |\n| Africa MSME financing gap ≈ $331B | TechCabal / African Exponent, CreditChek coverage | 🟡 Secondary |\n| Rwanda financial inclusion 96% (2024), banked adults only 22% | BNR National Financial Inclusion Roadmap 2026-2030 | ✅ Observed |\n| 60% of Rwandan MSMEs borrowed nothing in past 12 months | AFR Rwanda MSME FinMap 2024 | ✅ Observed |\n| Collateral demands up to 5x loan amount block SME credit | RSSB/Enko $100M SME Fund announcement (FSD Africa) | ✅ Observed |\n| 80+ licensed lending NDFSPs in Rwanda; several licenses revoked Oct 2025 | BNR Licensed NDFSPs list (Nov 2025) + revoked list | ✅ Observed |\n| BNR regulatory sandbox open to local + foreign fintechs, ~3-month licensing | BNR sandbox page; Finhive Africa Fintech Regulation Guide (June 2026) | ✅ Observed |\n| Rwandan fintechs: Kayko ($1.2M seed, 8,500 merchants), Numida entered Mar 2026 | TechBuild, New Times | ✅ Observed |\n| PEMiG = causal-AI scoring API, 5 partner lenders, $250K loans, B2B SaaS + per-assessment | Disrupt Africa (May 2026), PEMiG Medium engineering posts | ✅ Observed |\n| Lendsqr pricing: from ~$127/mo (Pro) to ~$3,810/yr (Business) + $1,900 setup | Lendsqr blog cost breakdowns | ✅ Observed |\n| Building lending tech from scratch in Africa ≈ $9,500–31,700, 6–18 months | Lendsqr blog | 🟡 Secondary |\n| \"Lenders would pay for underwriting/origination APIs in Rwanda\" | No interviews conducted yet | ❓ Assumption |\n"
+          }
+        ],
+        "kv": [
+          {
+            "k": "Stage",
+            "v": "research"
+          },
+          {
+            "k": "App name",
+            "v": "EmbeddedLend (working title — rename at PRD)"
+          },
+          {
+            "k": "User level",
+            "v": "B (Developer)"
+          },
+          {
+            "k": "Target platform",
+            "v": "web / API-first"
+          },
+          {
+            "k": "Budget",
+            "v": "side-project scale (~$200–800/mo running)"
+          },
+          {
+            "k": "Timeline",
+            "v": "open; MVP ~3–4 months part-time"
+          }
+        ]
+      },
+      {
+        "file": "research-qianhe.md",
+        "title": "Research Qianhe",
+        "claims": [
+          {
+            "claim": "A Chinese P2P platform 千和投 (qianhetou.com) existed",
+            "source": "Chinadaily, March 2015",
+            "grade": "observed"
+          },
+          {
+            "claim": "China's P2P industry purged 2019–2020 (6,000+ platforms → ~0)",
+            "source": "TechCrunch / Crowdfund Insider / industry coverage",
+            "grade": "observed"
+          },
+          {
+            "claim": "Qianhe burned $100M",
+            "source": "loot-drop.io (no primary source found)",
+            "grade": "unverified"
+          },
+          {
+            "claim": "Founded in 2014",
+            "source": "loot-drop.io (no primary source found)",
+            "grade": "unverified"
+          },
+          {
+            "claim": "SME financing gap ≈ $2.5T/yr in China",
+            "source": "Industry reports",
+            "grade": "secondary"
+          },
+          {
+            "claim": "\"Lenders would pay for underwriting APIs\"",
+            "source": "No interviews conducted yet",
+            "grade": "assumption"
+          }
+        ],
+        "handoff": "- Stage: autopsy\n- Company: Qianhe (千和投)\n- Sector: Financials / Fintech\n- Cash burned: $100.0M (loot-drop claim, unverified)\n- Years active: 2014–2019\n- Cause of death: Regulatory crackdown on P2P lending + regulatory arbitrage + unsustainable unit economics\n- Rebuild concept: B2B embedded-lending infrastructure (AI underwriting APIs for licensed banks + vertical SaaS platforms)\n- Source: https://www.loot-drop.io/startup/2545-qianhe + primary sources\n- Generated for: (pending — user idea to be validated via vibe-research)\n---",
+        "verdict": null,
+        "sections": [
+          {
+            "title": "1. The Company",
+            "body": "\nChinese **peer-to-peer (P2P) lending platform** connecting individual lenders with underbanked SMEs.\n\n- **Sector:** Financials / Fintech\n- **Country:** China\n- **Years active:** 2014–2019 (loot-drop claim — founding year unverified; platform confirmed active by March 2015)\n- **Total cash burned:** $100.0M (loot-drop claim — NOT confirmed by primary sources)\n- **Product type:** Financial & Fintech\n"
+          },
+          {
+            "title": "2. Cause of Death",
+            "body": "\n1. **Regulatory crackdown** — China's 2019–2020 government purge of the P2P industry (from ~6,000 platforms at peak to near zero).\n2. **Regulatory arbitrage, not a moat** — the model depended on operating in a licensing gray zone with immature risk management.\n3. **Unsustainable unit economics** — required continuous growth to work; systemic fraud and defaults compounded.\n"
+          },
+          {
+            "title": "3. Market Before & Today",
+            "body": "\n- **Then (2014–2017):** China's underbanked SME sector, risk-averse banks, mobile internet adoption. P2P market reached ~$200B+ transactions at 2017 peak, 3,383+ platforms active (Jan 2016).\n- **Now:** Consumer-facing P2P lending is effectively dead post-2019. The SME financing gap (~$2.5T/yr) remains, but credit is channeled through licensed banks, microlenders, and fintech infrastructure. The winner path is **embedded/B2B lending**, not direct platforms.\n"
+          },
+          {
+            "title": "4. Lessons",
+            "body": "\n1. **Regulatory arbitrage is not a moat — it's a time bomb.** In financial services, if your edge is a loophole, a government can close it overnight.\n2. **Unvalidated underwriting at scale = systemic defaults.** Growth-based models collapse when the funding treadmill stops.\n3. **Separate capital supply from technology** — partner with licensed lenders; don't lend directly without a license.\n4. **Sell to platforms, not consumers** — sidestepping regulatory risk while capturing the same market demand.\n"
+          },
+          {
+            "title": "5. Rebuild Opportunity",
+            "body": "\nLoot-drop's proposed \"ChainCredit\": a **B2B embedded-lending infrastructure** platform providing AI-driven underwriting, loan origination, and servicing APIs to licensed banks/microlenders and vertical SaaS platforms (e-commerce, logistics, agriculture). Revenue: per-API-call fees + risk-sharing on interest spread + SaaS subscriptions. My read: directionally sound and mirrors how the Chinese fintech market actually consolidated post-2019.\n"
+          },
+          {
+            "title": "6. Verification Notes",
+            "body": "\nClaims ledger — every fact graded by evidence strength.\n\n| Claim | Source | Grade |\n|---|---|---|\n| A Chinese P2P platform 千和投 (qianhetou.com) existed | Chinadaily, March 2015 | ✅ Observed |\n| China's P2P industry purged 2019–2020 (6,000+ platforms → ~0) | TechCrunch / Crowdfund Insider / industry coverage | ✅ Observed |\n| Qianhe burned $100M | loot-drop.io (no primary source found) | ⚠️ Unverified |\n| Founded in 2014 | loot-drop.io (no primary source found) | ⚠️ Unverified |\n| SME financing gap ≈ $2.5T/yr in China | Industry reports | 🟡 Secondary |\n| \"Lenders would pay for underwriting APIs\" | No interviews conducted yet | ❓ Assumption |\n\n**Name ambiguity:** \"Qianhe\" also matches unrelated active companies (Qianhe Condiment 603027.SS, Shanghai Qianhe consulting). This autopsy refers to the P2P lending platform.\n"
+          },
+          {
+            "title": "7. Cross-References",
+            "body": "\n- **Weidai** ($110M, same regulatory death) — loot-drop.io/startup/2548-weidai\n- **Nirvana** (insurance infra, no market need)\n- **Sleek** (SMB cards, competition)\n\n---\n"
+          },
+          {
+            "title": "Handoff Context",
+            "body": "<!-- Machine-readable summary for the next workflow step. Do not delete; vibe-research reads this block. -->\n- Stage: autopsy\n- Company: Qianhe (千和投)\n- Sector: Financials / Fintech\n- Cash burned: $100.0M (loot-drop claim, unverified)\n- Years active: 2014–2019\n- Cause of death: Regulatory crackdown on P2P lending + regulatory arbitrage + unsustainable unit economics\n- Rebuild concept: B2B embedded-lending infrastructure (AI underwriting APIs for licensed banks + vertical SaaS platforms)\n- Source: https://www.loot-drop.io/startup/2545-qianhe + primary sources\n- Generated for: (pending — user idea to be validated via vibe-research)\n---\n"
+          }
+        ],
+        "kv": [
+          {
+            "k": "Stage",
+            "v": "autopsy"
+          },
+          {
+            "k": "Company",
+            "v": "Qianhe (千和投)"
+          },
+          {
+            "k": "Sector",
+            "v": "Financials / Fintech"
+          },
+          {
+            "k": "Cash burned",
+            "v": "$100.0M (loot-drop claim, unverified)"
+          },
+          {
+            "k": "Years active",
+            "v": "2014–2019"
+          },
+          {
+            "k": "Cause of death",
+            "v": "Regulatory crackdown on P2P lending + regulatory arbitrage + unsustainable unit economics"
+          }
+        ]
+      }
+    ],
+    "totalClaims": 18
+  }
+]
