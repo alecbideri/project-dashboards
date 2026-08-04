@@ -73,18 +73,19 @@ function StatCard({
   icon,
   label,
   value,
-  tone = "primary",
+  tone = "neutral",
 }: {
   icon: React.ReactNode
   label: string
   value: number | string
-  tone?: "primary" | "success" | "warning" | "info"
+  tone?: "primary" | "success" | "warning" | "info" | "neutral"
 }) {
   const tones: Record<string, string> = {
     primary: "bg-primary/10 text-primary",
     success: "bg-success/10 text-success",
     warning: "bg-warning/10 text-warning",
     info: "bg-info/10 text-info",
+    neutral: "bg-muted/60 text-muted-foreground",
   }
   return (
     <div className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-shadow hover:shadow-lg">
@@ -588,14 +589,21 @@ export default function App() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
               <StatCard icon={<FolderGit2 className="size-5" />} label="Projects" value={projects.length} />
-              <StatCard icon={<Scale className="size-5" />} label="Total Claims" value={totalClaims} tone="info" />
+              <StatCard icon={<Scale className="size-5" />} label="Total Claims" value={totalClaims} />
               <StatCard
                 icon={<FileText className="size-5" />}
                 label="Documents"
                 value={projects.reduce((a, p) => a + p.docs.length, 0)}
-                tone="warning"
+              />
+              <StatCard
+                icon={<Gauge className="size-5" />}
+                label="Observed Claims"
+                value={projects.reduce(
+                  (a, p) => a + p.docs.reduce((b, d) => b + d.claims.filter((c) => c.grade === "observed").length, 0),
+                  0,
+                )}
               />
             </div>
 
