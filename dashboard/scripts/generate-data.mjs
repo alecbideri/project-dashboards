@@ -44,6 +44,29 @@ function splitSections(md) {
   return sections
 }
 
+function parseTables(body) {
+  const tables = []
+  const lines = body.split(/\r?\n/)
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i]
+    if (!/^\s*\|.*\|\s*$/.test(l)) continue
+    const next = lines[i + 1] || ""
+    if (!/^\s*\|[\s:\-|]+\|\s*$/.test(next)) continue
+    const cells = (s) =>
+      s.replace(/^\||\|$/g, "").split("|").map((c) => c.trim())
+    const header = cells(l)
+    const rows = []
+    i += 2
+    while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) {
+      rows.push(cells(lines[i]))
+      i++
+    }
+    i--
+    tables.push({ header, rows })
+  }
+  return tables
+}
+
 function extractKv(md) {
   const kv = {}
   for (const line of md.split(/\r?\n/)) {
@@ -87,7 +110,11 @@ for (const entry of fs.readdirSync(repoRoot)) {
       claims,
       handoff,
       verdict,
-      sections: sections.map((s) => ({ title: s.title, body: s.body.join("\n") })),
+      sections: sections.map((s) => ({
+        title: s.title,
+        body: s.body.join("\n"),
+        tables: parseTables(s.body.join("\n")),
+      })),
       kv: Object.entries(kv).slice(0, 6).map(([k, v]) => ({ k, v })),
     })
   }

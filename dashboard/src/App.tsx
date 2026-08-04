@@ -6,7 +6,15 @@ import {
   type ColumnDef,
   type SortingState,
 } from "@tanstack/react-table"
-import { ArrowLeft, ArrowUpDown, FolderGit2, FileText, Scale } from "lucide-react"
+import {
+  ArrowLeft,
+  ArrowUpDown,
+  ClipboardList,
+  FolderGit2,
+  FileText,
+  Gauge,
+  Scale,
+} from "lucide-react"
 
 import {
   DataGrid,
@@ -14,6 +22,15 @@ import {
 } from "@/components/reui/data-grid/data-grid"
 import { DataGridTable } from "@/components/reui/data-grid/data-grid-table"
 import { Badge } from "@/components/reui/badge"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { ThemeToggle, useTheme } from "@/components/theme-toggle"
+import { OpportunitiesKanban } from "@/components/opportunities-kanban"
 import {
   loadProjects,
   gradeStyles,
@@ -54,19 +71,27 @@ function StatCard({
   icon,
   label,
   value,
+  tone = "primary",
 }: {
   icon: React.ReactNode
   label: string
   value: number | string
+  tone?: "primary" | "success" | "warning" | "info"
 }) {
+  const tones: Record<string, string> = {
+    primary: "bg-primary/10 text-primary",
+    success: "bg-success/10 text-success",
+    warning: "bg-warning/10 text-warning",
+    info: "bg-info/10 text-info",
+  }
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-border bg-card p-4">
-      <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+    <div className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-shadow hover:shadow-lg">
+      <div className={cn("flex size-10 shrink-0 items-center justify-center rounded-lg", tones[tone])}>
         {icon}
       </div>
-      <div>
-        <div className="text-2xl font-semibold text-foreground">{value}</div>
-        <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="min-w-0">
+        <div className="truncate text-2xl font-semibold text-foreground">{value}</div>
+        <div className="truncate text-xs text-muted-foreground">{label}</div>
       </div>
     </div>
   )
@@ -188,49 +213,120 @@ function ClaimsTable({ claims }: { claims: Claim[] }) {
   )
 }
 
-function DocBlock({ doc }: { doc: ProjectDoc }) {
+function SectionCard({
+  title,
+  icon,
+  children,
+}: {
+  title: string
+  icon?: React.ReactNode
+  children: React.ReactNode
+}) {
   return (
-    <section className="rounded-xl border border-border bg-card p-5">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-lg font-semibold text-foreground">{doc.title}</h3>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline">{doc.claims.length} claims</Badge>
-        </div>
-      </div>
-
-      {doc.claims.length > 0 && (
-        <div className="mb-5">
-          <h4 className="mb-2 text-sm font-medium text-muted-foreground">Evidence Ledger</h4>
-          <ClaimsTable claims={doc.claims} />
-        </div>
-      )}
-
-      {doc.verdict && (
-        <div className="mb-5 rounded-lg border border-primary/30 bg-primary/5 p-4">
-          <h4 className="mb-1 text-sm font-semibold text-primary">Verdict</h4>
-          <Markdown text={doc.verdict} />
-        </div>
-      )}
-
-      {doc.handoff && (
-        <div className="mb-5 rounded-lg border border-muted bg-muted/30 p-4">
-          <h4 className="mb-1 text-sm font-semibold text-muted-foreground">Handoff Context</h4>
-          <Markdown text={doc.handoff} />
-        </div>
-      )}
-
-      {doc.sections.map((s, i) =>
-        s.body.replace(/\s/g, "").length === 0 ? null : (
-          <div key={i} className={cn("py-2", i > 0 && "border-t border-border/60")}>
-            <Markdown text={`### ${s.title}\n\n${s.body}`} />
-          </div>
-        ),
-      )}
+    <section className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+      <header className="flex items-center gap-2 border-b border-border bg-muted/20 px-4 py-2.5">
+        {icon && <span className="text-muted-foreground">{icon}</span>}
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+      </header>
+      <div className="p-4">{children}</div>
     </section>
   )
 }
 
-function ProjectView({ project, onBack }: { project: Project; onBack: () => void }) {
+function MarkdownTable({ header, rows }: { header: string[]; rows: string[][] }) {
+  return (
+    <div className="overflow-x-auto rounded-lg border border-border">
+      <table className="w-full text-left text-sm">
+        <thead className="bg-muted/40">
+          <tr>
+            {header.map((h, i) => (
+              <th key={i} className="px-3 py-2 font-medium text-foreground">
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, ri) => (
+            <tr key={ri} className={cn("border-t border-border/60", ri % 2 === 1 && "bg-muted/20")}>
+              {row.map((c, ci) => (
+                <td key={ci} className="px-3 py-2 text-muted-foreground">
+                  {c}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+function DocBlock({ doc }: { doc: ProjectDoc }) {
+  const candidatesSection = doc.sections.find((s) =>
+    /candidate|pipeline/i.test(s.title || ""),
+  )
+
+  return (
+    <div className="space-y-5">
+      <SectionCard
+        title={doc.title}
+        icon={<ClipboardList className="size-4" />}
+      >
+        {doc.sections
+          .filter((s) => s.body.replace(/\s/g, "").length > 0)
+          .map((s, i) => {
+            const isCandidates = candidatesSection === s
+            return (
+              <div key={i} className={cn("space-y-3", i > 0 && "mt-5 border-t border-border/60 pt-5")}>
+                <h4 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                  {s.title}
+                </h4>
+
+                {isCandidates && s.tables.length > 0 ? (
+                  <OpportunitiesKanban header={s.tables[0].header} rows={s.tables[0].rows} />
+                ) : null}
+
+                <div className={cn(isCandidates && s.tables.length > 0 && "hidden")}>
+                  <Markdown text={s.body} />
+                </div>
+              </div>
+            )
+          })}
+      </SectionCard>
+
+      {doc.claims.length > 0 && (
+        <SectionCard title={`Evidence Ledger (${doc.claims.length})`} icon={<Scale className="size-4" />}>
+          <ClaimsTable claims={doc.claims} />
+        </SectionCard>
+      )}
+
+      {doc.verdict && (
+        <SectionCard title="Verdict" icon={<Gauge className="size-4" />}>
+          <Markdown text={doc.verdict} />
+        </SectionCard>
+      )}
+
+      {doc.handoff && (
+        <SectionCard title="Handoff Context" icon={<ClipboardList className="size-4" />}>
+          <Markdown text={doc.handoff} />
+        </SectionCard>
+      )}
+    </div>
+  )
+}
+
+function ProjectView({
+  project,
+  projects,
+  onBack,
+  onSelectProject,
+}: {
+  project: Project
+  projects: Project[]
+  onBack: () => void
+  onSelectProject: (p: Project | null) => void
+}) {
   const totalClaims = project.totalClaims
   const gradeCounts = useMemo(() => {
     const acc = { observed: 0, secondary: 0, unverified: 0, assumption: 0 }
@@ -240,13 +336,33 @@ function ProjectView({ project, onBack }: { project: Project; onBack: () => void
   }, [project])
 
   return (
-    <div className="space-y-6">
-      <button
-        onClick={onBack}
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ArrowLeft className="size-4" /> Back to projects
-      </button>
+    <div className="mx-auto max-w-5xl space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <button
+          onClick={onBack}
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" /> Overview
+        </button>
+        <Select
+          value={project.name}
+          onValueChange={(v) => {
+            const p = projects.find((x) => x.name === v)
+            onSelectProject(p ?? null)
+          }}
+        >
+          <SelectTrigger className="w-56">
+            <SelectValue placeholder="Select project" />
+          </SelectTrigger>
+          <SelectContent>
+            {projects.map((p) => (
+              <SelectItem key={p.name} value={p.name}>
+                {p.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
@@ -260,9 +376,9 @@ function ProjectView({ project, onBack }: { project: Project; onBack: () => void
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <StatCard icon={<FileText className="size-5" />} label="Docs" value={project.docs.length} />
-        <StatCard icon={<Scale className="size-5" />} label="Claims" value={totalClaims} />
-        <StatCard icon={<Scale className="size-5" />} label="Observed" value={gradeCounts.observed} />
-        <StatCard icon={<Scale className="size-5" />} label="Secondary" value={gradeCounts.secondary} />
+        <StatCard icon={<Scale className="size-5" />} label="Claims" value={totalClaims} tone="info" />
+        <StatCard icon={<Gauge className="size-5" />} label="Observed" value={gradeCounts.observed} tone="success" />
+        <StatCard icon={<Gauge className="size-5" />} label="Secondary" value={gradeCounts.secondary} tone="warning" />
       </div>
 
       {project.docs.map((doc) => (
@@ -272,10 +388,62 @@ function ProjectView({ project, onBack }: { project: Project; onBack: () => void
   )
 }
 
+function Header({
+  projects,
+  selected,
+  onSelectProject,
+  theme,
+  onToggleTheme,
+}: {
+  projects: Project[]
+  selected: Project | null
+  onSelectProject: (p: Project | null) => void
+  theme: "dark" | "light"
+  onToggleTheme: () => void
+}) {
+  return (
+    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-6 py-3">
+        <button
+          onClick={() => onSelectProject(null)}
+          className="flex items-center gap-2 text-foreground"
+        >
+          <FolderGit2 className="size-5 text-primary" />
+          <span className="text-sm font-semibold">Project Dashboards</span>
+        </button>
+
+        <div className="flex items-center gap-2">
+          <Select
+            value={selected?.name ?? "__overview"}
+            onValueChange={(v) => {
+              const p = projects.find((x) => x.name === v)
+              onSelectProject(p ?? null)
+            }}
+          >
+            <SelectTrigger className="w-44 md:w-52">
+              <SelectValue placeholder="Overview" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__overview">Overview</SelectItem>
+              {projects.map((p) => (
+                <SelectItem key={p.name} value={p.name}>
+                  {p.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+        </div>
+      </div>
+    </header>
+  )
+}
+
 export default function App() {
   const [projects, setProjects] = useState<Project[] | null>(null)
   const [selected, setSelected] = useState<Project | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const { theme, toggle } = useTheme()
 
   const load = useCallback(async () => {
     try {
@@ -291,7 +459,7 @@ export default function App() {
 
   if (error)
     return (
-      <div className="p-8 text-sm text-destructive">
+      <div className="flex h-screen items-center justify-center p-8 text-sm text-destructive">
         Failed to load project data: {error}
       </div>
     )
@@ -303,32 +471,55 @@ export default function App() {
       </div>
     )
 
-  if (selected) return <ProjectView project={selected} onBack={() => setSelected(null)} />
-
   const totalClaims = projects.reduce((a, p) => a + p.totalClaims, 0)
 
   return (
-    <div className="min-h-screen bg-background p-6 md:p-10">
-      <div className="mx-auto max-w-5xl space-y-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground">Projects — Master Overview</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Auto-generated from <code className="rounded bg-muted px-1 text-primary">docs/*.md</code>
-          </p>
-        </div>
+    <div className="min-h-screen bg-background">
+      <Header
+        projects={projects}
+        selected={selected}
+        onSelectProject={setSelected}
+        theme={theme}
+        onToggleTheme={toggle}
+      />
 
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-          <StatCard icon={<FolderGit2 className="size-5" />} label="Projects" value={projects.length} />
-          <StatCard icon={<Scale className="size-5" />} label="Total Claims" value={totalClaims} />
-          <StatCard icon={<FileText className="size-5" />} label="Documents" value={projects.reduce((a, p) => a + p.docs.length, 0)} />
-        </div>
+      <main className="mx-auto max-w-5xl px-6 py-8">
+        {selected ? (
+          <ProjectView
+            project={selected}
+            projects={projects}
+            onBack={() => setSelected(null)}
+            onSelectProject={setSelected}
+          />
+        ) : (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">Projects — Master Overview</h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Auto-generated from{" "}
+                <code className="rounded bg-muted px-1 text-primary">docs/*.md</code>
+              </p>
+            </div>
 
-        <MasterGrid projects={projects} onSelect={setSelected} />
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+              <StatCard icon={<FolderGit2 className="size-5" />} label="Projects" value={projects.length} />
+              <StatCard icon={<Scale className="size-5" />} label="Total Claims" value={totalClaims} tone="info" />
+              <StatCard
+                icon={<FileText className="size-5" />}
+                label="Documents"
+                value={projects.reduce((a, p) => a + p.docs.length, 0)}
+                tone="warning"
+              />
+            </div>
 
-        <div className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground">
-          <ArrowUpDown className="size-3.5" /> Click a header to sort · click a row to open
-        </div>
-      </div>
+            <MasterGrid projects={projects} onSelect={setSelected} />
+
+            <div className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground">
+              <ArrowUpDown className="size-3.5" /> Click a header to sort · click a row to open
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   )
 }

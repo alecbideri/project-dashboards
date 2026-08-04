@@ -24,6 +24,7 @@ export type Claim = {
 export type Section = {
   title: string
   body: string
+  tables: { header: string[]; rows: string[][] }[]
 }
 
 export const gradeStyles: Record<Claim["grade"], string> = {
