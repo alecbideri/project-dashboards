@@ -1,10 +1,7 @@
 # Action Log
 
-Every step actually done on this project. New streams and steps are only added when the work is started. Each step links to its result online.
+Every stream actually started on this project. New streams (e.g. Design) are added only when the work begins. Each stream is one entry that routes to its full report.
 
-| Stream | Step | Status | Date | Notes | Link |
-|---|---|---|---|---|---|
-| Research | Qianhe autopsy (startup-autopsy skill) | Done | 2026-08-01 | Learned: never hold the loan book | https://github.com/alecbideri/project-dashboards/blob/main/qianhe/docs/research-qianhe.md |
-| Research | EmbeddedLend deep research (vibe-research) | Done | 2026-08-01 | 12 graded claims; Handoff Context block | https://github.com/alecbideri/project-dashboards/blob/main/qianhe/docs/research-embeddedlend.md |
-| Research | Competitor sweep: PEMiG, CreditChek, CreditOS, Lendsqr, Migo, Oystr | Done | 2026-08-01 | Full-stack infra + point-API rivals | https://github.com/alecbideri/project-dashboards/blob/main/qianhe/docs/research-embeddedlend.md |
-| Research | Rwanda/EAC market sizing (MSME gap, BNR sandbox) | Done | 2026-08-01 | $1.2B/yr shortfall, 96% inclusion | https://github.com/alecbideri/project-dashboards/blob/main/qianhe/docs/research-embeddedlend.md |
+| Stream | Status | Date | Notes | Link |
+|---|---|---|---|---|
+| Deep Research | Done | 2026-08-01 | Qianhe autopsy, EmbeddedLend deep research, competitor sweep, Rwanda/EAC market sizing | https://github.com/alecbideri/project-dashboards/blob/main/qianhe/docs/research-embeddedlend.md |

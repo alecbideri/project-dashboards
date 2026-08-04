@@ -395,37 +395,11 @@
     ],
     "tasks": [
       {
-        "stream": "Research",
-        "steps": [
-          {
-            "step": "Qianhe autopsy (startup-autopsy skill)",
-            "status": "Done",
-            "date": "2026-08-01",
-            "notes": "Learned: never hold the loan book",
-            "link": "https://github.com/alecbideri/project-dashboards/blob/main/qianhe/docs/research-qianhe.md"
-          },
-          {
-            "step": "EmbeddedLend deep research (vibe-research)",
-            "status": "Done",
-            "date": "2026-08-01",
-            "notes": "12 graded claims; Handoff Context block",
-            "link": "https://github.com/alecbideri/project-dashboards/blob/main/qianhe/docs/research-embeddedlend.md"
-          },
-          {
-            "step": "Competitor sweep: PEMiG, CreditChek, CreditOS, Lendsqr, Migo, Oystr",
-            "status": "Done",
-            "date": "2026-08-01",
-            "notes": "Full-stack infra + point-API rivals",
-            "link": "https://github.com/alecbideri/project-dashboards/blob/main/qianhe/docs/research-embeddedlend.md"
-          },
-          {
-            "step": "Rwanda/EAC market sizing (MSME gap, BNR sandbox)",
-            "status": "Done",
-            "date": "2026-08-01",
-            "notes": "$1.2B/yr shortfall, 96% inclusion",
-            "link": "https://github.com/alecbideri/project-dashboards/blob/main/qianhe/docs/research-embeddedlend.md"
-          }
-        ]
+        "stream": "Deep Research",
+        "status": "Done",
+        "date": "2026-08-01",
+        "notes": "Qianhe autopsy, EmbeddedLend deep research, competitor sweep, Rwanda/EAC market sizing",
+        "link": "https://github.com/alecbideri/project-dashboards/blob/main/qianhe/docs/research-embeddedlend.md"
       }
     ],
     "totalClaims": 18

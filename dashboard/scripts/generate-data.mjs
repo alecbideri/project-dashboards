@@ -104,37 +104,26 @@ function extractKv(md) {
 }
 
 function parseTasks(md) {
-  // Reads an "Action Log" markdown table into a hierarchy: parent rows are
-  // Stream values, child rows are the individual Steps indented beneath.
+  // Reads an "Action Log" markdown table. Each row is a work-stream entry:
+  // Stream | Status | Date | Notes | Link.
   const tables = parseTables(md)
   const taskTable = tables.find(
-    (t) => t.header.some((h) => /stream/i.test(h)) && t.header.some((h) => /step/i.test(h))
+    (t) => t.header.some((h) => /stream/i.test(h)) && t.header.some((h) => /status/i.test(h))
   )
   if (!taskTable) return []
 
   const streamIdx = taskTable.header.findIndex((h) => /stream/i.test(h))
-  const stepIdx = taskTable.header.findIndex((h) => /step/i.test(h))
   const statusIdx = taskTable.header.findIndex((h) => /status/i.test(h))
   const dateIdx = taskTable.header.findIndex((h) => /date/i.test(h))
   const notesIdx = taskTable.header.findIndex((h) => /notes/i.test(h))
   const linkIdx = taskTable.header.findIndex((h) => /^link$/i.test(h))
 
-  const byStream = new Map()
-  for (const row of taskTable.rows) {
-    const stream = (streamIdx >= 0 ? row[streamIdx] : "Misc") || "Misc"
-    if (!byStream.has(stream)) byStream.set(stream, [])
-    byStream.get(stream).push({
-      step: stepIdx >= 0 ? row[stepIdx] : "",
-      status: statusIdx >= 0 ? row[statusIdx] : "",
-      date: dateIdx >= 0 ? row[dateIdx] : "",
-      notes: notesIdx >= 0 ? row[notesIdx] : "",
-      link: linkIdx >= 0 ? row[linkIdx] : "",
-    })
-  }
-
-  return [...byStream.entries()].map(([stream, steps]) => ({
-    stream,
-    steps,
+  return taskTable.rows.map((row) => ({
+    stream: streamIdx >= 0 ? row[streamIdx] : "Misc",
+    status: statusIdx >= 0 ? row[statusIdx] : "",
+    date: dateIdx >= 0 ? row[dateIdx] : "",
+    notes: notesIdx >= 0 ? row[notesIdx] : "",
+    link: linkIdx >= 0 ? row[linkIdx] : "",
   }))
 }
 

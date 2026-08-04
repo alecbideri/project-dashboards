@@ -8,11 +8,6 @@ export type Project = {
 
 export type TaskGroup = {
   stream: string
-  steps: TaskStep[]
-}
-
-export type TaskStep = {
-  step: string
   status: string
   date: string
   notes: string
