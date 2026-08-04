@@ -117,6 +117,7 @@ function parseTasks(md) {
   const statusIdx = taskTable.header.findIndex((h) => /status/i.test(h))
   const dateIdx = taskTable.header.findIndex((h) => /date/i.test(h))
   const notesIdx = taskTable.header.findIndex((h) => /notes/i.test(h))
+  const linkIdx = taskTable.header.findIndex((h) => /^link$/i.test(h))
 
   const byStream = new Map()
   for (const row of taskTable.rows) {
@@ -127,6 +128,7 @@ function parseTasks(md) {
       status: statusIdx >= 0 ? row[statusIdx] : "",
       date: dateIdx >= 0 ? row[dateIdx] : "",
       notes: notesIdx >= 0 ? row[notesIdx] : "",
+      link: linkIdx >= 0 ? row[linkIdx] : "",
     })
   }
 

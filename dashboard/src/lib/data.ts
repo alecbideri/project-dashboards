@@ -16,6 +16,7 @@ export type TaskStep = {
   status: string
   date: string
   notes: string
+  link: string
 }
 
 export type ProjectDoc = {

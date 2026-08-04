@@ -8,6 +8,7 @@ import {
 import {
   ArrowLeft,
   ClipboardList,
+  ExternalLink,
   FolderGit2,
   FileText,
   Gauge,
@@ -113,6 +114,7 @@ type TreeRow =
   | {
       kind: "stream"
       id: string
+      projectName: string
       stream: string
       done: number
       total: number
@@ -121,10 +123,13 @@ type TreeRow =
   | {
       kind: "step"
       id: string
+      projectName: string
+      stream: string
       step: string
       status: string
       date: string
       notes: string
+      link: string
     }
 
 function buildTree(projects: Project[]): TreeRow[] {
@@ -135,16 +140,20 @@ function buildTree(projects: Project[]): TreeRow[] {
       return {
         kind: "stream",
         id: `${p.name}::${g.stream}`,
+        projectName: p.name,
         stream: g.stream,
         done,
         total,
         subRows: g.steps.map((s, i) => ({
           kind: "step",
           id: `${p.name}::${g.stream}::${i}`,
+          projectName: p.name,
+          stream: g.stream,
           step: s.step,
           status: s.status,
           date: s.date,
           notes: s.notes,
+          link: s.link,
         })),
       }
     })
@@ -160,7 +169,15 @@ function buildTree(projects: Project[]): TreeRow[] {
   })
 }
 
-function MasterGrid({ projects, onSelect }: { projects: Project[]; onSelect: (p: Project) => void }) {
+function MasterGrid({
+  projects,
+  onSelect,
+  onOpenStream,
+}: {
+  projects: Project[]
+  onSelect: (p: Project) => void
+  onOpenStream: (projectName: string, stream: string) => void
+}) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
 
   const data = useMemo(() => buildTree(projects), [projects])
@@ -182,15 +199,15 @@ function MasterGrid({ projects, onSelect }: { projects: Project[]; onSelect: (p:
               )}
               {r.kind === "stream" && (
                 <>
-                  <ListTree className="size-4 text-muted-foreground" />
-                  <span className="font-semibold text-foreground">{r.stream}</span>
-                  <span className="text-xs text-muted-foreground">
-                    ({r.done}/{r.total} done)
+                  <ListTree className="size-4 shrink-0 text-muted-foreground" />
+                  <span className="truncate font-semibold text-foreground">{r.stream}</span>
+                  <span className="shrink-0 whitespace-nowrap text-xs text-muted-foreground">
+                    {r.done}/{r.total} done
                   </span>
                 </>
               )}
               {r.kind === "step" && (
-                <span className="text-muted-foreground">{r.step}</span>
+                <span className="truncate text-muted-foreground">{r.step}</span>
               )}
             </div>
           )
@@ -235,6 +252,25 @@ function MasterGrid({ projects, onSelect }: { projects: Project[]; onSelect: (p:
           return null
         },
       },
+      {
+        accessorKey: "result",
+        header: "Result",
+        cell: ({ row }) => {
+          const r = row.original
+          if (r.kind !== "step" || !r.link) return null
+          return (
+            <a
+              href={r.link}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-0.5 text-xs text-primary transition-colors hover:bg-muted"
+            >
+              Open <ExternalLink className="size-3" />
+            </a>
+          )
+        },
+      },
     ],
     [],
   )
@@ -257,6 +293,8 @@ function MasterGrid({ projects, onSelect }: { projects: Project[]; onSelect: (p:
         recordCount={projects.length}
         onRowClick={(row: TreeRow) => {
           if (row.kind === "project") onSelect(projects.find((p) => p.name === row.name)!)
+          if (row.kind === "stream") onOpenStream(row.projectName, row.stream)
+          if (row.kind === "step") onOpenStream(row.projectName, row.stream)
         }}
         tableLayout={{
           headerSticky: true,
@@ -496,6 +534,76 @@ function ProjectView({
   )
 }
 
+function StreamView({
+  project,
+  stream,
+  onBack,
+}: {
+  project: Project
+  stream: TaskGroup
+  onBack: () => void
+}) {
+  const total = stream.steps.length
+  const done = stream.steps.filter((s) => /done/i.test(s.status)).length
+  const pct = total === 0 ? 0 : Math.round((done / total) * 100)
+
+  return (
+    <div className="mx-auto max-w-5xl space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <button
+          onClick={onBack}
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" /> Overview
+        </button>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <FolderGit2 className="size-4" />
+          <span>{project.name}</span>
+        </div>
+      </div>
+
+      <div>
+        <h1 className="text-2xl font-semibold text-foreground">{stream.stream}</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Work-stream in {project.name} · {done}/{total} steps done
+        </p>
+      </div>
+
+      <div className="h-2 overflow-hidden rounded-full bg-muted">
+        <div
+          className="h-full rounded-full bg-primary transition-all"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+
+      <div className="space-y-3">
+        {stream.steps.map((s, i) => (
+          <div key={i} className="flex items-start justify-between gap-4 rounded-xl border border-border bg-card p-4">
+            <div className="min-w-0 space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <StatusBadge status={s.status} />
+                <span className="text-sm font-medium text-foreground">{s.step}</span>
+              </div>
+              {s.date && <div className="text-xs text-muted-foreground">{s.date}</div>}
+              {s.notes && <div className="text-sm text-muted-foreground">{s.notes}</div>}
+            </div>
+            {s.link && (
+              <a
+                href={s.link}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex shrink-0 items-center gap-1 rounded-md border border-border px-2.5 py-1.5 text-xs text-primary transition-colors hover:bg-muted"
+              >
+                Open result <ExternalLink className="size-3" />
+              </a>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function Header({
   projects,
   selected,
@@ -550,6 +658,7 @@ function Header({
 export default function App() {
   const [projects, setProjects] = useState<Project[] | null>(null)
   const [selected, setSelected] = useState<Project | null>(null)
+  const [streamView, setStreamView] = useState<{ project: Project; stream: TaskGroup } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const { theme, toggle } = useTheme()
 
@@ -586,13 +695,22 @@ export default function App() {
       <Header
         projects={projects}
         selected={selected}
-        onSelectProject={setSelected}
+        onSelectProject={(p) => {
+          setStreamView(null)
+          setSelected(p)
+        }}
         theme={theme}
         onToggleTheme={toggle}
       />
 
       <main className="mx-auto max-w-5xl px-6 py-8">
-        {selected ? (
+        {streamView ? (
+          <StreamView
+            project={streamView.project}
+            stream={streamView.stream}
+            onBack={() => setStreamView(null)}
+          />
+        ) : selected ? (
           <ProjectView
             project={selected}
             projects={projects}
@@ -620,10 +738,18 @@ export default function App() {
               />
             </div>
 
-            <MasterGrid projects={projects} onSelect={setSelected} />
+            <MasterGrid
+              projects={projects}
+              onSelect={setSelected}
+              onOpenStream={(projectName, streamName) => {
+                const project = projects.find((p) => p.name === projectName)
+                const stream = project?.tasks.find((t) => t.stream === streamName)
+                if (project && stream) setStreamView({ project, stream })
+              }}
+            />
 
             <div className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground">
-              <ListTree className="size-3.5" /> Click a stream to expand tasks · click a project row to open
+              <ListTree className="size-3.5" /> Click a stream or task to open its detail · a project row opens the project
             </div>
           </div>
         )}
