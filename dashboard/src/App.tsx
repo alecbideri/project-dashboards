@@ -8,7 +8,6 @@ import {
 import {
   ArrowLeft,
   ClipboardList,
-  ExternalLink,
   FolderGit2,
   FileText,
   Gauge,
@@ -214,25 +213,6 @@ function MasterGrid({
           if (r.kind === "stream" && r.notes)
             return <span className="line-clamp-1 text-xs text-muted-foreground">{r.notes}</span>
           return null
-        },
-      },
-      {
-        accessorKey: "result",
-        header: "Result",
-        cell: ({ row }) => {
-          const r = row.original
-          if (r.kind !== "stream" || !r.link) return null
-          return (
-            <a
-              href={r.link}
-              target="_blank"
-              rel="noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-0.5 text-xs text-primary transition-colors hover:bg-muted"
-            >
-              Open <ExternalLink className="size-3" />
-            </a>
-          )
         },
       },
     ],
@@ -622,7 +602,7 @@ export default function App() {
             <MasterGrid projects={projects} onSelect={setSelected} />
 
             <div className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground">
-              <ListTree className="size-3.5" /> Click a stream to open the project · the Open button routes to its report
+              <ListTree className="size-3.5" /> Click a stream to open the project
             </div>
           </div>
         )}
