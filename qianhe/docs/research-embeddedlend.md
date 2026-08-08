@@ -1,6 +1,7 @@
 # Deep Research: Embedded Lending API (Rwanda / EAC)
 
 *Research run 2026-08-01 via vibe-research (Developer path, Level B). Built on the Qianhe autopsy (Stage: autopsy → research). Working title — rename at PRD stage.*
+*Updated 2026-08-08: eKash national payment switch launch, Uganda "data bridge" signal, CFI data-trust findings, Bank of Kigali Open API.*
 
 ## 1. Project name
 
@@ -14,8 +15,25 @@ Problem it solves: East Africa has a deep SME credit gap but lenders lack the un
 
 Why now: three converging tailwinds —
 1. **Policy push:** Rwanda's FSDS 2025-29, the RSSB-anchored **$100M Rwanda SME Growth Fund**, the **BNR regulatory sandbox** (open to local and foreign fintechs, ~3-month licensing path), and Kigali International Financial Centre explicitly target SME credit and fintech.
-2. **Data now exists:** 96% financial inclusion in Rwanda, mobile money ubiquity (MTN MoMo, Airtel), RwandaPay rails, and real-time payments (eKash) make alternative-data underwriting viable.
+2. **Data now exists:** 96% financial inclusion in Rwanda, mobile money ubiquity (MTN MoMo, Airtel), RwandaPay rails, and real-time payments (eKash, the national instant payment switch) make alternative-data underwriting viable and loan disbursement/repayment cheap and instant.
 3. **Market shift:** East African fintech is moving from payments toward "data-as-a-service" that feeds credit decisions — the exact wedge our API occupies.
+
+## 2b. National payment rail: eKash (live July 2026)
+
+Rwanda launched **eKash**, its national instant payment system (operated by RSwitch, overseen by BNR), fully live **14 July 2026** — two weeks ago. It is a single interoperable national switch connecting **22 financial institutions**: commercial banks (Bank of Kigali, Ecobank, I&M…), MTN Mobile Money, Airtel Money, SACCOs, and microfinance institutions.
+
+What it changes:
+- **One integration = the whole ecosystem.** Every institution connects once to eKash instead of maintaining bilateral links; the same applies to fintechs via **open APIs at lower cost** (RSwitch COO Jean Jacques Kajuga, Kigali Times). Bank of Kigali separately launched an **Open API (Mar 2026)** enabling "payments, credit access, and secure data exchange" for fintechs.
+- **Cheap, instant, interoperable money movement:** flat **RWF20/transfer** (down from up to RWF5,000), up to **RWF10m/transaction**, four transfer types (account↔account, account↔wallet, wallet↔account, wallet↔wallet). No new consumer app — customers keep using existing banking/mobile-money/USSD channels.
+- **Government-backed public good:** built with RISA, RSwitch, AFR, AfricaNenda, Bill & Melinda Gates Foundation, and the Mojaloop community (World Bank FASTT profile).
+
+**The key finding: eKash is a payments rail, NOT a credit system.** It moves money; it does not score borrowers, build credit histories, or make loan decisions. The "loan part" the user asked about is untouched — and that is precisely the wedge. eKash gives EmbeddedLend the disbursement/repayment plumbing (one integration, cheap instant transfers), but the underwriting/origination brain on top of it does not exist yet.
+
+**The data bridge is validated externally.** A Uganda fintech pitch (TMS Ruge, Instagram, Jul 2026) states the exact thesis: *"The most complete financial record most Ugandan small business owners have is their mobile money statement… We built the credit history. We built it on a network that processes more transactions than any bank branch system in the country. The bridge between that data and a loan is a product decision waiting to be made."* Rwanda's equivalent "network" is eKash — making the data-layer feasibility real, not hypothetical. What's still missing everywhere is the credit decisioning layer on top: our API.
+
+**Data trust is proven favorable — with limits.** A Center for Financial Inclusion study of Rwandan mobile-money users found people deem **financial history and mobile-money transactions fair** inputs for credit decisions, but strongly distrust "creepy" alternative data (phone model, texts, social media, geolocation), and two-thirds would demand correction of wrong data. Implication for product design: score on **cash-flow / MoMo behavior** (accepted), keep decisions **explainable + correctable**, and build consent-first data pulls (aligns with Rwanda's GDPR-style Law 058/2021).
+
+**Implication for the moat:** because eKash standardizes the pipes (open APIs, one integration), the durable moat is no longer "we own the connections" — it is **the aggregated credit-history dataset + lender relationships + the scoring layer** built on top of the open rail. Data access is the castle; eKash made the road to it public, so we must be the ones who build the history.
 
 ## 3. Target users
 
@@ -34,7 +52,7 @@ Pain points: no verifiable borrower records; manual underwriting; days-long appr
 
 Directional only — deep architecture is the Tech Design step. Given your **Node/TypeScript** stack:
 - **Architecture:** API-first microservice integration layer. The lender's core banking system stays the system of record; our services sit beside it (origination flow, scoring engine, decisioning, servicing webhooks) — the PEMiG pattern (single `POST /v1/score` returning a score + explanation + risk signals).
-- **Integrations:** mobile money (MTN MoMo / Airtel via RwandaPay or direct), bank/mobile statements, credit bureaus (TransUnion, Metropol, Creditinfo Kenya), KYC/KYB + AML vendors (Xcobean, Zeeh, Oystr TH), digital ID.
+- **Integrations:** money movement via the national **eKash** switch (one integration → banks + MTN MoMo + Airtel Money + SACCOs, RWF20 flat, RWF10m cap), mobile money (MTN MoMo / Airtel via RwandaPay or direct), bank/mobile statements, credit bureaus (TransUnion, Metropol, Creditinfo Kenya), KYC/KYB + AML vendors (Xcobean, Zeeh, Oystr TH), digital ID.
 - **Model:** a hybrid rules engine + ML scoring over alternative data (transaction telemetry, cash-flow signals) rather than pure bureau scoring — thin-file friendly.
 - **Compliance as code:** consent-first data pulls, audit logging, tamper-proof decision traces, data residency in the jurisdiction (Rwanda's Law 058/2021 + NCSA expectations).
 - **Integrations timeline benchmark:** PEMiG reports 6–10 weeks contract→pilot for API-capable lenders.
@@ -99,3 +117,10 @@ The landscape splits into four groups — all are potential co-opetition, and th
 | Lendsqr pricing: from ~$127/mo (Pro) to ~$3,810/yr (Business) + $1,900 setup | Lendsqr blog cost breakdowns | ✅ Observed |
 | Building lending tech from scratch in Africa ≈ $9,500–31,700, 6–18 months | Lendsqr blog | 🟡 Secondary |
 | "Lenders would pay for underwriting/origination APIs in Rwanda" | No interviews conducted yet | ❓ Assumption |
+| eKash = national instant payment system (RNDPS), fully live 14 Jul 2026, connects 22 institutions (banks, MTN MoMo, Airtel Money, SACCOs, MFIs) | New Times (14 Jul 2026), African Business (27 Jul 2026), RISA launch note, World Bank FASTT profile | ✅ Observed |
+| eKash: flat RWF20/transfer (down from up to RWF5,000), up to RWF10m/transaction, four transfer types, no new consumer app | New Times (14 Jul 2026), African Business (27 Jul 2026) | ✅ Observed |
+| eKash is a payments rail only — no credit scoring, credit history, or loan decisioning on it | New Times / African Business launch coverage (no credit functionality mentioned) | ✅ Observed |
+| eKash open APIs let fintechs connect to the national infrastructure at lower cost | RSwitch COO Jean Jacques Kajuga, Kigali Times (12 Mar 2026) | ✅ Observed |
+| Bank of Kigali Open API (Mar 2026) enables payments, credit access, secure data exchange for fintechs | KT Press (11 Mar 2026) | ✅ Observed |
+| Rwandan MoMo users deem financial history + mobile-money transactions fair for credit decisions; distrust phone/social/geolocation data; 2/3 want data correction | Center for Financial Inclusion study (2021) | ✅ Observed |
+| Uganda: TMS Ruge "built the credit history" on the mobile-money network; "bridge between that data and a loan is a product decision" | Instagram @tmsruge post DacPnQwOc1l (Jul 2026) | 🟡 Secondary |
