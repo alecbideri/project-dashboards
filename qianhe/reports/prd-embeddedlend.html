@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PRD: EmbeddedLend — API-First SME Underwriting Layer</title>
+<style>
+  @page {
+    size: A4;
+    margin: 2.2cm 2cm 2.2cm 2cm;
+    @bottom-center { content: counter(page) " / " counter(pages); font-size: 8.5pt; color: #888; }
+    @top-right { content: "EmbeddedLend — PRD v1.0"; font-size: 8pt; color: #aaa; }
+  }
+  @page cover {
+    margin: 0;
+    @bottom-center { content: none; }
+    @top-right { content: none; }
+  }
+  body { font-family: 'Georgia', 'Times New Roman', serif; line-height: 1.55; color: #1a1a1a; font-size: 10.5pt; }
+  .cover { page: cover; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 2cm; background: #0f1b2d; color: #eef2f7; }
+  .cover .kicker { font-family: 'Segoe UI', sans-serif; text-transform: uppercase; letter-spacing: 0.2em; font-size: 9pt; color: #4a82b8; margin-bottom: 1.2cm; }
+  .cover h1 { font-size: 26pt; line-height: 1.25; margin: 0 0 0.6cm 0; color: #fff; font-weight: 600; }
+  .cover .subtitle { font-size: 13pt; color: #7e92ab; margin-bottom: 1.6cm; line-height: 1.5; }
+  .cover .meta { font-family: 'Segoe UI', sans-serif; font-size: 9.5pt; color: #6b7f99; border-top: 1px solid #2c3e55; padding-top: 0.7cm; }
+  .cover .meta div { margin-bottom: 0.15cm; }
+  h1 { font-size: 16pt; color: #0f1b2d; margin: 0 0 0.3cm 0; }
+  h2 { font-size: 12.5pt; color: #14345e; margin: 0.9cm 0 0.25cm 0; border-bottom: 1.5px solid #14345e; padding-bottom: 0.1cm; }
+  h3 { font-size: 11pt; color: #14345e; margin: 0.55cm 0 0.15cm 0; }
+  p { margin: 0 0 0.32cm 0; text-align: justify; }
+  .abstract { background: #f4f7fb; border-left: 4px solid #14345e; padding: 0.5cm 0.6cm; margin: 0.5cm 0 0.7cm 0; }
+  .abstract .label { font-family: 'Segoe UI', sans-serif; font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.12em; color: #14345e; font-weight: 600; }
+  ul, ol { margin: 0.1cm 0 0.35cm 0; padding-left: 0.6cm; }
+  li { margin-bottom: 0.12cm; text-align: justify; }
+  table { border-collapse: collapse; width: 100%; margin: 0.35cm 0 0.5cm 0; font-size: 8.8pt; }
+  th, td { border: 1px solid #b9c2cc; padding: 4px 7px; text-align: left; vertical-align: top; }
+  th { background: #e6edf5; font-family: 'Segoe UI', sans-serif; font-size: 8.3pt; color: #0f1b2d; }
+  tr:nth-child(even) td { background: #f7f9fc; }
+  .grade-observed { color: #1a7f37; font-weight: 600; }
+  .grade-secondary { color: #9a6700; font-weight: 600; }
+  .grade-assumption { color: #8250df; font-weight: 600; }
+  .callout { background: #f6f4ee; border-left: 4px solid #9a6700; padding: 0.4cm 0.55cm; margin: 0.4cm 0; font-style: italic; color: #3a3a3a; }
+  .toc { margin: 0.6cm 0; }
+  .toc div { margin-bottom: 0.1cm; }
+  .toc .toc-num { font-family: 'Segoe UI', sans-serif; color: #14345e; font-weight: 600; display: inline-block; width: 0.6cm; }
+  .refs { font-size: 9pt; }
+  .refs div { margin-bottom: 0.18cm; }
+  .pagebreak { page-break-before: always; }
+  .footer-note { font-family: 'Segoe UI', sans-serif; font-size: 8.5pt; color: #777; margin-top: 0.8cm; border-top: 1px solid #ddd; padding-top: 0.25cm; }
+  strong { color: #0f1b2d; }
+  .fig { text-align: center; margin: 0.5cm 0; }
+  .fig svg { max-width: 100%; }
+  .fig-cap { font-family: 'Segoe UI', sans-serif; font-size: 8.5pt; color: #555; margin-top: 0.15cm; }
+  .mvp { background: #eef4fb; border: 2px solid #14345e; padding: 0.45cm 0.55cm; margin: 0.4cm 0; }
+  .mvp .label { font-family: 'Segoe UI', sans-serif; font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.12em; color: #0f1b2d; font-weight: 600; display: block; margin-bottom: 0.2cm; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="kicker">Product Requirements Document · Architecture</div>
+  <h1>EmbeddedLend: API-First SME Underwriting Layer</h1>
+  <div class="subtitle">The system contract for the unbuilt bridge — consent-based mobile-money underwriting on top of BNR Open Finance (data rail) and eKash (money rail). API-only scope; UI deferred.</div>
+  <div class="meta">
+    <div><strong>Working title:</strong> EmbeddedLend (rename at PRD stage)</div>
+    <div><strong>Market:</strong> Rwanda → East African Community</div>
+    <div><strong>Stage:</strong> PRD (architecture) → MVP slice flagged → Demo build</div>
+    <div><strong>Version:</strong> v1.0 · August 2026</div>
+    <div><strong>Companion documents:</strong> Problem Statement, Deep Research, Qianhe Autopsy</div>
+  </div>
+</div>
+
+<div class="pagebreak"></div>
+
+<h1>Abstract</h1>
+<div class="abstract">
+  <span class="label">Executive Summary</span>
+  <p>EmbeddedLend is an API-first SME underwriting service for the "missing middle" of Rwanda's credit market. It converts consented mobile-money cash-flow into defensible, explainable loan decisions, sitting on top of the two national rails: BNR Open Finance (the data rail, voluntary phase now) and eKash (the money rail, live July 2026).</p>
+  <p>This PRD specifies the full architecture — a layered stack from consent and data access, through deterministic signal extraction and scoring, to loan operations and eKash money movement, with compliance and audit as a vertical slice. The MVP slice (flagged throughout) is the "one livable room" that proves the core bet: one consent flow, one data source, the scoring engine, the eKash connector, and the core endpoints. UI productization is explicitly out of scope; a demo interface is built separately as an outreach artifact.</p>
+</div>
+
+<h2>Contents</h2>
+<div class="toc">
+  <div><span class="toc-num">1.</span> Goals &amp; Non-Goals</div>
+  <div><span class="toc-num">2.</span> Personas (Primary)</div>
+  <div><span class="toc-num">3.</span> Architecture Overview</div>
+  <div><span class="toc-num">4.</span> Data Flow (Borrower Journey)</div>
+  <div><span class="toc-num">5.</span> Component Map</div>
+  <div><span class="toc-num">6.</span> API Surface Sketch</div>
+  <div><span class="toc-num">7.</span> Compliance Architecture</div>
+  <div><span class="toc-num">8.</span> MVP Slice (Flagged)</div>
+  <div><span class="toc-num">9.</span> Tech Stack</div>
+  <div><span class="toc-num">10.</span> Evidence Ledger (PRD-specific)</div>
+</div>
+
+<div class="pagebreak"></div>
+
+<h2>1. Goals &amp; Non-Goals</h2>
+<h3>Goals</h3>
+<ul>
+  <li>Deliver an <strong>API-first SME underwriting service</strong> enabling licensed lenders to originate, underwrite, and service business loans for the "missing middle" — MSMEs too informal for collateral-based bank lending and too business-like for consumer micro-loans.</li>
+  <li>Turn consented <strong>mobile-money cash-flow</strong> into a <strong>defensible, explainable loan decision</strong> — the unbuilt bridge between the data rail (BNR Open Finance) and the money rail (eKash).</li>
+  <li>Make the regulator comfortable with <strong>more lending, not less</strong>: consent-first data pulls, audit trails, explainable decisions, data residency.</li>
+</ul>
+<h3>Non-Goals (explicitly out of scope)</h3>
+<ul>
+  <li><strong>No UI/UX productization</strong> in this PRD — no lender portal screens, no onboarding flows. UI is deferred pending primary research on the player landscape; a demo interface is built separately as an outreach artifact.</li>
+  <li>No direct consumer lending, no deposits, no holding a loan book (the Qianhe lesson — we never take credit risk; the lender remains the regulated entity).</li>
+  <li>No ML model training or black-box scoring in the MVP — deterministic, transparent scoring first.</li>
+  <li>No multi-bureau, multi-rail integration in the MVP.</li>
+</ul>
+
+<h2>2. Personas (Primary — who pays)</h2>
+<table>
+  <tr><th style="width:20%">Persona</th><th style="width:48%">Description</th><th style="width:32%">Consumes</th></tr>
+  <tr><td><strong>NDFSP</strong> (non-deposit-taking financial service provider)</td><td>One of 80+ licensed digital lenders in Rwanda (e.g. Zamuka, IWACU, EXUUS). Tech-poor, small, needs plug-and-play origination + scoring.</td><td>Full stack: consent, data pull, score, decision, loan, disbursement, repayment</td></tr>
+  <tr><td><strong>MFI / SACCO</strong></td><td>Extends credit to women and micro-enterprises; runs on field-officer apps and paper.</td><td>Scoring API + decision API (brings own distribution)</td></tr>
+  <tr><td><strong>Vertical SaaS platform</strong></td><td>E-commerce, logistics, agritech, retail POS serving merchants (e.g. Kayko corridor). Wants embedded working capital without becoming a lender.</td><td>Embedded credit flow: score + decision + loan + eKash disbursement inside their product</td></tr>
+</table>
+<p><em>Secondary (future): regional banks preferring white-label APIs; digital lenders expanding into Rwanda.</em></p>
+
+<h2>3. Architecture Overview</h2>
+<p>A layered, API-first microservice integration layer. The lender's core banking system stays the system of record; our services sit beside it.</p>
+<div class="fig">
+<svg width="640" height="470" viewBox="0 0 640 470" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="640" height="470" fill="#ffffff" stroke="none"/>
+  <rect x="10" y="10" width="620" height="58" rx="6" fill="#f4f7fb" stroke="#14345e" stroke-width="1.5"/>
+  <text x="30" y="34" font-family="Segoe UI, sans-serif" font-size="10" font-weight="bold" fill="#14345e">COMPLIANCE &amp; AUDIT (vertical slice)</text>
+  <text x="30" y="52" font-family="Segoe UI, sans-serif" font-size="9" fill="#3a3a3a">consent records · audit log · data residency · NCSA posture</text>
+
+  <rect x="10" y="78" width="620" height="72" rx="6" fill="#e6edf5" stroke="#14345e" stroke-width="1.5"/>
+  <text x="30" y="100" font-family="Segoe UI, sans-serif" font-size="10" font-weight="bold" fill="#0f1b2d">L1 · CONSENT &amp; DATA ACCESS</text>
+  <text x="30" y="118" font-family="Segoe UI, sans-serif" font-size="9" fill="#3a3a3a">API gateway → Consent service → Data aggregator</text>
+  <text x="30" y="134" font-family="Segoe UI, sans-serif" font-size="9" fill="#3a3a3a">Open Finance · bank APIs · MoMo APIs · MTN KYC · bureau</text>
+
+  <rect x="10" y="160" width="620" height="58" rx="6" fill="#e6edf5" stroke="#14345e" stroke-width="1.5"/>
+  <text x="30" y="182" font-family="Segoe UI, sans-serif" font-size="10" font-weight="bold" fill="#0f1b2d">L2 · SIGNAL EXTRACTION</text>
+  <text x="30" y="200" font-family="Segoe UI, sans-serif" font-size="9" fill="#3a3a3a">cash-flow signals: income stability · concentration · seasonality · repayment capacity · savings</text>
+
+  <rect x="10" y="228" width="620" height="58" rx="6" fill="#e6edf5" stroke="#14345e" stroke-width="1.5"/>
+  <text x="30" y="250" font-family="Segoe UI, sans-serif" font-size="10" font-weight="bold" fill="#0f1b2d">L3 · DECISION</text>
+  <text x="30" y="268" font-family="Segoe UI, sans-serif" font-size="9" fill="#3a3a3a">deterministic scoring engine (explainable) + policy rules → score, risk signals, decision trace</text>
+
+  <rect x="10" y="296" width="620" height="58" rx="6" fill="#e6edf5" stroke="#14345e" stroke-width="1.5"/>
+  <text x="30" y="318" font-family="Segoe UI, sans-serif" font-size="10" font-weight="bold" fill="#0f1b2d">L4 · LOAN OPERATIONS</text>
+  <text x="30" y="336" font-family="Segoe UI, sans-serif" font-size="9" fill="#3a3a3a">origination · loan management · repayment scheduling</text>
+
+  <rect x="10" y="364" width="620" height="58" rx="6" fill="#dbe7f3" stroke="#0f1b2d" stroke-width="2"/>
+  <text x="30" y="386" font-family="Segoe UI, sans-serif" font-size="10" font-weight="bold" fill="#0f1b2d">L5 · MONEY MOVEMENT (eKash)</text>
+  <text x="30" y="404" font-family="Segoe UI, sans-serif" font-size="9" fill="#3a3a3a">one integration → banks + MTN MoMo + Airtel + SACCOs (disbursement, repayment, RWF20 flat)</text>
+
+  <rect x="10" y="432" width="620" height="28" rx="6" fill="#f6f4ee" stroke="#9a6700" stroke-width="1.5"/>
+  <text x="30" y="450" font-family="Segoe UI, sans-serif" font-size="9" font-style="italic" fill="#5b4a1e">Design principle: numbers computed by code, narrative by AI — no black-box scores</text>
+</svg>
+<div class="fig-cap">Figure 1 — EmbeddedLend layered architecture (MVP slice shaded in Figure 3)</div>
+</div>
+
+<h2>4. Data Flow (Borrower Journey)</h2>
+<div class="fig">
+<svg width="640" height="240" viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="640" height="240" fill="#ffffff"/>
+  <rect x="14" y="20" width="150" height="44" rx="6" fill="#e6edf5" stroke="#14345e" stroke-width="1.5"/>
+  <text x="89" y="39" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="bold" fill="#0f1b2d" text-anchor="middle">1 · CONSENT</text>
+  <text x="89" y="54" font-family="Segoe UI, sans-serif" font-size="8" fill="#3a3a3a" text-anchor="middle">borrower opts in</text>
+  <rect x="245" y="20" width="150" height="44" rx="6" fill="#e6edf5" stroke="#14345e" stroke-width="1.5"/>
+  <text x="320" y="39" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="bold" fill="#0f1b2d" text-anchor="middle">2 · DATA PULL</text>
+  <text x="320" y="54" font-family="Segoe UI, sans-serif" font-size="8" fill="#3a3a3a" text-anchor="middle">Open Finance · MoMo · KYC</text>
+  <rect x="476" y="20" width="150" height="44" rx="6" fill="#e6edf5" stroke="#14345e" stroke-width="1.5"/>
+  <text x="551" y="39" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="bold" fill="#0f1b2d" text-anchor="middle">3 · SIGNALS</text>
+  <text x="551" y="54" font-family="Segoe UI, sans-serif" font-size="8" fill="#3a3a3a" text-anchor="middle">cash-flow features</text>
+  <polygon points="164,42 245,42" fill="none" stroke="#14345e" stroke-width="1.2"/>
+  <polygon points="245,42 236,38 236,46" fill="#14345e"/>
+  <polygon points="395,42 476,42" fill="none" stroke="#14345e" stroke-width="1.2"/>
+  <polygon points="476,42 467,38 467,46" fill="#14345e"/>
+  <rect x="14" y="104" width="150" height="44" rx="6" fill="#e6edf5" stroke="#14345e" stroke-width="1.5"/>
+  <text x="89" y="123" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="bold" fill="#0f1b2d" text-anchor="middle">4 · SCORE</text>
+  <text x="89" y="138" font-family="Segoe UI, sans-serif" font-size="8" fill="#3a3a3a" text-anchor="middle">deterministic + trace</text>
+  <rect x="245" y="104" width="150" height="44" rx="6" fill="#e6edf5" stroke="#14345e" stroke-width="1.5"/>
+  <text x="320" y="123" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="bold" fill="#0f1b2d" text-anchor="middle">5 · DECISION</text>
+  <text x="320" y="138" font-family="Segoe UI, sans-serif" font-size="8" fill="#3a3a3a" text-anchor="middle">policy rules + limits</text>
+  <rect x="476" y="104" width="150" height="44" rx="6" fill="#dbe7f3" stroke="#0f1b2d" stroke-width="2"/>
+  <text x="551" y="123" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="bold" fill="#0f1b2d" text-anchor="middle">6 · DISBURSE</text>
+  <text x="551" y="138" font-family="Segoe UI, sans-serif" font-size="8" fill="#3a3a3a" text-anchor="middle">via eKash</text>
+  <polygon points="164,126 245,126" fill="none" stroke="#14345e" stroke-width="1.2"/>
+  <polygon points="245,126 236,122 236,130" fill="#14345e"/>
+  <polygon points="395,126 476,126" fill="none" stroke="#14345e" stroke-width="1.2"/>
+  <polygon points="476,126 467,122 467,130" fill="#14345e"/>
+  <rect x="245" y="180" width="150" height="44" rx="6" fill="#dbe7f3" stroke="#0f1b2d" stroke-width="2"/>
+  <text x="320" y="199" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="bold" fill="#0f1b2d" text-anchor="middle">7 · REPAYMENT</text>
+  <text x="320" y="214" font-family="Segoe UI, sans-serif" font-size="8" fill="#3a3a3a" text-anchor="middle">collections via eKash</text>
+  <polygon points="320,148 320,180" fill="none" stroke="#0f1b2d" stroke-width="1.4" stroke-dasharray="4 3"/>
+  <polygon points="320,180 314,171 326,171" fill="#0f1b2d"/>
+  <text x="400" y="204" font-family="Segoe UI, sans-serif" font-size="8.5" font-style="italic" fill="#555">repayment history → feeds future scores (moat)</text>
+</svg>
+<div class="fig-cap">Figure 2 — Data flow: consent → data → signals → score → decision → eKash disbursement → repayment</div>
+</div>
+
+<h2>5. Component Map</h2>
+<table>
+  <tr><th style="width:26%">Component</th><th style="width:74%">Responsibility</th></tr>
+  <tr><td>API Gateway</td><td>AuthN/AuthZ, rate limiting, tenant isolation per lender</td></tr>
+  <tr><td>Consent Service</td><td>Capture, record, revoke consent; audit-gated</td></tr>
+  <tr><td>Data Aggregator</td><td>Normalize Open Finance / bank / MoMo / KYC / bureau data into one schema</td></tr>
+  <tr><td>Signal Extractor</td><td>Compute cash-flow signals (deterministic)</td></tr>
+  <tr><td>Scoring Engine</td><td>Deterministic, explainable score + risk signals</td></tr>
+  <tr><td>Decision Service</td><td>Policy rules, limits, decision trace</td></tr>
+  <tr><td>Loan Manager</td><td>Origination, loan lifecycle, repayment scheduling</td></tr>
+  <tr><td>eKash Connector</td><td>Disbursement + repayment over the national rail</td></tr>
+  <tr><td>Audit Store</td><td>Tamper-proof decision + consent audit trail</td></tr>
+</table>
+
+<h2>6. API Surface Sketch</h2>
+<table>
+  <tr><th style="width:38%">Endpoint</th><th style="width:62%">Purpose</th></tr>
+  <tr><td><code>POST /v1/consent</code></td><td>Create borrower data-sharing consent</td></tr>
+  <tr><td><code>GET /v1/data/summary</code></td><td>Fetch consented, aggregated data + cash-flow signals</td></tr>
+  <tr><td><code>POST /v1/score</code></td><td>Compute deterministic score + risk signals</td></tr>
+  <tr><td><code>POST /v1/decisions</code></td><td>Apply policy rules → decision + trace</td></tr>
+  <tr><td><code>POST /v1/loans</code></td><td>Originate a loan</td></tr>
+  <tr><td><code>POST /v1/disbursements</code></td><td>Disburse via eKash</td></tr>
+  <tr><td><code>POST /v1/repayments</code></td><td>Record/collect repayment via eKash</td></tr>
+</table>
+
+<h2>7. Compliance Architecture</h2>
+<ul>
+  <li><strong>Consent-first</strong> data pulls with purpose limitation (Law 058/2021 + GDPR-style rights: explainability, correction, portability).</li>
+  <li><strong>NCSA posture</strong> — data processor/controller certification path per the Open Finance roadmap.</li>
+  <li><strong>Data residency</strong> in jurisdiction; tamper-proof decision traces; full audit log.</li>
+  <li><strong>Explainability</strong> — every decision carries its risk signals and reasoning; the "numbers computed, narrative by AI" principle keeps the LLM as narrator, never the decider.</li>
+</ul>
+
+<div class="pagebreak"></div>
+
+<h2>8. MVP Slice (Flagged — what we build first)</h2>
+<div class="mvp">
+  <span class="label">MVP — The "One Livable Room"</span>
+  <p>The minimum cut that proves the core bet: a lender can plug in, get a borrower's mobile-money data, get a defensible score, and disburse/repay via eKash.</p>
+  <table>
+    <tr><th style="width:50%">In MVP</th><th style="width:50%">Out of MVP (later)</th></tr>
+    <tr><td>Consent flow (one)</td><td>Loan-management dashboards</td></tr>
+    <tr><td>One data source (mobile-money cash-flow)</td><td>Multiple bureaus</td></tr>
+    <tr><td>Scoring engine (deterministic, explainable)</td><td>KYC vendor integrations</td></tr>
+    <tr><td>Decision service + trace</td><td>ML model training</td></tr>
+    <tr><td>eKash connector (disburse + repay)</td><td>Fancy reporting / analytics</td></tr>
+    <tr><td>Core endpoints: consent, data/summary, score, decisions, loans, disbursements, repayments</td><td>Multi-country expansion</td></tr>
+  </table>
+  <p><strong>MVP success metric:</strong> a pilot lender originates a real business loan to a thin-file borrower using consented mobile-money data, with a defensible decision trace — proving willingness-to-pay and data-layer feasibility.</p>
+</div>
+<div class="fig">
+<svg width="640" height="200" viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="640" height="200" fill="#ffffff"/>
+  <text x="14" y="22" font-family="Segoe UI, sans-serif" font-size="10" font-weight="bold" fill="#0f1b2d">MVP coverage across the stack</text>
+  <rect x="14" y="34" width="612" height="22" rx="4" fill="#e6edf5" stroke="#14345e" stroke-width="1"/>
+  <rect x="14" y="34" width="612" height="22" rx="4" fill="#c9def0" stroke="#14345e" stroke-width="1.5"/>
+  <text x="20" y="49" font-family="Segoe UI, sans-serif" font-size="8.5" fill="#0f1b2d">L1 Consent &amp; Data Access (one source)</text>
+  <rect x="14" y="60" width="612" height="22" rx="4" fill="#c9def0" stroke="#14345e" stroke-width="1.5"/>
+  <text x="20" y="75" font-family="Segoe UI, sans-serif" font-size="8.5" fill="#0f1b2d">L2 Signal Extraction (cash-flow signals)</text>
+  <rect x="14" y="86" width="612" height="22" rx="4" fill="#c9def0" stroke="#14345e" stroke-width="1.5"/>
+  <text x="20" y="101" font-family="Segoe UI, sans-serif" font-size="8.5" fill="#0f1b2d">L3 Decision (scoring + policy + trace)</text>
+  <rect x="14" y="112" width="612" height="22" rx="4" fill="#e6edf5" stroke="#14345e" stroke-width="1"/>
+  <text x="20" y="127" font-family="Segoe UI, sans-serif" font-size="8.5" fill="#3a3a3a">L4 Loan Operations (minimal: origination + lifecycle)</text>
+  <rect x="14" y="138" width="612" height="22" rx="4" fill="#c9def0" stroke="#0f1b2d" stroke-width="1.5"/>
+  <text x="20" y="153" font-family="Segoe UI, sans-serif" font-size="8.5" fill="#0f1b2d">L5 Money Movement (eKash connector)</text>
+  <rect x="14" y="164" width="612" height="22" rx="4" fill="#e6edf5" stroke="#14345e" stroke-width="1"/>
+  <text x="20" y="179" font-family="Segoe UI, sans-serif" font-size="8.5" fill="#3a3a3a">Compliance &amp; Audit (minimum: consent + trace + residency)</text>
+  <text x="14" y="196" font-family="Segoe UI, sans-serif" font-size="8" font-style="italic" fill="#555">Shaded = shipped in MVP. Plain = deferred.</text>
+</svg>
+<div class="fig-cap">Figure 3 — MVP slice flagged across the architecture</div>
+</div>
+
+<h2>9. Tech Stack</h2>
+<ul>
+  <li><strong>Backend:</strong> Node/TypeScript, Postgres</li>
+  <li><strong>Infra:</strong> API-first microservices, containerized</li>
+  <li><strong>Money rail:</strong> eKash (one integration → whole ecosystem)</li>
+  <li><strong>Data rail:</strong> Open Finance / bank / MoMo consent APIs; MTN KYC API</li>
+  <li><strong>Decision:</strong> deterministic scoring engine (pure compute) + optional LLM narration layer (config at deploy time)</li>
+  <li><strong>Budget/timeline:</strong> side-project scale (~$200–800/mo); MVP ~3–4 months part-time; pilot with 1–2 lenders is the real milestone</li>
+</ul>
+
+<h2>10. Evidence Ledger (PRD-specific)</h2>
+<table>
+  <tr><th style="width:52%">Claim</th><th style="width:36%">Source</th><th style="width:12%">Grade</th></tr>
+  <tr><td>eKash = one integration for the whole ecosystem (banks, MTN MoMo, Airtel, SACCOs, MFIs), RWF20 flat, RWF10m cap</td><td>New Times, African Business, RISA (Jul 2026)</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>eKash is a payments rail only — no credit scoring/loan decisioning</td><td>Launch coverage</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>BNR Open Finance objective #1 = alternative scoring for MSMEs; voluntary Phase 1 now, mandatory Phase 2 (2026-28), central platform Phase 4 w/ private partner</td><td>BNR Open Finance Position Paper</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>MTN KYC API exists, consent-gated, use case "digital lending"</td><td>MTN Rwanda</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>BK Open API (Mar 2026) enables payments/credit access/data exchange</td><td>KT Press</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>80+ licensed NDFSPs; Jali Finance: "credit reference systems remain a structural challenge"</td><td>BNR list; allAfrica (Apr 2026)</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>Deterministic-compute + LLM-narration pattern validated in finance (FinRobot)</td><td>FinRobot repo / AI4Finance</td><td class="grade-secondary">🟡 Secondary</td></tr>
+  <tr><td>Willingness-to-pay by Rwandan lenders</td><td>No interviews yet</td><td class="grade-assumption">❓ Assumption</td></tr>
+</table>
+
+<div class="footer-note">Method: architecture derived from the problem statement (problem-embeddedlend.md) and deep research (research-embeddedlend.md); facts graded in Section 10. The MVP slice is the first implementable increment; UI productization and primary research on the player landscape run in parallel. Open question: lender willingness-to-pay, to be validated in the Field stage.</div>
+
+</body>
+</html>

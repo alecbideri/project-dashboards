@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Missing Middle: Why Rwanda's Creditworthy Small Businesses Can't Borrow</title>
+<style>
+  @page {
+    size: A4;
+    margin: 2.2cm 2cm 2.2cm 2cm;
+    @bottom-center { content: counter(page) " / " counter(pages); font-size: 8.5pt; color: #888; }
+    @top-right { content: "EmbeddedLend — Research Report"; font-size: 8pt; color: #aaa; }
+  }
+  @page cover {
+    margin: 0;
+    @bottom-center { content: none; }
+    @top-right { content: none; }
+  }
+  body { font-family: 'Georgia', 'Times New Roman', serif; line-height: 1.55; color: #1a1a1a; font-size: 10.5pt; }
+  .cover { page: cover; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 2cm; background: #0f1b2d; color: #eef2f7; }
+  .cover .kicker { font-family: 'Segoe UI', sans-serif; text-transform: uppercase; letter-spacing: 0.2em; font-size: 9pt; color: #4a82b8; margin-bottom: 1.2cm; }
+  .cover h1 { font-size: 26pt; line-height: 1.25; margin: 0 0 0.6cm 0; color: #fff; font-weight: 600; }
+  .cover .subtitle { font-size: 13pt; color: #7e92ab; margin-bottom: 1.6cm; line-height: 1.5; }
+  .cover .meta { font-family: 'Segoe UI', sans-serif; font-size: 9.5pt; color: #6b7f99; border-top: 1px solid #2c3e55; padding-top: 0.7cm; }
+  .cover .meta div { margin-bottom: 0.15cm; }
+  h1 { font-size: 16pt; color: #0f1b2d; margin: 0 0 0.3cm 0; }
+  h2 { font-size: 12.5pt; color: #14345e; margin: 0.9cm 0 0.25cm 0; border-bottom: 1.5px solid #14345e; padding-bottom: 0.1cm; }
+  h3 { font-size: 11pt; color: #14345e; margin: 0.55cm 0 0.15cm 0; }
+  p { margin: 0 0 0.32cm 0; text-align: justify; }
+  .abstract { background: #f4f7fb; border-left: 4px solid #14345e; padding: 0.5cm 0.6cm; margin: 0.5cm 0 0.7cm 0; }
+  .abstract .label { font-family: 'Segoe UI', sans-serif; font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.12em; color: #14345e; font-weight: 600; }
+  .statement { background: #eef4fb; border: 1px solid #b9cee6; padding: 0.55cm 0.65cm; margin: 0.5cm 0; }
+  .statement .label { font-family: 'Segoe UI', sans-serif; font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.12em; color: #0f1b2d; font-weight: 600; display: block; margin-bottom: 0.15cm; }
+  ul, ol { margin: 0.1cm 0 0.35cm 0; padding-left: 0.6cm; }
+  li { margin-bottom: 0.12cm; text-align: justify; }
+  table { border-collapse: collapse; width: 100%; margin: 0.35cm 0 0.5cm 0; font-size: 8.8pt; }
+  th, td { border: 1px solid #b9c2cc; padding: 4px 7px; text-align: left; vertical-align: top; }
+  th { background: #e6edf5; font-family: 'Segoe UI', sans-serif; font-size: 8.3pt; color: #0f1b2d; }
+  tr:nth-child(even) td { background: #f7f9fc; }
+  .grade-observed { color: #1a7f37; font-weight: 600; }
+  .grade-secondary { color: #9a6700; font-weight: 600; }
+  .grade-assumption { color: #8250df; font-weight: 600; }
+  .callout { background: #f6f4ee; border-left: 4px solid #9a6700; padding: 0.4cm 0.55cm; margin: 0.4cm 0; font-style: italic; color: #3a3a3a; }
+  .toc { margin: 0.6cm 0; }
+  .toc div { margin-bottom: 0.1cm; }
+  .toc .toc-num { font-family: 'Segoe UI', sans-serif; color: #14345e; font-weight: 600; display: inline-block; width: 0.6cm; }
+  .refs { font-size: 9pt; }
+  .refs div { margin-bottom: 0.18cm; }
+  .pagebreak { page-break-before: always; }
+  .footer-note { font-family: 'Segoe UI', sans-serif; font-size: 8.5pt; color: #777; margin-top: 0.8cm; border-top: 1px solid #ddd; padding-top: 0.25cm; }
+  strong { color: #0f1b2d; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="kicker">Research Report · Problem Statement &amp; Proposed Solution</div>
+  <h1>The Missing Middle: Why Rwanda's Creditworthy Small Businesses Can't Borrow</h1>
+  <div class="subtitle">A consent-based SME underwriting layer on top of Rwanda's national payment and data rails — the unbuilt bridge between mobile-money cash-flow and a defensible loan decision.</div>
+  <div class="meta">
+    <div><strong>Working title:</strong> EmbeddedLend (rename at PRD stage)</div>
+    <div><strong>Market:</strong> Rwanda → East African Community</div>
+    <div><strong>Stage:</strong> Research → Problem Statement → PRD (architecture)</div>
+    <div><strong>Version:</strong> v1.0 · August 2026</div>
+    <div><strong>Companion documents:</strong> Deep Research (research-embeddedlend.md), Qianhe Autopsy (research-qianhe.md)</div>
+  </div>
+</div>
+
+<div class="pagebreak"></div>
+
+<h1>Abstract</h1>
+<div class="abstract">
+  <span class="label">Executive Summary</span>
+  <p>Rwanda's small businesses occupy a credit dead zone: 87% of the business landscape is informal, too small and unbankable for collateral-based commercial lending, and too business-like for short-tenor consumer micro-loans. The consequence is that 60% of MSMEs borrowed nothing in the 12 months to 2024, against an estimated $1.2B/yr financing shortfall. Yet the asset that could change this — the mobile-money cash-flow statement, the most complete financial record most small business owners possess — is ignored by the formal credit system.</p>
+  <p>This report argues the problem is not scarce money, lazy lenders, or untrustworthy borrowers. It is an unbuilt technical layer: an underwriting framework that treats mobile-money cash-flow as proof of creditworthiness the way a bank statement is treated today. Two national infrastructure rails are arriving — eKash (the money rail, live July 2026) and BNR's Open Finance roadmap (the data rail, voluntary phase now) — but the bridge between them and the SME loan has not been built by any player. This report states the problem, argues each component with graded evidence, and proposes the solution to be architected in the PRD.</p>
+</div>
+
+<h2>Contents</h2>
+<div class="toc">
+  <div><span class="toc-num">1.</span> The Problem Statement</div>
+  <div><span class="toc-num">2.</span> The Credit Dead Zone</div>
+  <div><span class="toc-num">3.</span> The Overlooked Asset</div>
+  <div><span class="toc-num">4.</span> The Missing Bridge</div>
+  <div><span class="toc-num">5.</span> Why Now — The Two Rails Are Arriving</div>
+  <div><span class="toc-num">6.</span> Why It Matters — The Economy Pays</div>
+  <div><span class="toc-num">7.</span> No One Is to Blame</div>
+  <div><span class="toc-num">8.</span> The Proposed Solution</div>
+  <div><span class="toc-num">9.</span> Evidence Ledger (Graded Claims)</div>
+  <div><span class="toc-num">10.</span> References &amp; Method</div>
+</div>
+
+<div class="pagebreak"></div>
+
+<h2>1. The Problem Statement</h2>
+<div class="statement">
+  <span class="label">Problem Statement</span>
+  <p>Rwanda's small businesses sit in a credit dead zone. Too informal for collateral-based bank lending and too business-like for consumer micro-loans, they are the most underserved segment of the country's credit market. The irony is that the data to lend to them safely already exists — their mobile-money cash-flow is the most complete financial record most of them own — but no one has built the layer that reads it and turns it into a defensible loan decision. The money is there. The rails are being built. The bridge between them is empty.</p>
+  <p>This is not a problem of scarce money, or of lazy lenders, or of untrustworthy borrowers. Every participant is behaving rationally. The problem is the technical layer that sits between them — an unbuilt underwriting framework that could treat mobile-money cash-flow as proof of creditworthiness the way a bank statement is treated today.</p>
+</div>
+
+<h2>2. The Credit Dead Zone</h2>
+<p>Rwanda's MSMEs fall between two existing credit products, and the gap between them defines a structurally unserved segment.</p>
+<h3>2.1 Bank lending: collateral-bound and record-bound</h3>
+<p>Commercial credit demands collateral — commonly up to <strong>5x the loan amount</strong> — plus formal income records. Informal traders, smallholder farmers, and micro-entrepreneurs can produce neither. The National Institute of Statistics of Rwanda (NISR) Integrated Business Enterprise Survey 2024 identifies insufficient collateral as the number-one barrier to finance, affecting <strong>11.4% of formal businesses and 19.6% of informal businesses</strong>. Because the wider business landscape is 87% informal, the majority of productive enterprises are structurally ineligible for the primary formal channel.</p>
+<h3>2.2 Consumer micro-loans: too short and too small</h3>
+<p>Mobile credit products (MoKash, MoFlex, K'avance) are consumer instruments: <strong>7–30 day tenors, 7–9% facility fees, and rollover penalties</strong>. They are sized for consumption emergencies — a top-up, a school fee, a repair — not for purchasing inventory, equipment, or payroll. A trader who needs RWF 1–5 million for stock cannot build a business on a 30-day personal loan. The products price around risk by limiting size and tenure; they do not underwrite a business.</p>
+<h3>2.3 The measured consequence</h3>
+<p>The market consequence is stark and directly evidenced: <strong>60% of Rwandan MSMEs borrowed nothing in the 12 months before the AFR FinMap 2024 survey</strong>, despite an estimated <strong>~$1.2B/yr financing shortfall</strong> for formal MSMEs. Businesses that could grow do not. Jobs that could exist do not. The middle of Rwanda's credit market is simply not served.</p>
+
+<h2>3. The Overlooked Asset</h2>
+<p>The record that could change this already exists: the mobile-money statement.</p>
+<ul>
+  <li><strong>Scale:</strong> Rwanda reports <strong>96% financial inclusion, 86% mobile-money penetration, and 73% of payments conducted digitally</strong> (BNR Open Finance Position Paper). For most small business owners, the mobile-money history <em>is</em> their financial history — income, expenses, suppliers, customers, and savings, all in one ledger.</li>
+  <li><strong>Acceptability:</strong> A Center for Financial Inclusion (CFI) study of Rwandan mobile-money users found borrowers <strong>accept cash-flow and transaction data as fair inputs</strong> for credit decisions, while rejecting invasive signals (phone model, texts, geolocation) and demanding explainability and correction rights.</li>
+  <li><strong>The neglect:</strong> This data is currently ignored by the formal credit system — the same pattern a Ugandan fintech pitch described: <em>"the most complete financial record most small business owners have is their mobile money statement. It is not accepted as proof of income for a bank loan."</em></li>
+</ul>
+<p>The asset is real, consented-usable, and sitting unused.</p>
+
+<h2>4. The Missing Bridge</h2>
+<p>Between the data (mobile-money cash-flow) and the loan (safe, business-sized credit) an underwriting layer is required. None exists today.</p>
+<ul>
+  <li><strong>Incumbents price around the problem.</strong> MoKash, MoFlex, K'avance, and the new MoFaya (BPR Bank + MTN MoMo, launched 1 August 2026) constrain loan size and tenure to contain risk rather than underwrite the borrower's business. MoFaya extends the ceiling to RWF 2 million and explicitly mentions small businesses — but it is a bank-branded loan product, not an underwriting layer other lenders can adopt.</li>
+  <li><strong>Industry names the gap.</strong> The CEO of Jali Finance (April 2026): <em>"credit reference systems remain a structural challenge"</em> — borrowers from non-deposit-taking lenders are assessed in the same risk category as larger institutions despite different profiles.</li>
+  <li><strong>Academia validates, does not deploy.</strong> A December 2025 paper, <em>"Assessing the contribution of AI and alternative data in enhancing credit scoring accuracy and inclusivity in Rwanda,"</em> confirms the thesis — but as research, not as a production layer.</li>
+  <li><strong>The vacancy is confirmed.</strong> A research sweep of press, BNR/CMA sandbox admitted-firm lists, and competitor coverage found <strong>no player publicly building the consent-based underwriting layer</strong> on top of Rwanda's opening data infrastructure. The window is open.</li>
+</ul>
+
+<h2>5. Why Now — The Two Rails Are Arriving</h2>
+<p>Two national infrastructure pieces are being laid now. Neither is the underwriting layer — that is the point.</p>
+<h3>5.1 The money rail: eKash</h3>
+<p>Rwanda's national instant payment system went fully live <strong>14 July 2026</strong>: 22 institutions (commercial banks, MTN MoMo, Airtel Money, SACCOs, MFIs), flat <strong>RWF20/transfer</strong>, up to <strong>RWF10m/transaction</strong>, a single integration for the whole ecosystem, and open APIs for fintechs. eKash moves money; it does <strong>not</strong> score borrowers or build credit history. It is the disbursement and repayment plumbing.</p>
+<h3>5.2 The data rail: BNR Open Finance</h3>
+<p>The National Bank of Rwanda's position paper lists as objective #1: <em>"enabling consumer data sharing for alternative credit scoring and lending options to MSMEs."</em> The roadmap is phased:</p>
+<ul>
+  <li><strong>Phase 1 (2024–2026):</strong> voluntary sharing + standards being written — we are here now.</li>
+  <li><strong>Phase 2 (2026–2028):</strong> mandatory sharing for Tier-1 banks and mobile-money operators, with reciprocity.</li>
+  <li><strong>Phase 4 (2029/2030):</strong> a central data-sharing API platform — BNR states it is <em>"open to partnering with a private tech firm"</em> to build it.</li>
+</ul>
+<p>Bank of Kigali's Open API (March 2026) and MTN's consent-gated KYC API are the first bricks of this data rail.</p>
+<div class="callout">The timing argument is the crux: the voluntary window is open today. Whoever builds the underwriting layer during Phase 1 defines the standard the mandatory regime inherits — and can bid to build the Phase 4 central platform. This is a first-mover window, not a forever window.</div>
+
+<h2>6. Why It Matters — The Economy Pays</h2>
+<p>The cost of the missing middle is not borne by lenders or borrowers alone; it is borne by the economy.</p>
+<ul>
+  <li><strong>Productive capacity sits idle.</strong> Businesses that could grow, hire, and export do not — only <strong>3.6% of formal and 0.06% of informal businesses export</strong> (NISR 2024).</li>
+  <li><strong>Informality perpetuates.</strong> Without accepted records, businesses cannot graduate to formal credit, locking in the 87% informality rate.</li>
+  <li><strong>Inclusion stalls at the margin.</strong> 96% of Rwandans are financially included — but inclusion without usable credit is inclusion without opportunity.</li>
+  <li><strong>Policy intent is explicit.</strong> The FSDS, the $100M SME Growth Fund, the BNR sandbox, and the Open Finance roadmap all target exactly this segment. The policy is ready; the technical layer is not.</li>
+</ul>
+
+<h2>7. No One Is to Blame</h2>
+<p>This framing matters because the audience is the regulator and the institutions that must cooperate.</p>
+<ul>
+  <li><strong>Lenders</strong> rationally refuse to lend without verifiable records — lending blind is how losses happen.</li>
+  <li><strong>Borrowers</strong> rationally hide from a system that rejects them — why share a financial life with someone who will say no?</li>
+  <li><strong>Banks are not "outdated."</strong> They move the bulk of Rwanda's money and remain essential; mobile money complements, not replaces, them.</li>
+  <li>The problem is the <strong>framework and the unbuilt layer</strong>: a credit system still reading one kind of record while the real financial behavior of the majority lives in another, with no technical bridge connecting them.</li>
+</ul>
+
+<div class="pagebreak"></div>
+
+<h2>8. The Proposed Solution</h2>
+<p>A <strong>consent-based SME underwriting service</strong> that sits on top of the two national rails:</p>
+<ul>
+  <li><strong>Data in:</strong> consented transaction data via Open Finance / bank / MoMo APIs — cash-flow signals, not invasive data.</li>
+  <li><strong>Decision:</strong> a deterministic, explainable scoring engine (FinRobot-style separation: numbers computed by code, narrative by AI) producing a score, risk signals, and a defensible decision trace.</li>
+  <li><strong>Money out:</strong> loan disbursement and repayment over eKash — one integration, cheap, instant, interoperable.</li>
+  <li><strong>Compliance:</strong> consent-first pulls, audit trails, data residency — making the regulator comfortable with more lending, not less.</li>
+</ul>
+<p>The full architecture — services, data flow, API surface, MVP scope, and timeline — is specified in the PRD (next document in this series).</p>
+
+<h2>9. Evidence Ledger (Graded Claims)</h2>
+<p>Claims are graded as: <span class="grade-observed">✅ Observed</span> (found in a named primary/secondary source), <span class="grade-secondary">🟡 Secondary</span> (industry press), or <span class="grade-assumption">❓ Assumption</span> (not yet validated).</p>
+<table>
+  <tr><th style="width:52%">Claim</th><th style="width:36%">Source</th><th style="width:12%">Grade</th></tr>
+  <tr><td>87% informality of Rwanda's business landscape (2024)</td><td>NISR Integrated Business Enterprise Survey 2024</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>Insufficient collateral is #1 finance barrier: 11.4% formal, 19.6% informal</td><td>NISR 2024</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>60% of MSMEs borrowed nothing in past 12 months</td><td>AFR MSME FinMap 2024</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>Rwanda MSME financing shortfall ≈ $1.2B/yr</td><td>Kayko funding coverage, allAfrica</td><td class="grade-secondary">🟡 Secondary</td></tr>
+  <tr><td>Collateral demanded up to 5x loan amount</td><td>RSSB/Enko $100M SME Fund (FSD Africa)</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>96% financial inclusion; 86% mobile money penetration; 73% digital payments</td><td>BNR Open Finance Position Paper</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>MoKash/MoFlex: 7–30 day tenors, 7–9% facility fees, rollover fees</td><td>MTN Rwanda product pages</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>K'avance = overdraft to complete low-balance transactions (Dec 2025)</td><td>New Times</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>MoFaya (BPR+MTN, Aug 1 2026) digital loans up to RWF2m, "individuals and small businesses"</td><td>Taarifa, New Times</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>eKash live 14 Jul 2026: 22 institutions, RWF20 flat, RWF10m cap, open APIs</td><td>New Times, African Business, RISA</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>eKash is a payments rail only — no credit scoring/loan decisioning</td><td>Launch coverage (no credit functionality)</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>BNR Open Finance objective #1 = data sharing for alternative scoring of MSMEs</td><td>BNR Open Finance Position Paper</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>Open Finance Phase 1 (2024-26) voluntary; Phase 2 (2026-28) mandatory Tier-1 + MMOs; Phase 4 (2029/30) central API platform w/ private partner</td><td>BNR Open Finance Position Paper</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>BK Open API (Mar 2026) — payments/credit access/data exchange</td><td>KT Press</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>Rwandan MoMo users accept cash-flow data, reject phone/social data, want explainability</td><td>Center for Financial Inclusion study (2021)</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>"Credit reference systems remain a structural challenge"</td><td>Jali Finance CEO via allAfrica (Apr 2026)</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>BNR revoked 7 NDFSP licenses in 2026 amid sector growth 104→250</td><td>allAfrica (Apr 2026)</td><td class="grade-observed">✅ Observed</td></tr>
+  <tr><td>No player publicly building Open Finance → MSME underwriting layer</td><td>Research sweep (press, sandbox lists, competitor coverage)</td><td class="grade-secondary">🟡 Secondary</td></tr>
+</table>
+
+<h2>10. References &amp; Method</h2>
+<div class="refs">
+  <div><strong>[1]</strong> National Institute of Statistics of Rwanda, <em>Integrated Business Enterprise Survey</em>, 2024.</div>
+  <div><strong>[2]</strong> Access to Finance Rwanda, <em>Rwanda MSME FinMap Report</em>, 2024.</div>
+  <div><strong>[3]</strong> National Bank of Rwanda, <em>Open Finance Position Paper</em> (Phase roadmap 2024–2030).</div>
+  <div><strong>[4]</strong> Center for Financial Inclusion, <em>Trust of Data Usage, Sources, and Decisioning: Perspectives from Rwandan Mobile Money Users</em>, 2021.</div>
+  <div><strong>[5]</strong> The New Times / African Business / RISA, eKash national launch coverage, July 2026.</div>
+  <div><strong>[6]</strong> MTN Rwanda product documentation: MoKash, MoFlex. Taarifa / New Times: MoFaya launch (Aug 2026).</div>
+  <div><strong>[7]</strong> KT Press, <em>BK Open API</em> coverage, March–April 2026.</div>
+  <div><strong>[8]</strong> allAfrica, <em>Central Bank Tightens Oversight, Revokes Seven Lenders</em>, April 2026.</div>
+  <div><strong>[9]</strong> Ngunjiri &amp; Kamau, <em>Assessing the contribution of AI and alternative data in enhancing credit scoring accuracy and inclusivity in Rwanda</em>, Financial Regulation International, Dec 2025.</div>
+  <div><strong>[10]</strong> TMS Ruge (founderssprint), Instagram post DacPnQwOc1l, July 2026.</div>
+</div>
+<div class="footer-note">Method: evidence gathered via multi-source web and institutional research (BNR, RISA, NISR, AFR), press coverage, provider documentation, and primary-position papers. All statistics are graded in Section 9; "Observed" claims were located in a named source, "Secondary" claims rely on industry press. Willingness-to-pay by Rwandan lenders remains an open assumption to be validated in the Field stage.</div>
+
+</body>
+</html>

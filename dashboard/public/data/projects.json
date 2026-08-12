@@ -64,6 +64,247 @@
         ]
       },
       {
+        "file": "prd-embeddedlend.md",
+        "title": "Prd Embeddedlend",
+        "claims": [
+          {
+            "claim": "eKash = one integration for the whole ecosystem (banks, MTN MoMo, Airtel, SACCOs, MFIs), RWF20 flat, RWF10m cap",
+            "source": "New Times, African Business, RISA (Jul 2026)",
+            "grade": "observed"
+          },
+          {
+            "claim": "eKash is a payments rail only — no credit scoring/loan decisioning",
+            "source": "Launch coverage",
+            "grade": "observed"
+          },
+          {
+            "claim": "BNR Open Finance objective #1 = alternative scoring for MSMEs; voluntary Phase 1 now, mandatory Phase 2 (2026-28), central platform Phase 4 w/ private partner",
+            "source": "BNR Open Finance Position Paper",
+            "grade": "observed"
+          },
+          {
+            "claim": "MTN KYC API exists, consent-gated, use case \"digital lending\"",
+            "source": "MTN Rwanda",
+            "grade": "observed"
+          },
+          {
+            "claim": "BK Open API (Mar 2026) enables payments/credit access/data exchange",
+            "source": "KT Press",
+            "grade": "observed"
+          },
+          {
+            "claim": "80+ licensed NDFSPs; Jali Finance: \"credit reference systems remain a structural challenge\"",
+            "source": "BNR list; allAfrica (Apr 2026)",
+            "grade": "observed"
+          },
+          {
+            "claim": "Deterministic-compute + LLM-narration pattern validated in finance (FinRobot)",
+            "source": "FinRobot repo/AI4Finance",
+            "grade": "secondary"
+          },
+          {
+            "claim": "Willingness-to-pay by Rwandan lenders",
+            "source": "No interviews yet",
+            "grade": "assumption"
+          }
+        ],
+        "handoff": null,
+        "verdict": null,
+        "sections": [
+          {
+            "title": "1. Goals & Non-Goals",
+            "body": "\n### Goals\n- Deliver an **API-first SME underwriting service** that lets licensed lenders originate, underwrite, and service business loans for the \"missing middle\": MSMEs too informal for collateral-based bank lending and too business-like for consumer micro-loans.\n- Turn consented **mobile-money cash-flow** into a **defensible, explainable loan decision** — the unbuilt bridge between the data rail (BNR Open Finance) and the money rail (eKash).\n- Make the regulator comfortable with **more lending, not less**: consent-first data pulls, audit trails, explainable decisions, data residency.\n\n### Non-Goals (explicitly out of scope)\n- **No UI/UX productization** in this PRD — no lender portal screens, no onboarding flows. The UI concern is deferred pending primary research on the player landscape; a demo interface is built separately as an outreach artifact.\n- No direct consumer lending, no deposits, no holding a loan book (the Qianhe lesson — we never take credit risk; the lender remains the regulated entity).\n- No ML model training or black-box scoring in the MVP — deterministic, transparent scoring first.\n- No multi-bureau, multi-rail integration in the MVP.\n",
+            "tables": []
+          },
+          {
+            "title": "2. Personas (Primary — who pays)",
+            "body": "\n| Persona | Description | Consumes |\n|---|---|---|\n| **NDFSP (non-deposit-taking financial service provider)** | One of 80+ licensed digital lenders in Rwanda (e.g. Zamuka, IWACU, EXUUS). Tech-poor, small, needs plug-and-play origination + scoring. | Full stack: consent, data pull, score, decision, loan, disbursement, repayment |\n| **MFI / SACCO** | Extends credit to women and micro-enterprises, runs on field-officer apps and paper. | Scoring API + decision API (brings own distribution) |\n| **Vertical SaaS platform** | E-commerce, logistics, agritech, retail POS serving merchants (e.g. Kayko corridor). Wants embedded working capital for merchants without becoming a lender. | Embedded credit flow: score + decision + loan + eKash disbursement inside their product |\n\nSecondary (future): regional banks preferring white-label APIs; digital lenders expanding into Rwanda.\n",
+            "tables": [
+              {
+                "header": [
+                  "Persona",
+                  "Description",
+                  "Consumes"
+                ],
+                "rows": [
+                  [
+                    "**NDFSP (non-deposit-taking financial service provider)**",
+                    "One of 80+ licensed digital lenders in Rwanda (e.g. Zamuka, IWACU, EXUUS). Tech-poor, small, needs plug-and-play origination + scoring.",
+                    "Full stack: consent, data pull, score, decision, loan, disbursement, repayment"
+                  ],
+                  [
+                    "**MFI / SACCO**",
+                    "Extends credit to women and micro-enterprises, runs on field-officer apps and paper.",
+                    "Scoring API + decision API (brings own distribution)"
+                  ],
+                  [
+                    "**Vertical SaaS platform**",
+                    "E-commerce, logistics, agritech, retail POS serving merchants (e.g. Kayko corridor). Wants embedded working capital for merchants without becoming a lender.",
+                    "Embedded credit flow: score + decision + loan + eKash disbursement inside their product"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "title": "3. Architecture Overview",
+            "body": "\nA layered, API-first microservice integration layer. The lender's core banking system stays the system of record; our services sit beside it.\n\n```\n┌─────────────────────────────────────────────────────────────┐\n│  COMPLIANCE & AUDIT (vertical slice)                        │\n│  consent records · audit log · data residency · NCSA        │\n├─────────────────────────────────────────────────────────────┤\n│  L1  CONSENT & DATA ACCESS                                  │\n│      API gateway → Consent service → Data aggregator        │\n│      (Open Finance / bank APIs / MoMo APIs / MTN KYC /      │\n│       bureau)                                               │\n├─────────────────────────────────────────────────────────────┤\n│  L2  SIGNAL EXTRACTION                                      │\n│      cash-flow signals: income stability · concentration ·  │\n│      seasonality · repayment capacity · savings behavior    │\n├─────────────────────────────────────────────────────────────┤\n│  L3  DECISION                                               │\n│      deterministic scoring engine (explainable)             │\n│      + policy rules → score, risk signals, decision trace   │\n├─────────────────────────────────────────────────────────────┤\n│  L4  LOAN OPERATIONS                                        │\n│      origination · loan management · repayment scheduling   │\n├─────────────────────────────────────────────────────────────┤\n│  L5  MONEY MOVEMENT (eKash)                                 │\n│      one integration → banks + MTN MoMo + Airtel + SACCOs   │\n│      (disbursement, repayment collection, RWF20 flat)       │\n└─────────────────────────────────────────────────────────────┘\n```\n\n**Design principle (FinRobot-style):** *numbers computed by code, narrative by AI.* The scoring engine computes deterministic values; an LLM narrates lender-facing recommendations with full provenance. No black-box scores.\n",
+            "tables": []
+          },
+          {
+            "title": "4. Data Flow (Borrower Journey)",
+            "body": "\n1. **Consent** — borrower consents via lender app; consent service records purpose, scope, duration (consent-first, Law 058/2021-aligned).\n2. **Data pull** — aggregator fetches consented transaction data (mobile-money cash-flow via Open Finance/bank/MoMo APIs; KYC verification via MTN KYC API; optional bureau check).\n3. **Signal extraction** — cash-flow signals computed: income stability, concentration, seasonality, repayment capacity, savings behavior.\n4. **Score** — deterministic engine produces score + risk signals.\n5. **Decision** — policy rules (limits, tenure, risk thresholds) produce decision + full decision trace.\n6. **Disbursement** — via eKash, one integration, cheap, instant.\n7. **Repayment** — collections via eKash; repayment history feeds back into future scores (network effect → credit-history moat).\n",
+            "tables": []
+          },
+          {
+            "title": "5. Component Map",
+            "body": "\n| Component | Responsibility |\n|---|---|\n| **API Gateway** | AuthN/AuthZ, rate limiting, tenant isolation per lender |\n| **Consent Service** | Capture, record, revoke consent; audit-gated |\n| **Data Aggregator** | Normalize Open Finance / bank / MoMo / KYC / bureau data into one schema |\n| **Signal Extractor** | Compute cash-flow signals (deterministic) |\n| **Scoring Engine** | Deterministic, explainable score + risk signals |\n| **Decision Service** | Policy rules, limits, decision trace |\n| **Loan Manager** | Origination, loan lifecycle, repayment scheduling |\n| **eKash Connector** | Disbursement + repayment over the national rail |\n| **Audit Store** | Tamper-proof decision + consent audit trail |\n",
+            "tables": [
+              {
+                "header": [
+                  "Component",
+                  "Responsibility"
+                ],
+                "rows": [
+                  [
+                    "**API Gateway**",
+                    "AuthN/AuthZ, rate limiting, tenant isolation per lender"
+                  ],
+                  [
+                    "**Consent Service**",
+                    "Capture, record, revoke consent; audit-gated"
+                  ],
+                  [
+                    "**Data Aggregator**",
+                    "Normalize Open Finance / bank / MoMo / KYC / bureau data into one schema"
+                  ],
+                  [
+                    "**Signal Extractor**",
+                    "Compute cash-flow signals (deterministic)"
+                  ],
+                  [
+                    "**Scoring Engine**",
+                    "Deterministic, explainable score + risk signals"
+                  ],
+                  [
+                    "**Decision Service**",
+                    "Policy rules, limits, decision trace"
+                  ],
+                  [
+                    "**Loan Manager**",
+                    "Origination, loan lifecycle, repayment scheduling"
+                  ],
+                  [
+                    "**eKash Connector**",
+                    "Disbursement + repayment over the national rail"
+                  ],
+                  [
+                    "**Audit Store**",
+                    "Tamper-proof decision + consent audit trail"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "title": "6. API Surface Sketch",
+            "body": "\n| Endpoint | Purpose |\n|---|---|\n| `POST /v1/consent` | Create borrower data-sharing consent |\n| `GET /v1/data/summary` | Fetch consented, aggregated data + cash-flow signals |\n| `POST /v1/score` | Compute deterministic score + risk signals |\n| `POST /v1/decisions` | Apply policy rules → decision + trace |\n| `POST /v1/loans` | Originate a loan |\n| `POST /v1/disbursements` | Disburse via eKash |\n| `POST /v1/repayments` | Record/collect repayment via eKash |\n",
+            "tables": [
+              {
+                "header": [
+                  "Endpoint",
+                  "Purpose"
+                ],
+                "rows": [
+                  [
+                    "`POST /v1/consent`",
+                    "Create borrower data-sharing consent"
+                  ],
+                  [
+                    "`GET /v1/data/summary`",
+                    "Fetch consented, aggregated data + cash-flow signals"
+                  ],
+                  [
+                    "`POST /v1/score`",
+                    "Compute deterministic score + risk signals"
+                  ],
+                  [
+                    "`POST /v1/decisions`",
+                    "Apply policy rules → decision + trace"
+                  ],
+                  [
+                    "`POST /v1/loans`",
+                    "Originate a loan"
+                  ],
+                  [
+                    "`POST /v1/disbursements`",
+                    "Disburse via eKash"
+                  ],
+                  [
+                    "`POST /v1/repayments`",
+                    "Record/collect repayment via eKash"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "title": "7. Compliance Architecture",
+            "body": "\n- **Consent-first** data pulls with purpose limitation (Law 058/2021 + GDPR-style rights: explainability, correction, portability).\n- **NCSA posture** — data processor/controller certification path per Open Finance roadmap.\n- **Data residency** in jurisdiction; tamper-proof decision traces; full audit log.\n- **Explainability** — every decision carries its risk signals and reasoning; the \"numbers computed, narrative by AI\" principle keeps the LLM as narrator, never the decider.\n",
+            "tables": []
+          },
+          {
+            "title": "8. MVP Slice (Flagged — what we build first)",
+            "body": "\n**The \"one livable room\" that proves the core bet:** a lender can plug in, get a borrower's mobile-money data, get a defensible score, and disburse/repay via eKash.\n\n| In MVP | Out of MVP (later) |\n|---|---|\n| Consent flow (one) | Loan-management dashboards |\n| One data source (mobile-money cash-flow) | Multiple bureaus |\n| Scoring engine (deterministic, explainable) | KYC vendor integrations |\n| Decision service + trace | ML model training |\n| eKash connector (disburse + repay) | Fancy reporting / analytics |\n| Core endpoints: consent, data/summary, score, decisions, loans, disbursements, repayments | Multi-country expansion |\n\n**MVP success metric:** a pilot lender originates a real business loan to a thin-file borrower using consented mobile-money data, with a defensible decision trace — proving willingness-to-pay and the data-layer feasibility.\n",
+            "tables": [
+              {
+                "header": [
+                  "In MVP",
+                  "Out of MVP (later)"
+                ],
+                "rows": [
+                  [
+                    "Consent flow (one)",
+                    "Loan-management dashboards"
+                  ],
+                  [
+                    "One data source (mobile-money cash-flow)",
+                    "Multiple bureaus"
+                  ],
+                  [
+                    "Scoring engine (deterministic, explainable)",
+                    "KYC vendor integrations"
+                  ],
+                  [
+                    "Decision service + trace",
+                    "ML model training"
+                  ],
+                  [
+                    "eKash connector (disburse + repay)",
+                    "Fancy reporting / analytics"
+                  ],
+                  [
+                    "Core endpoints: consent, data/summary, score, decisions, loans, disbursements, repayments",
+                    "Multi-country expansion"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "title": "9. Tech Stack",
+            "body": "\n- **Backend:** Node/TypeScript, Postgres\n- **Infra:** API-first microservices, containerized\n- **Money rail:** eKash (one integration → whole ecosystem)\n- **Data rail:** Open Finance / bank / MoMo consent APIs; MTN KYC API\n- **Decision:** deterministic scoring engine (pure compute) + optional LLM narration layer (config at deploy time)\n- **Budget/timeline:** side-project scale (~$200–800/mo); MVP ~3–4 months part-time; pilot with 1–2 lenders is the real milestone\n",
+            "tables": []
+          },
+          {
+            "title": "10. Evidence Ledger (PRD-specific)",
+            "body": "\n",
+            "tables": []
+          }
+        ],
+        "kv": []
+      },
+      {
         "file": "problem-embeddedlend.md",
         "title": "Problem Embeddedlend",
         "claims": [
@@ -614,8 +855,15 @@
         "date": "2026-08-11",
         "notes": "Problem statement drafted — the missing middle: MSME credit dead zone, overlooked MoMo data, unbuilt underwriting layer",
         "link": "https://github.com/alecbideri/project-dashboards/blob/main/qianhe/docs/problem-embeddedlend.md"
+      },
+      {
+        "stream": "PRD",
+        "status": "In progress",
+        "date": "2026-08-11",
+        "notes": "Full architecture (consent→signals→decision→loans→eKash) + MVP slice flagged; API-only, no UI",
+        "link": "https://github.com/alecbideri/project-dashboards/blob/main/qianhe/docs/prd-embeddedlend.md"
       }
     ],
-    "totalClaims": 43
+    "totalClaims": 51
   }
 ]
