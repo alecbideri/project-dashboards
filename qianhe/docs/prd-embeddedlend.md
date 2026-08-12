@@ -29,6 +29,8 @@ Secondary (future): regional banks preferring white-label APIs; digital lenders 
 
 A layered, API-first microservice integration layer. The lender's core banking system stays the system of record; our services sit beside it.
 
+![Hand-drawn architecture diagram](architecture/diagram.png)
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  COMPLIANCE & AUDIT (vertical slice)                        │

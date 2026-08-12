@@ -173,6 +173,20 @@ export function Markdown({ text }: { text: string }) {
 
     if (line.trim().startsWith("- ")) continue
 
+    const im = line.match(/^\s*!\[([^\]]*)\]\(([^)]+)\)\s*$/)
+    if (im) {
+      blocks.push(
+        <div key={key++} className="my-2">
+          <img
+            src={im[2]}
+            alt={im[1]}
+            className="mx-auto max-h-[560px] rounded-lg border border-border object-contain"
+          />
+        </div>,
+      )
+      continue
+    }
+
     blocks.push(
       <p key={key++} className="py-1 text-sm text-muted-foreground">
         {renderInline(line)}
