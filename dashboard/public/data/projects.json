@@ -293,7 +293,7 @@
           },
           {
             "title": "9. Tech Stack",
-            "body": "\n- **Backend:** Node/TypeScript, Postgres\n- **Infra:** API-first microservices, containerized\n- **Money rail:** eKash (one integration → whole ecosystem)\n- **Data rail:** Open Finance / bank / MoMo consent APIs; MTN KYC API\n- **Decision:** deterministic scoring engine (pure compute) + optional LLM narration layer (config at deploy time)\n- **Budget/timeline:** side-project scale (~$200–800/mo); MVP ~3–4 months part-time; pilot with 1–2 lenders is the real milestone\n",
+            "body": "\n- **Backend:** Node/TypeScript, Postgres\n- **Infra:** API-first microservices, containerized\n- **Money rail:** eKash (one integration → whole ecosystem)\n- **Data rail:** Open Finance / bank / MoMo consent APIs; MTN KYC API\n- **Decision:** deterministic scoring engine (pure compute) + optional LLM narration layer (config at deploy time)\n",
             "tables": []
           },
           {

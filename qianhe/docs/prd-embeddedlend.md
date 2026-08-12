@@ -1,6 +1,6 @@
 # Product Requirements Document: EmbeddedLend — API-First SME Underwriting Layer
 
-*Stage: PRD (architecture). Preceded by: problem-embeddedlend.md (problem statement), research-embeddedlend.md (deep research). Next: build demo (dummy data).*
+*Stage: PRD (architecture). Preceded by: problem-embeddedlend.md (problem statement). Next: build demo (dummy data).*
 
 ## 1. Goals & Non-Goals
 
@@ -123,7 +123,6 @@ A layered, API-first microservice integration layer. The lender's core banking s
 - **Money rail:** eKash (one integration → whole ecosystem)
 - **Data rail:** Open Finance / bank / MoMo consent APIs; MTN KYC API
 - **Decision:** deterministic scoring engine (pure compute) + optional LLM narration layer (config at deploy time)
-- **Budget/timeline:** side-project scale (~$200–800/mo); MVP ~3–4 months part-time; pilot with 1–2 lenders is the real milestone
 
 ## 10. Evidence Ledger (PRD-specific)
 
