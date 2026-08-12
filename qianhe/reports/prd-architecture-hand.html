@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EmbeddedLend — Hand-Drawn Architecture</title>
+<style>
+  @page {
+    size: A4;
+    margin: 2.2cm 2cm 2.2cm 2cm;
+    @bottom-center { content: counter(page) " / " counter(pages); font-size: 8.5pt; color: #888; }
+    @top-right { content: "EmbeddedLend — Architecture (Hand Version)"; font-size: 8pt; color: #aaa; }
+  }
+  @page cover {
+    margin: 0;
+    @bottom-center { content: none; }
+    @top-right { content: none; }
+  }
+  body { font-family: 'Georgia', 'Times New Roman', serif; line-height: 1.55; color: #1a1a1a; font-size: 10.5pt; }
+  .cover { page: cover; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 2cm; background: #0f1b2d; color: #eef2f7; }
+  .cover .kicker { font-family: 'Segoe UI', sans-serif; text-transform: uppercase; letter-spacing: 0.2em; font-size: 9pt; color: #4a82b8; margin-bottom: 1.2cm; }
+  .cover h1 { font-size: 26pt; line-height: 1.25; margin: 0 0 0.6cm 0; color: #fff; font-weight: 600; }
+  .cover .subtitle { font-size: 13pt; color: #7e92ab; margin-bottom: 1.6cm; line-height: 1.5; }
+  .cover .meta { font-family: 'Segoe UI', sans-serif; font-size: 9.5pt; color: #6b7f99; border-top: 1px solid #2c3e55; padding-top: 0.7cm; }
+  .cover .meta div { margin-bottom: 0.15cm; }
+  h1 { font-size: 16pt; color: #0f1b2d; margin: 0 0 0.3cm 0; }
+  h2 { font-size: 12.5pt; color: #14345e; margin: 0.9cm 0 0.25cm 0; border-bottom: 1.5px solid #14345e; padding-bottom: 0.1cm; }
+  h3 { font-size: 11pt; color: #14345e; margin: 0.55cm 0 0.15cm 0; }
+  p { margin: 0 0 0.32cm 0; text-align: justify; }
+  ul { margin: 0.1cm 0 0.35cm 0; padding-left: 0.6cm; }
+  li { margin-bottom: 0.12cm; text-align: justify; }
+  table { border-collapse: collapse; width: 100%; margin: 0.35cm 0 0.5cm 0; font-size: 8.8pt; }
+  th, td { border: 1px solid #b9c2cc; padding: 4px 7px; text-align: left; vertical-align: top; }
+  th { background: #e6edf5; font-family: 'Segoe UI', sans-serif; font-size: 8.3pt; color: #0f1b2d; }
+  tr:nth-child(even) td { background: #f7f9fc; }
+  .callout { background: #f6f4ee; border-left: 4px solid #9a6700; padding: 0.4cm 0.55cm; margin: 0.4cm 0; font-style: italic; color: #3a3a3a; }
+  .pagebreak { page-break-before: always; }
+  .footer-note { font-family: 'Segoe UI', sans-serif; font-size: 8.5pt; color: #777; margin-top: 0.8cm; border-top: 1px solid #ddd; padding-top: 0.25cm; }
+  strong { color: #0f1b2d; }
+  .fig { text-align: center; margin: 0.6cm 0; }
+  .fig img { max-width: 100%; max-height: 24cm; }
+  .fig-cap { font-family: 'Segoe UI', sans-serif; font-size: 8.5pt; color: #555; margin-top: 0.15cm; }
+  .note { font-family: 'Segoe UI', sans-serif; font-size: 8.5pt; color: #666; background: #f6f6f2; border: 1px solid #d9d9cc; padding: 0.25cm 0.35cm; margin: 0.4cm 0; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="kicker">Hand-Drawn Architecture · EmbeddedLend</div>
+  <h1>The Underwriting Bridge, Drawn by Hand</h1>
+  <div class="subtitle">A companion to the PRD — the same consent-based SME underwriting architecture, rendered as an approachable hand-drawn diagram: data in, decision made, loan out, repayment loop.</div>
+  <div class="meta">
+    <div><strong>Working title:</strong> EmbeddedLend</div>
+    <div><strong>Market:</strong> Rwanda → East African Community</div>
+    <div><strong>Stage:</strong> PRD companion · Architecture visualization</div>
+    <div><strong>Version:</strong> v1.0 · August 2026</div>
+    <div><strong>Source:</strong> prd-embeddedlend.md (full architecture &amp; MVP slice)</div>
+  </div>
+</div>
+
+<div class="pagebreak"></div>
+
+<h1>The Hand-Drawn Architecture</h1>
+<p>The full architecture of the PRD, rendered as one approachable hand-drawn flow. Four inputs on the left (consent, open finance, mobile-money and bank APIs, eKash rail) feed the underwriting core (data &amp; consent, signals, decision, loans). A policy gate approves or retries, the output is a disbursed loan, and repayment history loops back to improve future scores. Side panels carry the lender personas (who pays), compliance (consent records, audit, residency), and money movement (disburse and repay over eKash).</p>
+
+<div class="fig">
+  <img src="architecture/diagram.png" alt="Hand-drawn architecture of EmbeddedLend">
+  <div class="fig-cap">Figure 1 — EmbeddedLend architecture, hand-drawn style. Animated GIF, interactive HTML, and editable Excalidraw versions ship alongside this document.</div>
+</div>
+
+<div class="note">Interactive companion: open <strong>architecture/diagram.html</strong> in a browser for the animated, explorable version. The <strong>.excalidraw</strong> file is editable. The <strong>.svg</strong> is the scalable static source.</div>
+
+<div class="pagebreak"></div>
+
+<h2>Reading the Diagram</h2>
+
+<h3>1. What flows in (left side)</h3>
+<ul>
+  <li><strong>Borrower Consent</strong> — the legal gate: data is pulled only with the borrower's opt-in (Law 058/2021 + GDPR-style rights).</li>
+  <li><strong>Open Finance</strong> — BNR's data-sharing rail (voluntary Phase 1 now, mandatory Phase 2 2026–28).</li>
+  <li><strong>MoMo / Bank APIs</strong> — MTN MoMo, Airtel, bank records, MTN KYC.</li>
+  <li><strong>eKash Rail</strong> — the national payment switch (RWF20 flat, RWF10m cap, one integration).</li>
+</ul>
+
+<h3>2. The underwriting core (center)</h3>
+<ul>
+  <li><strong>Data &amp; Consent</strong> — consented pulls, aggregated ledger.</li>
+  <li><strong>Signals</strong> — deterministic cash-flow features: income stability, concentration, seasonality, repayment capacity.</li>
+  <li><strong>Decision</strong> — a deterministic, explainable score plus a full decision trace. <em>Numbers computed by code; narrative by AI. No black-box scores.</em></li>
+  <li><strong>Loans</strong> — origination and repayment scheduling.</li>
+</ul>
+
+<h3>3. The gate and the loop</h3>
+<ul>
+  <li><strong>Approve?</strong> — policy rules (score + limits). "Declined / missing data" routes back for retry.</li>
+  <li><strong>Disbursed Loan</strong> — the output, sent over eKash.</li>
+  <li><strong>Repayment loop</strong> — repayment history feeds back into future scores. This is the moat: the aggregated credit-history dataset no single lender owns.</li>
+</ul>
+
+<h3>4. The side panels</h3>
+<ul>
+  <li><strong>Lender Personas (who pays)</strong> — NDFSP (full-stack underwriting), MFI/SACCO (scoring + decision APIs), Vertical SaaS (embedded credit flow).</li>
+  <li><strong>Compliance</strong> — consent records + revocation, tamper-proof audit, data residency — the regulator's comfort layer.</li>
+  <li><strong>Money Movement</strong> — disburse and repay over eKash: one integration, cheap, instant, interoperable.</li>
+</ul>
+
+<h2>The MVP Slice (flagged)</h2>
+<p>Everything shaded in the PRD's MVP figure is what we build first — the "one livable room": one consent flow, one data source (mobile-money cash-flow), the scoring engine, the decision service, the eKash connector, and the core endpoints (<code>consent, data/summary, score, decisions, loans, disbursements, repayments</code>). The hand-drawn diagram shows the whole system; the MVP is the smallest cut through it that proves the bet.</p>
+
+<div class="footer-note">Companion to prd-embeddedlend.md (full architecture &amp; MVP slice). Diagram generated in hand-drawn style; content mirrors the PRD's architecture, data flow, personas, compliance, and MVP. Open question carried forward: lender willingness-to-pay, to be validated in the Field stage.</div>
+
+</body>
+</html>
