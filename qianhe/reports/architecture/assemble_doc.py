@@ -25,13 +25,14 @@ def svg_of(filename):
 diagrams = [
     {
         "file": "embeddedlend-architecture.html",
+        "img": "diagram.png",
         "num": "01",
-        "title": "The underwriting bridge — system at a glance",
+        "title": "The underwriting bridge — system at a glance (hand-drawn)",
         "explain": (
-            "The whole system in one picture. The lender (top right) requests a decision; the borrower (top left) consents. "
-            "Consented data flows from Open Finance and mobile-money rails into a deterministic Decision Engine, whose AI layer "
-            "explains the call back to the lender. An approved loan is disbursed over eKash and repayment history loops back to "
-            "sharpen future scores, all under compliance."
+            "The whole system in one picture. The lender requests a decision; the borrower consents. Consented data flows from "
+            "Open Finance and mobile-money rails into a deterministic underwriting core, whose AI layer explains the call back to "
+            "the lender. An approved loan is disbursed over eKash and repayment history loops back to sharpen future scores, all "
+            "under compliance."
         ),
     },
     {
@@ -128,7 +129,7 @@ parts.append("""<!DOCTYPE html>
   .diagram .num { font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.16em; color: var(--color-accent); }
   .diagram h2 { font-family: var(--font-serif); font-size: 1.35rem; font-weight: 400; letter-spacing: -0.01em; }
   .diagram .explain { color: var(--color-muted); font-size: 0.95rem; max-width: 72ch; margin-bottom: 1.2rem; }
-  .diagram svg { width: 100%; height: auto; display: block; background: var(--color-paper); border: 1px solid rgba(45,49,66,0.10); border-radius: 8px; }
+  .diagram svg, .diagram img { width: 100%; height: auto; display: block; background: var(--color-paper); border: 1px solid rgba(45,49,66,0.10); border-radius: 8px; }
   footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid rgba(45,49,66,0.15); font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.12em; color: var(--color-muted); }
 </style>
 </head>
@@ -142,11 +143,15 @@ parts.append("""<!DOCTYPE html>
 """)
 
 for d in diagrams:
+    if d.get("img"):
+        body = f'<img src="{d["img"]}" alt="{d["title"]}">'
+    else:
+        body = svg_of(d["file"])
     parts.append(f"""
     <section class="diagram">
       <div class="meta"><span class="num">{d['num']}</span><h2>{d['title']}</h2></div>
       <p class="explain">{d['explain']}</p>
-      {svg_of(d['file'])}
+      {body}
     </section>
 """)
 
