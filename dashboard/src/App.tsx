@@ -229,10 +229,7 @@ function MasterGrid({
         recordCount={projects.length}
         onRowClick={(row: TreeRow) => {
           if (row.kind === "project") return
-          if (row.kind === "stream") {
-            if (row.link) window.open(row.link, "_blank", "noopener")
-            else onSelect(projects.find((p) => p.name === row.projectName)!)
-          }
+          if (row.kind === "stream") onSelect(projects.find((p) => p.name === row.projectName)!)
         }}
         tableLayout={{
           headerSticky: true,
@@ -604,7 +601,7 @@ export default function App() {
             <MasterGrid projects={projects} onSelect={setSelected} />
 
             <div className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground">
-              <ListTree className="size-3.5" /> Click a stream to open its report · the project row opens the project
+              <ListTree className="size-3.5" /> Click a stream to open the project
             </div>
           </div>
         )}
