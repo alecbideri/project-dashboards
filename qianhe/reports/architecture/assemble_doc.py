@@ -25,14 +25,13 @@ def svg_of(filename):
 diagrams = [
     {
         "file": "embeddedlend-architecture.html",
-        "img": "diagram.png",
         "num": "01",
-        "title": "The underwriting bridge — system at a glance (hand-drawn)",
+        "title": "The underwriting bridge — system at a glance",
         "explain": (
-            "The whole system in one picture. The lender requests a decision; the borrower consents. Consented data flows from "
-            "Open Finance and mobile-money rails into a deterministic underwriting core, whose AI layer explains the call back to "
-            "the lender. An approved loan is disbursed over eKash and repayment history loops back to sharpen future scores, all "
-            "under compliance."
+            "The whole system in one picture. The lender (top right) requests a decision; the borrower (top left) consents. "
+            "Consented data flows from Open Finance and mobile-money rails into a deterministic Decision Engine, whose AI layer "
+            "explains the call back to the lender. An approved loan is disbursed over eKash and repayment history loops back to "
+            "sharpen future scores, all under compliance."
         ),
     },
     {
