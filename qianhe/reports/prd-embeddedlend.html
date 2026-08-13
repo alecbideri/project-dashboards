@@ -118,7 +118,11 @@
 <p><em>Secondary (future): regional banks preferring white-label APIs; digital lenders expanding into Rwanda.</em></p>
 
 <h2>3. Architecture Overview</h2>
-<p>A layered, API-first microservice integration layer. The lender's core banking system stays the system of record; our services sit beside it.</p>
+<p>A layered, API-first microservice integration layer. The lender's core banking system stays the system of record; our services sit beside it. At a glance, the whole system: consented data flows in on the left, is scored and decided in the underwriting core, a policy gate approves, a loan is disbursed over eKash, and repayment history loops back to improve future scores.</p>
+<div class="fig">
+  <img src="architecture/diagram.png" alt="Hand-drawn architecture of EmbeddedLend" style="max-width:100%; max-height:23cm;">
+  <div class="fig-cap">Figure 1 — EmbeddedLend, the system at a glance (hand-drawn overview)</div>
+</div>
 <div class="fig">
 <svg width="640" height="470" viewBox="0 0 640 470" xmlns="http://www.w3.org/2000/svg">
   <rect x="0" y="0" width="640" height="470" fill="#ffffff" stroke="none"/>
@@ -150,7 +154,7 @@
   <rect x="10" y="432" width="620" height="28" rx="6" fill="#f6f4ee" stroke="#9a6700" stroke-width="1.5"/>
   <text x="30" y="450" font-family="Segoe UI, sans-serif" font-size="9" font-style="italic" fill="#5b4a1e">Design principle: numbers computed by code, narrative by AI — no black-box scores</text>
 </svg>
-<div class="fig-cap">Figure 1 — EmbeddedLend layered architecture (MVP slice shaded in Figure 3)</div>
+<div class="fig-cap">Figure 2 — EmbeddedLend layered architecture (MVP slice shaded in Figure 4)</div>
 </div>
 
 <h2>4. Data Flow (Borrower Journey)</h2>
@@ -190,7 +194,7 @@
   <polygon points="320,180 314,171 326,171" fill="#0f1b2d"/>
   <text x="400" y="204" font-family="Segoe UI, sans-serif" font-size="8.5" font-style="italic" fill="#555">repayment history → feeds future scores (moat)</text>
 </svg>
-<div class="fig-cap">Figure 2 — Data flow: consent → data → signals → score → decision → eKash disbursement → repayment</div>
+<div class="fig-cap">Figure 3 — Data flow: consent → data → signals → score → decision → eKash disbursement → repayment</div>
 </div>
 
 <h2>5. Component Map</h2>
@@ -263,7 +267,7 @@
   <text x="20" y="179" font-family="Segoe UI, sans-serif" font-size="8.5" fill="#3a3a3a">Compliance &amp; Audit (minimum: consent + trace + residency)</text>
   <text x="14" y="196" font-family="Segoe UI, sans-serif" font-size="8" font-style="italic" fill="#555">Shaded = shipped in MVP. Plain = deferred.</text>
 </svg>
-<div class="fig-cap">Figure 3 — MVP slice flagged across the architecture</div>
+<div class="fig-cap">Figure 4 — MVP slice flagged across the architecture</div>
 </div>
 
 <h2>9. Tech Stack</h2>

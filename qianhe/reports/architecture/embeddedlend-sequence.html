@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The borrower journey · Sequence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #f5f5f5;
+      --color-ink:     #2d3142;
+      --color-muted:   #4f5d75;
+      --color-accent:  #eb6c36;
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+    body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+    .frame { max-width: 1280px; width: 100%; }
+    .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+    h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400; letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink); margin-bottom: 0.4rem; }
+    .sub { font-family: var(--font-sans); font-size: 0.9rem; color: var(--color-muted); margin-bottom: 1.5rem; }
+    svg { width: 100%; min-width: 1000px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Sequence · EmbeddedLend</p>
+    <h1>The borrower journey, one API call at a time</h1>
+    <p class="sub">Time flows top to bottom. The borrower applies, the lender asks for a decision, the platform pulls consented data, scores it, and the AI explains — then money moves out over eKash and repayment comes back to sharpen the next score.</p>
+
+    <svg viewBox="0 0 1280 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="seq-title seq-desc">
+      <title id="seq-title">The borrower journey, one API call at a time</title>
+      <desc id="seq-desc">Sequence diagram of the borrower journey. Borrower applies via the lender app; lender requests a decision; the platform consents and pulls open-finance data, computes a deterministic score, and the AI explains it back to the lender; an approved loan is disbursed over eKash and repayment feeds the credit history.</desc>
+      <defs>
+        <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="0.9" fill="rgba(45,49,66,0.10)"/>
+        </pattern>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+        <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+      <rect width="100%" height="100%" fill="url(#dots)" opacity="0.55"/>
+
+      <!-- Lifelines (x: Borrower 150, Lender 420, Platform 660, Open Finance 920, eKash 1130) -->
+      <line x1="150" y1="128" x2="150" y2="660" stroke="rgba(45,49,66,0.22)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="420" y1="128" x2="420" y2="660" stroke="rgba(45,49,66,0.22)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="660" y1="128" x2="660" y2="660" stroke="rgba(45,49,66,0.22)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="920" y1="128" x2="920" y2="660" stroke="rgba(45,49,66,0.22)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="1130" y1="128" x2="1130" y2="660" stroke="rgba(45,49,66,0.22)" stroke-width="1" stroke-dasharray="3,3"/>
+
+      <!-- Activation bars -->
+      <!-- Lender activation -->
+      <rect x="416" y="180" width="8" height="112" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <!-- Platform activation (long) -->
+      <rect x="656" y="236" width="8" height="232" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <!-- Open Finance activation -->
+      <rect x="916" y="300" width="8" height="44" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+
+      <!-- Messages (drawn before labels) -->
+      <!-- M1: Borrower → Lender (apply) -->
+      <line x1="150" y1="176" x2="416" y2="176" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <!-- M2: Lender → Platform (request decision) -->
+      <line x1="420" y1="232" x2="656" y2="232" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <!-- M3: Platform → Open Finance (consent + pull) -->
+      <line x1="660" y1="292" x2="916" y2="292" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <!-- M4: Open Finance → Platform (data + signals) -->
+      <line x1="920" y1="336" x2="664" y2="336" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <!-- M5: Platform self (score) -->
+      <path d="M 668 380 L 704 380 L 704 412 L 668 412" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <!-- M6: Platform → Lender (AI explains the decision · coral success) -->
+      <line x1="656" y1="464" x2="420" y2="464" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+      <!-- M7: Lender → Platform (approve + originate) -->
+      <line x1="420" y1="500" x2="656" y2="500" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <!-- M8: Platform → eKash (disburse) -->
+      <line x1="660" y1="552" x2="1126" y2="552" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <!-- M9: eKash → Borrower (money in) -->
+      <line x1="1130" y1="596" x2="154" y2="596" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <!-- M10: Borrower → Platform (repay · async) -->
+      <line x1="150" y1="640" x2="656" y2="640" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+
+      <!-- Labels (masked) -->
+      <rect x="224" y="160" width="120" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="284" y="170" fill="#2e5aa8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">APPLY FOR LOAN</text>
+
+      <rect x="484" y="216" width="124" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="546" y="226" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">POST /V1/DECISIONS</text>
+
+      <rect x="716" y="276" width="120" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="776" y="286" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">CONSENT + PULL</text>
+
+      <rect x="700" y="320" width="128" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="764" y="330" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">CASH-FLOW SIGNALS</text>
+
+      <rect x="712" y="388" width="60" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="742" y="398" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">SCORE</text>
+
+      <rect x="456" y="448" width="124" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="518" y="458" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">EXPLAIN · APPROVE</text>
+
+      <rect x="484" y="484" width="120" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="544" y="494" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">ORIGINATE LOAN</text>
+
+      <rect x="756" y="536" width="120" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="816" y="546" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DISBURSE /EKASH</text>
+
+      <rect x="600" y="580" width="120" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="660" y="590" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MONEY IN · WALLET</text>
+
+      <rect x="352" y="624" width="104" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="404" y="634" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">REPAY · ASYNC</text>
+
+      <!-- Actor boxes -->
+      <!-- Borrower (external) -->
+      <rect x="78" y="72" width="144" height="56" rx="6" fill="#f5f5f5"/>
+      <rect x="78" y="72" width="144" height="56" rx="6" fill="rgba(79,93,117,0.10)" stroke="#7a8399" stroke-width="1"/>
+      <rect x="86" y="80" width="28" height="12" rx="2" fill="transparent" stroke="rgba(122,131,153,0.40)" stroke-width="0.8"/>
+      <text x="100" y="89" fill="#7a8399" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">EXT</text>
+      <text x="150" y="104" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Borrower</text>
+      <text x="150" y="119" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">thin-file MSME</text>
+
+      <!-- Lender App (cloud) -->
+      <rect x="348" y="72" width="144" height="56" rx="6" fill="#f5f5f5"/>
+      <rect x="348" y="72" width="144" height="56" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <rect x="356" y="80" width="32" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.22)" stroke-width="0.8"/>
+      <text x="372" y="89" fill="#7a8399" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">API</text>
+      <text x="420" y="104" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Lender App</text>
+      <text x="420" y="119" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">the API customer</text>
+
+      <!-- EmbeddedLend (focal coral) -->
+      <rect x="580" y="72" width="160" height="56" rx="6" fill="#f5f5f5"/>
+      <rect x="580" y="72" width="160" height="56" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <rect x="588" y="80" width="32" height="12" rx="2" fill="transparent" stroke="rgba(235,108,54,0.50)" stroke-width="0.8"/>
+      <text x="604" y="89" fill="#eb6c36" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">CORE</text>
+      <text x="660" y="104" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">EmbeddedLend</text>
+      <text x="660" y="119" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">consent · score · explain</text>
+
+      <!-- Open Finance (store) -->
+      <rect x="840" y="72" width="160" height="56" rx="6" fill="#f5f5f5"/>
+      <rect x="840" y="72" width="160" height="56" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+      <rect x="848" y="80" width="32" height="12" rx="2" fill="transparent" stroke="rgba(79,93,117,0.50)" stroke-width="0.8"/>
+      <text x="864" y="89" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DATA</text>
+      <text x="920" y="104" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Open Finance</text>
+      <text x="920" y="119" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">MoMo · bank · KYC</text>
+
+      <!-- eKash (rail) -->
+      <rect x="1058" y="72" width="144" height="56" rx="6" fill="#f5f5f5"/>
+      <rect x="1058" y="72" width="144" height="56" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <rect x="1066" y="80" width="32" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.22)" stroke-width="0.8"/>
+      <text x="1082" y="89" fill="#7a8399" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">RAIL</text>
+      <text x="1130" y="104" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">eKash</text>
+      <text x="1130" y="119" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">RWF20 flat</text>
+
+      <!-- Legend -->
+      <line x1="78" y1="684" x2="1202" y2="684" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="78" y="700" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND</text>
+
+      <rect x="78" y="720" width="14" height="10" rx="2" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="98" y="728" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Focal actor</text>
+
+      <rect x="210" y="716" width="4" height="18" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <text x="222" y="728" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Activation</text>
+
+      <line x1="330" y1="726" x2="358" y2="726" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <text x="366" y="728" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">HTTP request</text>
+
+      <line x1="498" y1="726" x2="526" y2="726" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <text x="534" y="728" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Return / async</text>
+
+      <line x1="674" y1="726" x2="702" y2="726" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+      <text x="710" y="728" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Primary response</text>
+    </svg>
+  </div>
+</body>
+</html>

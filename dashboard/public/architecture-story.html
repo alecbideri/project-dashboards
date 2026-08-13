@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EmbeddedLend — Architecture Story</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --color-paper:   #f5f5f5;
+    --color-ink:     #2d3142;
+    --color-muted:   #4f5d75;
+    --color-accent:  #eb6c36;
+    --font-sans:     'Geist', system-ui, sans-serif;
+    --font-serif:    'Instrument Serif', serif;
+    --font-mono:     'Geist Mono', ui-monospace, monospace;
+  }
+  body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink); line-height: 1.6; padding: 3rem 2rem 5rem; }
+  .frame { max-width: 1280px; margin: 0 auto; }
+  header { margin-bottom: 2.5rem; border-bottom: 1px solid rgba(45,49,66,0.15); padding-bottom: 1.5rem; }
+  .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+  h1 { font-family: var(--font-serif); font-size: clamp(1.6rem, 2.6vw + 0.75rem, 2.2rem); font-weight: 400; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 0.6rem; }
+  .lede { color: var(--color-muted); font-size: 1.02rem; max-width: 60ch; }
+  .diagram { margin: 3rem 0; }
+  .diagram .meta { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 0.5rem; }
+  .diagram .num { font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.16em; color: var(--color-accent); }
+  .diagram h2 { font-family: var(--font-serif); font-size: 1.35rem; font-weight: 400; letter-spacing: -0.01em; }
+  .diagram .explain { color: var(--color-muted); font-size: 0.95rem; max-width: 72ch; margin-bottom: 1.2rem; }
+  .diagram svg { width: 100%; height: auto; display: block; background: var(--color-paper); border: 1px solid rgba(45,49,66,0.10); border-radius: 8px; }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid rgba(45,49,66,0.15); font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.12em; color: var(--color-muted); }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <header>
+      <p class="eyebrow">EmbeddedLend · Architecture Story</p>
+      <h1>The underwriting bridge, explained</h1>
+      <p class="lede">Consent-based SME underwriting on top of BNR Open Finance and eKash. One scrollable story: the system, the decision engine, who does what, the moat flywheel, the API journey, the data topology, and why now.</p>
+    </header>
+
+    <section class="diagram">
+      <div class="meta"><span class="num">01</span><h2>The underwriting bridge — system at a glance</h2></div>
+      <p class="explain">The whole system in one picture. The lender (top right) requests a decision; the borrower (top left) consents. Consented data flows from Open Finance and mobile-money rails into a deterministic Decision Engine, whose AI layer explains the call back to the lender. An approved loan is disbursed over eKash and repayment history loops back to sharpen future scores, all under compliance.</p>
+      <svg viewBox="0 0 1280 860" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="architecture-bridge-title architecture-bridge-desc">
+      <title id="architecture-bridge-title">The underwriting bridge, in one picture</title>
+      <desc id="architecture-bridge-desc">Architecture diagram of a consent-based SME underwriting service. A lender requests a decision and a borrower consents; consent service pulls data from open finance and mobile-money APIs into a deterministic decision engine; an AI narration layer explains the decision back to the lender; approved loans are disbursed over the eKash rail and repayment history feeds back into future scores, all under compliance.</desc>
+      <defs>
+        <pattern id="architecture-dots" width="22" height="22" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="0.9" fill="rgba(45,49,66,0.10)"/>
+        </pattern>
+        <marker id="architecture-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="architecture-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+        <marker id="architecture-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+      <rect width="100%" height="100%" fill="url(#architecture-dots)" opacity="0.55"/>
+
+      <!-- Zones (before arrows and nodes) -->
+      <rect x="24" y="132" width="1232" height="192" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <rect x="500" y="136" width="104" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="552" y="145" fill="rgba(45,49,66,0.40)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">DATA &amp; CONSENT</text>
+
+      <rect x="24" y="324" width="1232" height="192" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <rect x="540" y="328" width="96" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="588" y="337" fill="rgba(45,49,66,0.40)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">UNDERWRITING</text>
+
+      <rect x="24" y="516" width="1232" height="272" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <rect x="540" y="520" width="88" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="584" y="529" fill="rgba(45,49,66,0.40)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">MONEY &amp; LOANS</text>
+
+      <!-- Arrows (before boxes) -->
+      <line x1="160" y1="96" x2="160" y2="200" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#architecture-arrow)"/>
+      <line x1="260" y1="232" x2="400" y2="232" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#architecture-arrow)"/>
+      <path d="M 1060,96 V 128 H 652 Q 644,128 644,136 V 384 Q 644,392 652,392 H 640" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#architecture-arrow)"/>
+      <path d="M 640,232 V 340 H 392 Q 400,340 400,348 V 416 Q 400,424 392,424 H 400" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#architecture-arrow)"/>
+      <line x1="640" y1="424" x2="720" y2="424" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#architecture-arrow)"/>
+      <line x1="520" y1="456" x2="520" y2="584" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#architecture-arrow-accent)"/>
+      <line x1="520" y1="648" x2="520" y2="680" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#architecture-arrow)"/>
+      <line x1="640" y1="712" x2="720" y2="712" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#architecture-arrow)"/>
+      <path d="M 720,712 H 680 Q 672,712 672,704 V 472 Q 672,464 680,464 H 568 Q 560,464 560,472 V 456" fill="none" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#architecture-arrow)"/>
+      <path d="M 840,392 V 104 H 1000 V 96" fill="none" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#architecture-arrow)"/>
+      <line x1="1020" y1="424" x2="960" y2="424" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#architecture-arrow)"/>
+
+      <!-- Arrow labels (masked, 6-10px gap) -->
+      <rect x="168" y="140" width="56" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="196" y="151" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">CONSENT</text>
+
+      <rect x="300" y="208" width="32" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="316" y="219" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">PULL</text>
+
+      <rect x="800" y="140" width="56" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="828" y="151" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">REQUEST</text>
+
+      <rect x="480" y="316" width="56" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="508" y="327" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">SIGNALS</text>
+
+      <rect x="656" y="400" width="48" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="680" y="411" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">EXPLAIN</text>
+
+      <rect x="528" y="508" width="56" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="556" y="519" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">APPROVE</text>
+
+      <rect x="528" y="652" width="56" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="556" y="663" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DISBURSE</text>
+
+      <rect x="652" y="688" width="36" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="670" y="699" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">REPAY</text>
+
+      <rect x="680" y="544" width="88" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="724" y="555" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">FEEDS SCORES</text>
+
+      <rect x="872" y="80" width="96" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="920" y="91" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">EXPLANATION</text>
+
+      <rect x="972" y="400" width="36" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="990" y="411" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">AUDIT</text>
+
+      <!-- Node: Borrower -->
+      <rect x="80" y="32" width="160" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="80" y="32" width="160" height="64" rx="6" fill="rgba(79,93,117,0.10)" stroke="#7a8399" stroke-width="1"/>
+      <rect x="88" y="40" width="28" height="12" rx="2" fill="transparent" stroke="rgba(122,131,153,0.40)" stroke-width="0.8"/>
+      <text x="102" y="49" fill="#7a8399" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">USER</text>
+      <text x="160" y="68" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Borrower</text>
+      <text x="160" y="84" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">consents</text>
+
+      <!-- Node: Lender -->
+      <rect x="980" y="32" width="160" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="980" y="32" width="160" height="64" rx="6" fill="rgba(79,93,117,0.10)" stroke="#7a8399" stroke-width="1"/>
+      <rect x="988" y="40" width="28" height="12" rx="2" fill="transparent" stroke="rgba(122,131,153,0.40)" stroke-width="0.8"/>
+      <text x="1002" y="49" fill="#7a8399" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">EXT</text>
+      <text x="1060" y="68" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Lender</text>
+      <text x="1060" y="84" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">API customer</text>
+
+      <!-- Node: Consent Service -->
+      <rect x="60" y="200" width="200" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="60" y="200" width="200" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="68" y="208" width="28" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="82" y="217" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">API</text>
+      <text x="160" y="236" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Consent Service</text>
+      <text x="160" y="252" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">consent-first</text>
+
+      <!-- Node: Open Finance / MoMo -->
+      <rect x="400" y="200" width="240" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="400" y="200" width="240" height="64" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+      <rect x="408" y="208" width="32" height="12" rx="2" fill="transparent" stroke="rgba(79,93,117,0.50)" stroke-width="0.8"/>
+      <text x="424" y="217" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DATA</text>
+      <text x="520" y="236" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Open Finance / MoMo</text>
+      <text x="520" y="252" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">bank · KYC · bureau</text>
+
+      <!-- Node: Decision Engine (focal coral) -->
+      <rect x="400" y="392" width="240" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="400" y="392" width="240" height="64" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <rect x="408" y="400" width="32" height="12" rx="2" fill="transparent" stroke="rgba(235,108,54,0.50)" stroke-width="0.8"/>
+      <text x="424" y="409" fill="#eb6c36" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">CORE</text>
+      <text x="632" y="452" fill="rgba(235,108,54,0.10)" font-size="32" font-weight="600" font-family="'Geist Mono', monospace" text-anchor="end">01</text>
+      <text x="520" y="428" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Decision Engine</text>
+      <text x="520" y="444" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">deterministic score</text>
+
+      <!-- Node: AI Narration -->
+      <rect x="720" y="392" width="240" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="720" y="392" width="240" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="728" y="400" width="28" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="742" y="409" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">AI</text>
+      <text x="840" y="428" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">AI Narration</text>
+      <text x="840" y="444" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">explains to lender</text>
+
+      <!-- Node: Compliance (security boundary) -->
+      <rect x="1020" y="392" width="180" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="1020" y="392" width="180" height="64" rx="6" fill="rgba(235,108,54,0.05)" stroke="rgba(235,108,54,0.50)" stroke-width="1" stroke-dasharray="4,4"/>
+      <rect x="1028" y="400" width="28" height="12" rx="2" fill="transparent" stroke="rgba(235,108,54,0.50)" stroke-width="0.8"/>
+      <text x="1042" y="409" fill="#eb6c36" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">GRD</text>
+      <text x="1110" y="428" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Compliance</text>
+      <text x="1110" y="444" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">audit · residency</text>
+
+      <!-- Node: Disbursed Loan -->
+      <rect x="400" y="584" width="240" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="400" y="584" width="240" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="408" y="592" width="28" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="422" y="601" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">API</text>
+      <text x="520" y="620" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Disbursed Loan</text>
+      <text x="520" y="636" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">originate</text>
+
+      <!-- Node: eKash Rail -->
+      <rect x="400" y="680" width="240" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="400" y="680" width="240" height="64" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <rect x="408" y="688" width="32" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.22)" stroke-width="0.8"/>
+      <text x="424" y="697" fill="#7a8399" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">RAIL</text>
+      <text x="520" y="716" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">eKash</text>
+      <text x="520" y="732" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">RWF20 flat</text>
+
+      <!-- Node: Repayment history (store) -->
+      <rect x="720" y="680" width="240" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="720" y="680" width="240" height="64" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+      <rect x="728" y="688" width="28" height="12" rx="2" fill="transparent" stroke="rgba(79,93,117,0.50)" stroke-width="0.8"/>
+      <text x="742" y="697" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DB</text>
+      <text x="840" y="716" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Repayment History</text>
+      <text x="840" y="732" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">the moat · feeds scores</text>
+
+      <!-- Legend strip -->
+      <line x1="40" y1="812" x2="1240" y2="812" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="40" y="828" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND</text>
+
+      <rect x="40" y="844" width="14" height="10" rx="2" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="60" y="852" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Focal / core</text>
+
+      <rect x="170" y="844" width="14" height="10" rx="2" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="190" y="852" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Backend / API</text>
+
+      <rect x="290" y="844" width="14" height="10" rx="2" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+      <text x="310" y="852" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Store / data</text>
+
+      <rect x="410" y="844" width="14" height="10" rx="2" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <text x="430" y="852" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Rail / cloud</text>
+
+      <rect x="530" y="844" width="14" height="10" rx="2" fill="rgba(79,93,117,0.10)" stroke="#7a8399" stroke-width="1"/>
+      <text x="550" y="852" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">External</text>
+
+      <rect x="640" y="844" width="14" height="10" rx="2" fill="rgba(235,108,54,0.05)" stroke="rgba(235,108,54,0.50)" stroke-width="1" stroke-dasharray="4,4"/>
+      <text x="660" y="852" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Security</text>
+
+      <line x1="760" y1="849" x2="788" y2="849" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#architecture-arrow-accent)"/>
+      <text x="796" y="852" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Primary flow</text>
+
+      <line x1="920" y1="849" x2="948" y2="849" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#architecture-arrow)"/>
+      <text x="956" y="852" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Return / async</text>
+    </svg>
+    </section>
+
+    <section class="diagram">
+      <div class="meta"><span class="num">02</span><h2>Inside the decision engine</h2></div>
+      <p class="explain">The core, opened up: numbers computed by code, narrative by AI. Consented data becomes cash-flow signals, then a deterministic score, then a policy-gated decision. The gate approves into eKash, explains via AI narration, writes a tamper-proof decision trace, or declines back to re-pull data.</p>
+      <svg viewBox="0 0 1280 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="decision-detail-detail-title decision-detail-detail-desc">
+      <title id="decision-detail-detail-title">Inside the decision engine</title>
+      <desc id="decision-detail-detail-desc">Detail diagram of the decision engine. Consented data flows into signal extraction, a deterministic scoring engine, and policy rules; a decision gate then approves into eKash disbursement, explains via AI narration, writes a decision trace, or declines back to signal extraction to re-pull data.</desc>
+      <defs>
+        <pattern id="decision-detail-dots" width="22" height="22" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="0.9" fill="rgba(45,49,66,0.10)"/>
+        </pattern>
+        <marker id="decision-detail-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="decision-detail-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+        <marker id="decision-detail-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+      <rect width="100%" height="100%" fill="url(#decision-detail-dots)" opacity="0.55"/>
+
+      <!-- Zones (before arrows and nodes) -->
+      <rect x="24" y="140" width="440" height="180" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <rect x="192" y="144" width="104" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="244" y="153" fill="rgba(45,49,66,0.40)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">DATA &amp; SIGNALS</text>
+
+      <rect x="480" y="140" width="440" height="180" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <rect x="648" y="144" width="104" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="700" y="153" fill="rgba(45,49,66,0.40)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">SCORE &amp; POLICY</text>
+
+      <rect x="920" y="140" width="260" height="180" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <rect x="1012" y="144" width="76" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="1050" y="153" fill="rgba(45,49,66,0.40)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">DECISION</text>
+
+      <rect x="24" y="360" width="1156" height="200" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <rect x="40" y="364" width="108" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="94" y="373" fill="rgba(45,49,66,0.40)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">OUTPUTS &amp; AUDIT</text>
+
+      <!-- Arrows (before boxes) -->
+      <line x1="220" y1="252" x2="260" y2="252" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#decision-detail-arrow)"/>
+      <line x1="440" y1="252" x2="520" y2="252" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#decision-detail-arrow)"/>
+      <line x1="700" y1="252" x2="740" y2="252" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#decision-detail-arrow)"/>
+      <line x1="920" y1="252" x2="956" y2="252" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#decision-detail-arrow)"/>
+      <path d="M 980,284 V 340 H 830 V 420" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#decision-detail-arrow)"/>
+      <line x1="1026" y1="284" x2="1026" y2="420" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#decision-detail-arrow-accent)"/>
+      <path d="M 1088,284 V 340 H 1104 V 520 H 350 V 284" fill="none" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#decision-detail-arrow)"/>
+      <line x1="610" y1="284" x2="610" y2="420" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#decision-detail-arrow)"/>
+      <line x1="700" y1="452" x2="740" y2="452" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#decision-detail-arrow)"/>
+
+      <!-- Arrow labels (masked, 6-10px gap) -->
+      <rect x="220" y="232" width="40" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="240" y="243" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DATA</text>
+
+      <rect x="456" y="232" width="48" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="480" y="243" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">SIGNALS</text>
+
+      <rect x="708" y="232" width="40" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="728" y="243" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">SCORE</text>
+
+      <rect x="924" y="232" width="40" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="944" y="243" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">RULES</text>
+
+      <rect x="872" y="320" width="56" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="900" y="331" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">EXPLAIN</text>
+
+      <rect x="964" y="352" width="56" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="992" y="363" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">APPROVE</text>
+
+      <rect x="608" y="500" width="64" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="640" y="511" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DECLINE</text>
+
+      <rect x="618" y="340" width="40" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="638" y="351" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">WRITE</text>
+
+      <!-- Node: Consented Data -->
+      <rect x="60" y="220" width="160" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="60" y="220" width="160" height="64" rx="6" fill="rgba(79,93,117,0.10)" stroke="#7a8399" stroke-width="1"/>
+      <rect x="68" y="228" width="28" height="12" rx="2" fill="transparent" stroke="rgba(122,131,153,0.40)" stroke-width="0.8"/>
+      <text x="82" y="237" fill="#7a8399" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">EXT</text>
+      <text x="140" y="256" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Consented Data</text>
+      <text x="140" y="272" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">MoMo · bank · KYC</text>
+
+      <!-- Node: Signal Extraction -->
+      <rect x="260" y="220" width="180" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="260" y="220" width="180" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="268" y="228" width="32" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="284" y="237" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">API</text>
+      <text x="350" y="256" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Signal Extraction</text>
+      <text x="350" y="272" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">cash-flow features</text>
+
+      <!-- Node: Scoring Engine (focal coral) -->
+      <rect x="520" y="220" width="180" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="520" y="220" width="180" height="64" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <rect x="528" y="228" width="32" height="12" rx="2" fill="transparent" stroke="rgba(235,108,54,0.50)" stroke-width="0.8"/>
+      <text x="544" y="237" fill="#eb6c36" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">CORE</text>
+      <text x="692" y="280" fill="rgba(235,108,54,0.10)" font-size="32" font-weight="600" font-family="'Geist Mono', monospace" text-anchor="end">01</text>
+      <text x="610" y="256" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Scoring Engine</text>
+      <text x="610" y="272" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">deterministic</text>
+
+      <!-- Node: Policy Rules -->
+      <rect x="740" y="220" width="180" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="740" y="220" width="180" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="748" y="228" width="32" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="764" y="237" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">RULE</text>
+      <text x="830" y="256" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Policy Rules</text>
+      <text x="830" y="272" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">limits · tenure</text>
+
+      <!-- Node: Decision Gate -->
+      <rect x="956" y="220" width="140" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="956" y="220" width="140" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="964" y="228" width="32" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="980" y="237" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">GATE</text>
+      <text x="1026" y="256" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Decision Gate</text>
+      <text x="1026" y="272" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">approve · decline</text>
+
+      <!-- Node: Decision Trace (store) -->
+      <rect x="520" y="420" width="180" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="520" y="420" width="180" height="64" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+      <rect x="528" y="428" width="28" height="12" rx="2" fill="transparent" stroke="rgba(79,93,117,0.50)" stroke-width="0.8"/>
+      <text x="542" y="437" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DB</text>
+      <text x="610" y="456" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Decision Trace</text>
+      <text x="610" y="472" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">tamper-proof</text>
+
+      <!-- Node: AI Narration -->
+      <rect x="740" y="420" width="180" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="740" y="420" width="180" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="748" y="428" width="28" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="762" y="437" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">AI</text>
+      <text x="830" y="456" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">AI Narration</text>
+      <text x="830" y="472" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">explains the why</text>
+
+      <!-- Node: eKash Disbursement -->
+      <rect x="956" y="420" width="140" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="956" y="420" width="140" height="64" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <rect x="964" y="428" width="32" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.22)" stroke-width="0.8"/>
+      <text x="980" y="437" fill="#7a8399" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">RAIL</text>
+      <text x="1026" y="456" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">eKash Disbursement</text>
+      <text x="1026" y="472" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">money out</text>
+
+      <!-- Legend strip -->
+      <line x1="40" y1="564" x2="1240" y2="564" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="40" y="580" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND</text>
+
+      <rect x="40" y="584" width="14" height="10" rx="2" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="60" y="592" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Focal / core</text>
+
+      <rect x="170" y="584" width="14" height="10" rx="2" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="190" y="592" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Backend / API</text>
+
+      <rect x="290" y="584" width="14" height="10" rx="2" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+      <text x="310" y="592" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Store / data</text>
+
+      <rect x="410" y="584" width="14" height="10" rx="2" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <text x="430" y="592" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Rail / cloud</text>
+
+      <rect x="530" y="584" width="14" height="10" rx="2" fill="rgba(79,93,117,0.10)" stroke="#7a8399" stroke-width="1"/>
+      <text x="550" y="592" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">External</text>
+
+      <line x1="680" y1="589" x2="708" y2="589" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#decision-detail-arrow-accent)"/>
+      <text x="716" y="592" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Primary flow</text>
+
+      <line x1="840" y1="589" x2="868" y2="589" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#decision-detail-arrow)"/>
+      <text x="876" y="592" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Return / async</text>
+    </svg>
+    </section>
+
+    <section class="diagram">
+      <div class="meta"><span class="num">03</span><h2>Who does what — the swimlane</h2></div>
+      <p class="explain">Five actors, one journey. Each horizontal band is an actor; each box is a step that actor performs; each arrow is a handoff of work. Solid arrows are handoffs, dashed arrows are money, return, or audit flows, and the coral arrow is the critical handoff: the AI explanation back to the lender. Read left to right: apply, request, consent, score, explain, review, disburse, repay, record repayment — which feeds future scores.</p>
+      <svg viewBox="0 0 1280 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="swimlane-swim-title swimlane-swim-desc">
+      <title id="swimlane-swim-title">Who does what in the underwriting flow</title>
+      <desc id="swimlane-swim-desc">Swimlane diagram across five actors. Borrower applies and repays. Lender requests the decision and reviews the AI explanation. EmbeddedLend consents and pulls data, scores, and explains. eKash disburses and records repayment. BNR oversees compliance.</desc>
+      <defs>
+        <pattern id="swimlane-dots" width="22" height="22" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="0.9" fill="rgba(45,49,66,0.10)"/>
+        </pattern>
+        <marker id="swimlane-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="swimlane-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+      <rect width="100%" height="100%" fill="url(#swimlane-dots)" opacity="0.55"/>
+
+      <!-- Lane dividers -->
+      <line x1="40" y1="80" x2="1240" y2="80" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+      <line x1="40" y1="180" x2="1240" y2="180" stroke="rgba(45,49,66,0.10)" stroke-width="1"/>
+      <line x1="40" y1="280" x2="1240" y2="280" stroke="rgba(45,49,66,0.10)" stroke-width="1"/>
+      <line x1="40" y1="380" x2="1240" y2="380" stroke="rgba(45,49,66,0.10)" stroke-width="1"/>
+      <line x1="40" y1="480" x2="1240" y2="480" stroke="rgba(45,49,66,0.10)" stroke-width="1"/>
+      <line x1="40" y1="580" x2="1240" y2="580" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+
+      <!-- Actor column divider -->
+      <line x1="200" y1="80" x2="200" y2="580" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+
+      <!-- Lane labels -->
+      <text x="48" y="140" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.18em">BORROWER</text>
+      <text x="48" y="240" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LENDER</text>
+      <text x="36" y="340" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.18em">EMBEDDEDLEND</text>
+      <text x="48" y="440" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.18em">EKASH</text>
+      <text x="48" y="540" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" letter-spacing="0.18em">BNR</text>
+
+      <!-- Arrows (drawn before boxes) -->
+      <!-- 1 Apply → Request -->
+      <line x1="320" y1="164" x2="320" y2="216" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#swimlane-arrow)"/>
+      <!-- 2 Request → Consent -->
+      <line x1="320" y1="264" x2="320" y2="316" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#swimlane-arrow)"/>
+      <!-- 3 Consent → Score -->
+      <line x1="400" y1="340" x2="480" y2="340" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#swimlane-arrow)"/>
+      <!-- 4 Score → AI -->
+      <line x1="640" y1="340" x2="720" y2="340" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#swimlane-arrow)"/>
+      <!-- 5 AI → Review (critical handoff, coral) -->
+      <line x1="800" y1="316" x2="800" y2="264" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#swimlane-arrow-accent)"/>
+      <!-- 6 Review → Disburse -->
+      <path d="M 880,264 V 300 H 900 V 440 H 640" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#swimlane-arrow)"/>
+      <!-- 7 Disburse → Repay (money in, dashed) -->
+      <path d="M 640,464 V 500 H 940 V 140 H 880" fill="none" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#swimlane-arrow)"/>
+      <!-- 8 Repay → Repayment -->
+      <path d="M 800,164 V 200 H 920 V 440 H 960" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#swimlane-arrow)"/>
+      <!-- 9 Repayment → Score (feeds scores, dashed) -->
+      <path d="M 1120,440 V 520 H 450 V 352 H 480" fill="none" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#swimlane-arrow)"/>
+      <!-- 10 Compliance → Consent (audit, dashed) -->
+      <line x1="340" y1="516" x2="340" y2="364" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#swimlane-arrow)"/>
+
+      <!-- Arrow labels -->
+      <rect x="808" y="280" width="56" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="836" y="291" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">EXPLAINS</text>
+
+      <rect x="948" y="334" width="56" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="976" y="345" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">MONEY IN</text>
+
+      <rect x="748" y="500" width="84" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="790" y="511" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">FEEDS SCORES</text>
+
+      <rect x="348" y="440" width="36" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="366" y="451" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">AUDIT</text>
+
+      <!-- Borrower: Apply -->
+      <rect x="240" y="116" width="160" height="48" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="320" y="138" fill="#2d3142" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Apply for loan</text>
+      <text x="320" y="152" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">thin-file MSME</text>
+
+      <!-- Borrower: Repay -->
+      <rect x="720" y="116" width="160" height="48" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="800" y="138" fill="#2d3142" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Repay</text>
+      <text x="800" y="152" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">mobile money</text>
+
+      <!-- Lender: Request decision -->
+      <rect x="240" y="216" width="160" height="48" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="320" y="238" fill="#2d3142" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Request decision</text>
+      <text x="320" y="252" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">POST /v1/decisions</text>
+
+      <!-- Lender: Review + approve -->
+      <rect x="720" y="216" width="160" height="48" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="800" y="238" fill="#2d3142" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Review + approve</text>
+      <text x="800" y="252" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">the AI explains why</text>
+
+      <!-- Core: Consent + pull -->
+      <rect x="240" y="316" width="160" height="48" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="320" y="338" fill="#2d3142" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Consent + pull</text>
+      <text x="320" y="352" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">Open Finance · MoMo</text>
+
+      <!-- Core: Score (coral focal) -->
+      <rect x="480" y="316" width="160" height="48" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="560" y="338" fill="#2d3142" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Score</text>
+      <text x="560" y="352" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">deterministic</text>
+
+      <!-- Core: AI explanation -->
+      <rect x="720" y="316" width="160" height="48" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="800" y="338" fill="#2d3142" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">AI explanation</text>
+      <text x="800" y="352" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">narrative · trace</text>
+
+      <!-- eKash: Disburse -->
+      <rect x="480" y="416" width="160" height="48" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <text x="560" y="438" fill="#2d3142" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Disburse</text>
+      <text x="560" y="452" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">RWF20 flat</text>
+
+      <!-- eKash: Repayment event -->
+      <rect x="960" y="416" width="160" height="48" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <text x="1040" y="438" fill="#2d3142" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Repayment event</text>
+      <text x="1040" y="452" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">collection</text>
+
+      <!-- BNR: Compliance (security) -->
+      <rect x="240" y="516" width="200" height="48" rx="6" fill="rgba(235,108,54,0.05)" stroke="rgba(235,108,54,0.50)" stroke-width="1" stroke-dasharray="4,4"/>
+      <text x="340" y="538" fill="#2d3142" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Compliance oversight</text>
+      <text x="340" y="552" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">sandbox · audit</text>
+
+      <!-- Legend -->
+      <line x1="40" y1="596" x2="1240" y2="596" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="40" y="612" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND</text>
+
+      <rect x="40" y="626" width="14" height="10" rx="2" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="60" y="634" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Step</text>
+
+      <rect x="132" y="626" width="14" height="10" rx="2" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="152" y="634" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Focal outcome</text>
+
+      <line x1="268" y1="632" x2="296" y2="632" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#swimlane-arrow)"/>
+      <text x="304" y="634" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Handoff</text>
+
+      <line x1="388" y1="632" x2="416" y2="632" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#swimlane-arrow)"/>
+      <text x="424" y="634" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Money / return / audit</text>
+
+      <line x1="596" y1="632" x2="624" y2="632" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#swimlane-arrow-accent)"/>
+      <text x="632" y="634" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Critical handoff</text>
+    </svg>
+    </section>
+
+    <section class="diagram">
+      <div class="meta"><span class="num">04</span><h2>The moat flywheel</h2></div>
+      <p class="explain">The strategic anchor: a self-reinforcing loop. Lending writes repayment history into one shared credit record; richer history sharpens the scores; sharper scores let us approve more thin-file borrowers safely; more lending writes more history. Each station writes back to the central hub — a moat no single lender can build alone. The coral station is the scoring engine that improves on every pass.</p>
+      <svg viewBox="0 0 1040 680" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="loop-loop-title loop-loop-desc">
+      <title id="loop-loop-title">The moat flywheel</title>
+      <desc id="loop-loop-desc">Six stations flow clockwise from Lend through Record, Sharpen, Approve, Fund and Repeat back to Lend. Each station writes state into one central credit-history hub, with Sharpen highlighted as the scoring engine that improves each loop.</desc>
+      <defs>
+        <pattern id="loop-dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="0.9" fill="rgba(45,49,66,0.10)"/></pattern>
+        <marker id="loop-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="loop-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+        <marker id="loop-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/></marker>
+        <marker id="loop-arrow-soft" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#7a8399"/></marker>
+      </defs>
+      <rect width="1040" height="680" fill="#f5f5f5"/>
+      <rect width="1040" height="680" fill="url(#loop-dots)" opacity="0.55"/>
+
+      <!-- Solid clockwise ring -->
+            <path d="M440.00 113.73 A240 240 0 0 1 704.97 187.07" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#loop-arrow)"/>
+      <path d="M705.73 188.00 A240 240 0 0 1 743.72 426.88" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#loop-arrow)"/>
+      <path d="M743.28 428.00 A240 240 0 0 1 601.13 565.87" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#loop-arrow)"/>
+      <path d="M600.00 566.27 A240 240 0 0 1 335.03 492.93" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#loop-arrow)"/>
+      <path d="M334.27 492.00 A240 240 0 0 1 296.28 253.12" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#loop-arrow)"/>
+      <path d="M296.72 252.00 A240 240 0 0 1 438.87 114.13" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#loop-arrow)"/>
+
+      <!-- Dashed write-backs to the hub -->
+            <path d="M520.00 132.00 L520.00 282.00" fill="none" stroke="#7a8399" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#loop-arrow-soft)"/>
+      <path d="M672.42 252.00 L615.26 285.00" fill="none" stroke="#7a8399" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#loop-arrow-soft)"/>
+      <path d="M672.42 428.00 L615.26 395.00" fill="none" stroke="#7a8399" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#loop-arrow-soft)"/>
+      <path d="M520.00 548.00 L520.00 398.00" fill="none" stroke="#7a8399" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#loop-arrow-soft)"/>
+      <path d="M367.58 428.00 L424.74 395.00" fill="none" stroke="#7a8399" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#loop-arrow-soft)"/>
+      <path d="M367.58 252.00 L424.74 285.00" fill="none" stroke="#7a8399" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#loop-arrow-soft)"/>
+
+      <!-- Curated spoke labels -->
+      <rect x="532" y="472" width="56" height="16" rx="4" fill="#f5f5f5"/>
+      <text x="560" y="484" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">SIGNALS</text>
+      <rect x="420" y="470" width="60" height="16" rx="4" fill="#f5f5f5"/>
+      <text x="450" y="482" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">OUTCOMES</text>
+
+      <rect x="440" y="68" width="160" height="64" rx="6" fill="#f5f5f5" stroke="#2d3142" stroke-width="1"/>
+      <text x="520.0" y="104.0" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Lend</text>
+      <text x="520.0" y="124.0" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">more loans, safely</text>
+      <rect x="648" y="188" width="160" height="64" rx="6" fill="#f5f5f5" stroke="#2d3142" stroke-width="1"/>
+      <text x="728.0" y="224.0" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Record</text>
+      <text x="728.0" y="244.0" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">repayment history</text>
+      <rect x="648" y="428" width="160" height="64" rx="6" fill="#f9e4d5" stroke="#eb6c36" stroke-width="1.2"/>
+      <text x="728.0" y="464.0" fill="#eb6c36" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Sharpen</text>
+      <text x="728.0" y="484.0" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">better scores</text>
+      <rect x="440" y="548" width="160" height="64" rx="6" fill="#f5f5f5" stroke="#2d3142" stroke-width="1"/>
+      <text x="520.0" y="584.0" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Approve</text>
+      <text x="520.0" y="604.0" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">more thin-file yes</text>
+      <rect x="232" y="428" width="160" height="64" rx="6" fill="#f5f5f5" stroke="#2d3142" stroke-width="1"/>
+      <text x="312.0" y="464.0" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Fund</text>
+      <text x="312.0" y="484.0" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">more disbursements</text>
+      <rect x="232" y="188" width="160" height="64" rx="6" fill="#f5f5f5" stroke="#2d3142" stroke-width="1"/>
+      <text x="312.0" y="224.0" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Repeat</text>
+      <text x="312.0" y="244.0" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">the flywheel spins</text>
+      <!-- The one shared-state hub: the credit-history moat. -->
+      <rect x="420" y="288" width="200" height="104" rx="8" fill="#2d3142"/>
+      <text x="520" y="334" fill="#f5f5f5" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Credit History</text>
+      <text x="520" y="358" fill="#f5f5f5" opacity="0.72" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">one shared record</text>
+    </svg>
+    </section>
+
+    <section class="diagram">
+      <div class="meta"><span class="num">05</span><h2>The borrower journey, one API call at a time</h2></div>
+      <p class="explain">Time flows top to bottom. The borrower applies, the lender requests a decision, the platform consents and pulls open-finance data, computes a deterministic score, and the AI explains the call back to the lender (the coral response). An approved loan is originated and disbursed over eKash, and repayment returns to sharpen the next score.</p>
+      <svg viewBox="0 0 1280 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="sequence-seq-title sequence-seq-desc">
+      <title id="sequence-seq-title">The borrower journey, one API call at a time</title>
+      <desc id="sequence-seq-desc">Sequence diagram of the borrower journey. Borrower applies via the lender app; lender requests a decision; the platform consents and pulls open-finance data, computes a deterministic score, and the AI explains it back to the lender; an approved loan is disbursed over eKash and repayment feeds the credit history.</desc>
+      <defs>
+        <pattern id="sequence-dots" width="22" height="22" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="0.9" fill="rgba(45,49,66,0.10)"/>
+        </pattern>
+        <marker id="sequence-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="sequence-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+        <marker id="sequence-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+      <rect width="100%" height="100%" fill="url(#sequence-dots)" opacity="0.55"/>
+
+      <!-- Lifelines (x: Borrower 150, Lender 420, Platform 660, Open Finance 920, eKash 1130) -->
+      <line x1="150" y1="128" x2="150" y2="660" stroke="rgba(45,49,66,0.22)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="420" y1="128" x2="420" y2="660" stroke="rgba(45,49,66,0.22)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="660" y1="128" x2="660" y2="660" stroke="rgba(45,49,66,0.22)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="920" y1="128" x2="920" y2="660" stroke="rgba(45,49,66,0.22)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="1130" y1="128" x2="1130" y2="660" stroke="rgba(45,49,66,0.22)" stroke-width="1" stroke-dasharray="3,3"/>
+
+      <!-- Activation bars -->
+      <!-- Lender activation -->
+      <rect x="416" y="180" width="8" height="112" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <!-- Platform activation (long) -->
+      <rect x="656" y="236" width="8" height="232" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <!-- Open Finance activation -->
+      <rect x="916" y="300" width="8" height="44" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+
+      <!-- Messages (drawn before labels) -->
+      <!-- M1: Borrower → Lender (apply) -->
+      <line x1="150" y1="176" x2="416" y2="176" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#sequence-arrow-link)"/>
+      <!-- M2: Lender → Platform (request decision) -->
+      <line x1="420" y1="232" x2="656" y2="232" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#sequence-arrow)"/>
+      <!-- M3: Platform → Open Finance (consent + pull) -->
+      <line x1="660" y1="292" x2="916" y2="292" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#sequence-arrow)"/>
+      <!-- M4: Open Finance → Platform (data + signals) -->
+      <line x1="920" y1="336" x2="664" y2="336" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#sequence-arrow)"/>
+      <!-- M5: Platform self (score) -->
+      <path d="M 668 380 L 704 380 L 704 412 L 668 412" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#sequence-arrow)"/>
+      <!-- M6: Platform → Lender (AI explains the decision · coral success) -->
+      <line x1="656" y1="464" x2="420" y2="464" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#sequence-arrow-accent)"/>
+      <!-- M7: Lender → Platform (approve + originate) -->
+      <line x1="420" y1="500" x2="656" y2="500" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#sequence-arrow)"/>
+      <!-- M8: Platform → eKash (disburse) -->
+      <line x1="660" y1="552" x2="1126" y2="552" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#sequence-arrow)"/>
+      <!-- M9: eKash → Borrower (money in) -->
+      <line x1="1130" y1="596" x2="154" y2="596" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#sequence-arrow)"/>
+      <!-- M10: Borrower → Platform (repay · async) -->
+      <line x1="150" y1="640" x2="656" y2="640" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#sequence-arrow)"/>
+
+      <!-- Labels (masked) -->
+      <rect x="224" y="160" width="120" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="284" y="170" fill="#2e5aa8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">APPLY FOR LOAN</text>
+
+      <rect x="484" y="216" width="124" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="546" y="226" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">POST /V1/DECISIONS</text>
+
+      <rect x="716" y="276" width="120" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="776" y="286" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">CONSENT + PULL</text>
+
+      <rect x="700" y="320" width="128" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="764" y="330" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">CASH-FLOW SIGNALS</text>
+
+      <rect x="712" y="388" width="60" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="742" y="398" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">SCORE</text>
+
+      <rect x="456" y="448" width="124" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="518" y="458" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">EXPLAIN · APPROVE</text>
+
+      <rect x="484" y="484" width="120" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="544" y="494" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">ORIGINATE LOAN</text>
+
+      <rect x="756" y="536" width="120" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="816" y="546" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DISBURSE /EKASH</text>
+
+      <rect x="600" y="580" width="120" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="660" y="590" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MONEY IN · WALLET</text>
+
+      <rect x="352" y="624" width="104" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="404" y="634" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">REPAY · ASYNC</text>
+
+      <!-- Actor boxes -->
+      <!-- Borrower (external) -->
+      <rect x="78" y="72" width="144" height="56" rx="6" fill="#f5f5f5"/>
+      <rect x="78" y="72" width="144" height="56" rx="6" fill="rgba(79,93,117,0.10)" stroke="#7a8399" stroke-width="1"/>
+      <rect x="86" y="80" width="28" height="12" rx="2" fill="transparent" stroke="rgba(122,131,153,0.40)" stroke-width="0.8"/>
+      <text x="100" y="89" fill="#7a8399" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">EXT</text>
+      <text x="150" y="104" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Borrower</text>
+      <text x="150" y="119" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">thin-file MSME</text>
+
+      <!-- Lender App (cloud) -->
+      <rect x="348" y="72" width="144" height="56" rx="6" fill="#f5f5f5"/>
+      <rect x="348" y="72" width="144" height="56" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <rect x="356" y="80" width="32" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.22)" stroke-width="0.8"/>
+      <text x="372" y="89" fill="#7a8399" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">API</text>
+      <text x="420" y="104" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Lender App</text>
+      <text x="420" y="119" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">the API customer</text>
+
+      <!-- EmbeddedLend (focal coral) -->
+      <rect x="580" y="72" width="160" height="56" rx="6" fill="#f5f5f5"/>
+      <rect x="580" y="72" width="160" height="56" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <rect x="588" y="80" width="32" height="12" rx="2" fill="transparent" stroke="rgba(235,108,54,0.50)" stroke-width="0.8"/>
+      <text x="604" y="89" fill="#eb6c36" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">CORE</text>
+      <text x="660" y="104" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">EmbeddedLend</text>
+      <text x="660" y="119" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">consent · score · explain</text>
+
+      <!-- Open Finance (store) -->
+      <rect x="840" y="72" width="160" height="56" rx="6" fill="#f5f5f5"/>
+      <rect x="840" y="72" width="160" height="56" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+      <rect x="848" y="80" width="32" height="12" rx="2" fill="transparent" stroke="rgba(79,93,117,0.50)" stroke-width="0.8"/>
+      <text x="864" y="89" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DATA</text>
+      <text x="920" y="104" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Open Finance</text>
+      <text x="920" y="119" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">MoMo · bank · KYC</text>
+
+      <!-- eKash (rail) -->
+      <rect x="1058" y="72" width="144" height="56" rx="6" fill="#f5f5f5"/>
+      <rect x="1058" y="72" width="144" height="56" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <rect x="1066" y="80" width="32" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.22)" stroke-width="0.8"/>
+      <text x="1082" y="89" fill="#7a8399" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">RAIL</text>
+      <text x="1130" y="104" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">eKash</text>
+      <text x="1130" y="119" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">RWF20 flat</text>
+
+      <!-- Legend -->
+      <line x1="78" y1="684" x2="1202" y2="684" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="78" y="700" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND</text>
+
+      <rect x="78" y="720" width="14" height="10" rx="2" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="98" y="728" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Focal actor</text>
+
+      <rect x="210" y="716" width="4" height="18" fill="rgba(45,49,66,0.06)" stroke="#4f5d75" stroke-width="0.8"/>
+      <text x="222" y="728" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Activation</text>
+
+      <line x1="330" y1="726" x2="358" y2="726" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#sequence-arrow-link)"/>
+      <text x="366" y="728" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">HTTP request</text>
+
+      <line x1="498" y1="726" x2="526" y2="726" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#sequence-arrow)"/>
+      <text x="534" y="728" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Return / async</text>
+
+      <line x1="674" y1="726" x2="702" y2="726" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#sequence-arrow-accent)"/>
+      <text x="710" y="728" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Primary response</text>
+    </svg>
+    </section>
+
+    <section class="diagram">
+      <div class="meta"><span class="num">06</span><h2>Data integration topology</h2></div>
+      <p class="explain">What plugs in, what plugs out, and over what wire. Consented sources — BNR Open Finance, mobile money, banks, and a credit bureau — feed a consent gateway and the underwriting core, and the credit-history store (the moat) accumulates. NDFSPs, MFI/SACCOs, and vertical SaaS platforms consume. eKash runs layer-wide for money movement.</p>
+      <svg viewBox="0 0 1200 664" xmlns="http://www.w3.org/2000/svg" aria-label="Sources connect to the EmbeddedLend core and three consumer surfaces, with eKash as a layer-wide money rail" role="img" aria-labelledby="dp-integration-dpi-title dp-integration-dpi-desc">
+      <title id="dp-integration-dpi-title">EmbeddedLend data integration topology</title>
+      <desc id="dp-integration-dpi-desc">Integration topology showing open finance, mobile money, banks, and a credit bureau feeding a consent gateway, an underwriting core, and a credit-history store, consumed by an NDFSP, an MFI or SACCO, and a vertical SaaS platform, with eKash as a layer-wide service.</desc>
+      <defs>
+        <pattern id="dp-integration-dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="0.9" fill="rgba(45,49,66,0.10)"/></pattern>
+        <marker id="dp-integration-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#4f5d75"/></marker>
+        <marker id="dp-integration-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#eb6c36"/></marker>
+        <marker id="dp-integration-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#2e5aa8"/></marker>
+        <marker id="dp-integration-arrow-sm" markerWidth="6" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,6 2.5,0 5" fill="#4f5d75"/></marker>
+        <marker id="dp-integration-arrow-dim" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#7a8399"/></marker>
+        <g id="dp-integration-ico-db" fill="none" stroke="currentColor" stroke-width="1.2"><ellipse cx="0" cy="-5" rx="7" ry="3"/><path d="M-7-5V5c0 2 14 2 14 0V-5M-7 0c0 2 14 2 14 0"/></g>
+        <g id="dp-integration-ico-momo" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="-7" y="-6" width="14" height="12" rx="3"/><path d="M-3-1h2M-3 1h2"/></g>
+        <g id="dp-integration-ico-bank" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M-8 4h16M-6 4V-2M-2 4V-2M2 4V-2M6 4V-2M-6-2h12"/></g>
+        <g id="dp-integration-ico-bureau" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="0" cy="-3" r="4"/><path d="M-4 1 0 8 4 1M-7 8h14"/></g>
+        <g id="dp-integration-ico-globe" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="0" cy="0" r="7"/><path d="M-7 0h14M0-7c2 2 2 12 0 14M0-7c-2 2-2 12 0 14"/></g>
+        <g id="dp-integration-ico-chart" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M-8 8H8M-6 6V0H-2V6M0 6V-7H4V6M6 6V-3H9"/></g>
+        <g id="dp-integration-ico-api" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M-3-8c-3 0-3 2-3 4v2c0 2-1 2-3 2 2 0 3 0 3 2v2c0 2 0 4 3 4M3-8c3 0 3 2 3 4v2c0 2 1 2 3 2-2 0-3 0-3 2v2c0 2 0 4-3 4"/></g>
+        <g id="dp-integration-ico-rail" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M-8-3h16M-8 3h16M-4-3v6M4-3v6"/></g>
+      </defs>
+      <rect width="1200" height="664" fill="#f5f5f5"/><rect width="1200" height="664" fill="url(#dp-integration-dots)" opacity=".55"/>
+      <rect fill="rgba(45,49,66,0.025)" stroke="rgba(45,49,66,0.32)" stroke-width="1" x="260" y="72" width="696" height="336" rx="8" stroke-width="1"/>
+      <!-- Connectors before nodes -->
+      <line fill="none" stroke="#eb6c36" stroke-width="1.4" x1="200" y1="124" x2="400" y2="124" marker-end="url(#dp-integration-arrow-accent)"/>
+      <line fill="none" stroke="#eb6c36" stroke-width="1.4" x1="200" y1="212" x2="400" y2="212" marker-end="url(#dp-integration-arrow-accent)"/>
+      <line fill="none" stroke="#eb6c36" stroke-width="1.4" x1="200" y1="300" x2="400" y2="300" marker-end="url(#dp-integration-arrow-accent)"/>
+      <path fill="none" stroke="#eb6c36" stroke-width="1.4" d="M200 388 H360 Q368 388 368 380 V340 Q368 332 376 332 H400" marker-end="url(#dp-integration-arrow-accent)"/>
+      <line fill="none" stroke="#eb6c36" stroke-width="1.4" x1="560" y1="212" x2="656" y2="212" marker-end="url(#dp-integration-arrow-accent)"/>
+      <line fill="none" stroke="#eb6c36" stroke-width="1.4" x1="816" y1="124" x2="1000" y2="124" marker-end="url(#dp-integration-arrow-accent)"/>
+      <line fill="none" stroke="#eb6c36" stroke-width="1.4" x1="816" y1="212" x2="1000" y2="212" marker-end="url(#dp-integration-arrow-accent)"/>
+      <line fill="none" stroke="#eb6c36" stroke-width="1.4" x1="816" y1="300" x2="1000" y2="300" marker-end="url(#dp-integration-arrow-accent)"/>
+      <line fill="none" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" x1="608" y1="160" x2="608" y2="176" marker-end="url(#dp-integration-arrow)"/>
+      <line fill="none" stroke="#eb6c36" stroke-width="1.2" stroke-dasharray="5,4" x1="608" y1="460" x2="608" y2="408" marker-end="url(#dp-integration-arrow-accent)"/>
+      <!-- Protocol labels -->
+      <g text-anchor="middle">
+        <rect fill="#f5f5f5" x="244" y="104" width="60" height="12" rx="2"/><text fill="#eb6c36" font-size="8" font-family="'Geist Mono',monospace" letter-spacing="0.06em" x="274" y="113">CONSENT</text>
+        <rect fill="#f5f5f5" x="244" y="192" width="56" height="12" rx="2"/><text fill="#eb6c36" font-size="8" font-family="'Geist Mono',monospace" letter-spacing="0.06em" x="272" y="201">CASH-FLOW</text>
+        <rect fill="#f5f5f5" x="244" y="280" width="48" height="12" rx="2"/><text fill="#eb6c36" font-size="8" font-family="'Geist Mono',monospace" letter-spacing="0.06em" x="268" y="289">KYC</text>
+        <rect fill="#f5f5f5" x="248" y="360" width="64" height="12" rx="2"/><text fill="#eb6c36" font-size="8" font-family="'Geist Mono',monospace" letter-spacing="0.06em" x="280" y="369">BUREAU</text>
+        <rect fill="#f5f5f5" x="584" y="192" width="52" height="12" rx="2"/><text fill="#eb6c36" font-size="8" font-family="'Geist Mono',monospace" letter-spacing="0.06em" x="610" y="201">DECISION</text>
+        <rect fill="#f5f5f5" x="856" y="104" width="48" height="12" rx="2"/><text fill="#4f5d75" font-size="8" font-family="'Geist Mono',monospace" letter-spacing="0.06em" x="880" y="113">SCORE</text>
+        <rect fill="#f5f5f5" x="856" y="192" width="56" height="12" rx="2"/><text fill="#4f5d75" font-size="8" font-family="'Geist Mono',monospace" letter-spacing="0.06em" x="884" y="201">ORIGINATE</text>
+        <rect fill="#f5f5f5" x="856" y="280" width="56" height="12" rx="2"/><text fill="#4f5d75" font-size="8" font-family="'Geist Mono',monospace" letter-spacing="0.06em" x="884" y="289">EMBED</text>
+      </g>
+      <g><rect fill="#f5f5f5" x="560" y="420" width="36" height="12" rx="2"/><text fill="#eb6c36" font-size="8" font-family="'Geist Mono',monospace" letter-spacing="0.06em" x="578" y="429" text-anchor="middle">EKASH</text></g>
+      <!-- Zone label -->
+      <rect fill="#f5f5f5" x="520" y="68" width="176" height="16" rx="2"/><text fill="#7a8399" font-size="8" font-family="'Geist Mono',monospace" letter-spacing="0.18em" x="608" y="79" text-anchor="middle">EMBEDDEDLEND CORE</text>
+      <!-- Sources -->
+      <g text-anchor="middle">
+        <g><rect fill="#f5f5f5" x="40" y="92" width="160" height="64" rx="6"/><rect fill="rgba(79,93,117,0.06)" stroke="#7a8399" stroke-width="1" x="40" y="92" width="160" height="64" rx="6"/><use href="#ico-db" transform="translate(64 124)" style="color:#4f5d75"/><text fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" x="120" y="120">BNR Open Finance</text><text fill="#4f5d75" font-size="9" font-family="'Geist Mono',monospace" x="120" y="140">data-sharing rail</text></g>
+        <g><rect fill="#f5f5f5" x="40" y="180" width="160" height="64" rx="6"/><rect fill="rgba(79,93,117,0.06)" stroke="#7a8399" stroke-width="1" x="40" y="180" width="160" height="64" rx="6"/><use href="#ico-momo" transform="translate(64 212)" style="color:#4f5d75"/><text fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" x="120" y="208">MTN MoMo · Airtel</text><text fill="#4f5d75" font-size="9" font-family="'Geist Mono',monospace" x="120" y="228">mobile money history</text></g>
+        <g><rect fill="#f5f5f5" x="40" y="268" width="160" height="64" rx="6"/><rect fill="rgba(79,93,117,0.06)" stroke="#7a8399" stroke-width="1" x="40" y="268" width="160" height="64" rx="6"/><use href="#ico-bank" transform="translate(64 300)" style="color:#4f5d75"/><text fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" x="120" y="296">Commercial banks</text><text fill="#4f5d75" font-size="9" font-family="'Geist Mono',monospace" x="120" y="316">statements · KYB</text></g>
+        <g><rect fill="#f5f5f5" x="40" y="356" width="160" height="64" rx="6"/><rect fill="rgba(79,93,117,0.06)" stroke="#7a8399" stroke-width="1" x="40" y="356" width="160" height="64" rx="6"/><use href="#ico-bureau" transform="translate(64 388)" style="color:#4f5d75"/><text fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" x="120" y="384">Credit bureau</text><text fill="#4f5d75" font-size="9" font-family="'Geist Mono',monospace" x="120" y="404">credit reference</text></g>
+      </g>
+      <!-- Core -->
+      <g text-anchor="middle">
+        <rect fill="#f5f5f5" x="276" y="116" width="664" height="44" rx="6"/><rect fill="rgba(45,49,66,0.05)" stroke="rgba(45,49,66,0.32)" stroke-width="1" x="276" y="116" width="664" height="44" rx="6"/><rect fill="transparent" stroke="#7a8399" stroke-width="0.8" stroke-opacity="0.5" x="288" y="128" width="32" height="12" rx="2"/><text fill="#7a8399" font-size="7" font-family="'Geist Mono',monospace" letter-spacing="0.08em" x="304" y="137">GATE</text><text fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" x="608" y="136">Consent Gateway</text><text fill="#4f5d75" font-size="9" font-family="'Geist Mono',monospace" x="608" y="151">consent-first · audit</text>
+        <rect fill="#f5f5f5" x="400" y="176" width="160" height="72" rx="6"/><rect fill="#f9e4d5" stroke="#eb6c36" stroke-width="1" x="400" y="176" width="160" height="72" rx="6"/><rect fill="transparent" stroke="#eb6c36" stroke-width="0.8" x="408" y="184" width="44" height="12" rx="2"/><text fill="#eb6c36" font-size="7" font-family="'Geist Mono',monospace" letter-spacing="0.08em" x="430" y="193">SCORE</text><text fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" x="480" y="214">Underwriting core</text><text fill="#4f5d75" font-size="9" font-family="'Geist Mono',monospace" x="480" y="232">deterministic · explainable</text>
+        <rect fill="#f5f5f5" x="656" y="176" width="160" height="72" rx="6"/><rect fill="#f9e4d5" stroke="#eb6c36" stroke-width="1" x="656" y="176" width="160" height="72" rx="6"/><rect fill="transparent" stroke="#eb6c36" stroke-width="0.8" x="664" y="184" width="32" height="12" rx="2"/><text fill="#eb6c36" font-size="7" font-family="'Geist Mono',monospace" letter-spacing="0.08em" x="680" y="193">HIST</text><text fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" x="736" y="214">Credit-history store</text><text fill="#4f5d75" font-size="9" font-family="'Geist Mono',monospace" x="736" y="232">the moat · repayment record</text></g>
+      <!-- Consumers -->
+      <g text-anchor="middle">
+        <g><rect fill="#f5f5f5" x="1000" y="92" width="160" height="64" rx="6"/><rect fill="rgba(79,93,117,0.06)" stroke="#7a8399" stroke-width="1" x="1000" y="92" width="160" height="64" rx="6"/><use href="#ico-globe" transform="translate(1024 124)" style="color:#4f5d75"/><text fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" x="1080" y="120">NDFSP</text><text fill="#4f5d75" font-size="9" font-family="'Geist Mono',monospace" x="1080" y="140">digital lender</text></g>
+        <g><rect fill="#f5f5f5" x="1000" y="180" width="160" height="64" rx="6"/><rect fill="rgba(79,93,117,0.06)" stroke="#7a8399" stroke-width="1" x="1000" y="180" width="160" height="64" rx="6"/><use href="#ico-chart" transform="translate(1024 212)" style="color:#4f5d75"/><text fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" x="1080" y="208">MFI / SACCO</text><text fill="#4f5d75" font-size="9" font-family="'Geist Mono',monospace" x="1080" y="228">scoring + decision</text></g>
+        <g><rect fill="#f5f5f5" x="1000" y="268" width="160" height="64" rx="6"/><rect fill="rgba(79,93,117,0.06)" stroke="#7a8399" stroke-width="1" x="1000" y="268" width="160" height="64" rx="6"/><use href="#ico-api" transform="translate(1024 300)" style="color:#4f5d75"/><text fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" x="1080" y="296">Vertical SaaS</text><text fill="#4f5d75" font-size="9" font-family="'Geist Mono',monospace" x="1080" y="316">embedded credit</text></g>
+      </g>
+      <!-- Layer-wide footer: eKash -->
+      <g><rect fill="#f5f5f5" x="40" y="460" width="1120" height="56" rx="6"/><rect fill="rgba(45,49,66,0.05)" stroke="rgba(45,49,66,0.32)" stroke-width="1" x="40" y="460" width="1120" height="56" rx="6"/><use href="#ico-rail" transform="translate(72 488)" style="color:#4f5d75"/><text fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist',sans-serif" x="96" y="486">eKash — national money rail</text><text fill="#4f5d75" font-size="9" font-family="'Geist Mono',monospace" x="96" y="502">disbursement · repayment · one integration · RWF20 flat</text></g>
+      <!-- Legend -->
+      <line x1="40" y1="608" x2="1160" y2="608" stroke="rgba(45,49,66,0.12)" stroke-width=".8"/><text fill="#4f5d75" font-size="8" font-family="'Geist Mono',monospace" letter-spacing="0.14em" x="40" y="628">TYPE KEY</text><rect x="128" y="620" width="16" height="12" rx="2" fill="rgba(79,93,117,.06)" stroke="#7a8399"/><text fill="#4f5d75" font-size="8" font-family="'Geist',sans-serif" x="152" y="630">Source / consumer</text><rect x="296" y="620" width="16" height="12" rx="2" fill="#f9e4d5" stroke="#eb6c36"/><text fill="#4f5d75" font-size="8" font-family="'Geist',sans-serif" x="320" y="630">Focal platform surface</text><rect x="492" y="620" width="16" height="12" rx="2" fill="rgba(45,49,66,.05)" stroke="rgba(45,49,66,.32)"/><text fill="#4f5d75" font-size="8" font-family="'Geist',sans-serif" x="516" y="630">Consent gateway</text><line x1="640" y1="626" x2="672" y2="626" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#dp-integration-arrow-accent)"/><text fill="#4f5d75" font-size="8" font-family="'Geist',sans-serif" x="684" y="630">Primary data path</text><line x1="824" y1="626" x2="856" y2="626" stroke="#eb6c36" stroke-dasharray="5 4" marker-end="url(#dp-integration-arrow-accent)"/><text fill="#4f5d75" font-size="8" font-family="'Geist',sans-serif" x="868" y="630">Layer-wide money rail</text>
+    </svg>
+    </section>
+
+    <section class="diagram">
+      <div class="meta"><span class="num">07</span><h2>Why now — the window is open</h2></div>
+      <p class="explain">The rails arrive on a schedule. eKash went fully live in July 2026. BNR's Open Finance roadmap runs voluntary now, mandatory in 2026–28, then a central platform in 2029/30 that BNR says it will partner to build. Whoever occupies the underwriting layer in the voluntary phase inherits the standard — the MVP window is open today.</p>
+      <svg viewBox="0 0 1000 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="timeline-tl-title timeline-tl-desc">
+      <title id="timeline-tl-title">Why now — the window is open</title>
+      <desc id="timeline-tl-desc">Timeline from 2024 to 2030 showing eKash going live in July 2026, BNR Open Finance moving from voluntary phase to mandatory sharing to a central platform, MoFaya launching, and the EmbeddedLend MVP window in the voluntary phase.</desc>
+      <defs>
+        <pattern id="timeline-dots" width="22" height="22" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="0.9" fill="rgba(45,49,66,0.10)"/>
+        </pattern>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+      <rect width="100%" height="100%" fill="url(#timeline-dots)" opacity="0.55"/>
+
+      <!-- Year markers (background) -->
+      <text x="60" y="350" fill="rgba(45,49,66,0.06)" font-size="72" font-weight="600" font-family="'Geist Mono', monospace">2024</text>
+      <text x="500" y="350" fill="rgba(45,49,66,0.06)" font-size="72" font-weight="600" font-family="'Geist Mono', monospace">2027</text>
+      <text x="800" y="350" fill="rgba(45,49,66,0.06)" font-size="72" font-weight="600" font-family="'Geist Mono', monospace">2030</text>
+
+      <!-- Baseline: 2024 (x=80) → 2030 (x=920). 6 years over 840px → 140px/yr. -->
+      <line x1="80" y1="240" x2="920" y2="240" stroke="rgba(79,93,117,0.45)" stroke-width="1"/>
+
+      <!-- Year boundary ticks -->
+      <line x1="220" y1="232" x2="220" y2="248" stroke="rgba(45,49,66,0.20)" stroke-width="1"/>
+      <text x="220" y="260" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">JAN '25</text>
+      <line x1="360" y1="232" x2="360" y2="248" stroke="rgba(45,49,66,0.20)" stroke-width="1"/>
+      <text x="360" y="260" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">JAN '26</text>
+      <line x1="500" y1="232" x2="500" y2="248" stroke="rgba(45,49,66,0.20)" stroke-width="1"/>
+      <text x="500" y="260" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">JAN '27</text>
+      <line x1="640" y1="232" x2="640" y2="248" stroke="rgba(45,49,66,0.20)" stroke-width="1"/>
+      <text x="640" y="260" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">JAN '28</text>
+      <line x1="780" y1="232" x2="780" y2="248" stroke="rgba(45,49,66,0.20)" stroke-width="1"/>
+      <text x="780" y="260" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">JAN '29</text>
+
+      <!-- Start / end caps -->
+      <line x1="80" y1="232" x2="80" y2="248" stroke="rgba(45,49,66,0.20)" stroke-width="1"/>
+      <line x1="920" y1="232" x2="920" y2="248" stroke="rgba(45,49,66,0.20)" stroke-width="1"/>
+      <text x="80" y="274" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">2024</text>
+      <text x="920" y="274" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">2030</text>
+
+      <!-- Event 1: 2024 · Open Finance Phase 1 begins (below) -->
+      <line x1="150" y1="240" x2="150" y2="296" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <circle cx="150" cy="240" r="4" fill="#2d3142"/>
+      <text x="150" y="312" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">2024 · PHASE 1</text>
+      <text x="150" y="328" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Open Finance roadmap</text>
+      <text x="150" y="344" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">voluntary data sharing</text>
+
+      <!-- Event 2: Jul 2026 · eKash fully live (above, coral major) -->
+      <line x1="433" y1="156" x2="433" y2="240" stroke="#eb6c36" stroke-width="1"/>
+      <circle cx="433" cy="240" r="6" fill="#eb6c36"/>
+      <text x="433" y="124" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">JUL '26</text>
+      <text x="433" y="144" fill="#2d3142" font-size="14" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">eKash fully live</text>
+      <text x="433" y="160" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">22 institutions · RWF20 flat</text>
+
+      <!-- Event 3: Aug 2026 · MoFaya (below) -->
+      <line x1="480" y1="240" x2="480" y2="296" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <circle cx="480" cy="240" r="4" fill="#2d3142"/>
+      <text x="480" y="312" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">AUG '26</text>
+      <text x="480" y="328" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">MoFaya launches</text>
+      <text x="480" y="344" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">BPR + MTN · up to RWF2m</text>
+
+      <!-- Event 4: 2026–2028 · Open Finance Phase 2 mandatory (above) -->
+      <line x1="640" y1="168" x2="640" y2="240" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <circle cx="640" cy="240" r="4" fill="#2d3142"/>
+      <text x="640" y="136" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">2026–2028 · PHASE 2</text>
+      <text x="640" y="152" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Mandatory sharing</text>
+      <text x="640" y="168" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Tier-1 banks + MMOs · reciprocity</text>
+
+      <!-- Event 5: 2029/30 · Open Finance Phase 4 central platform (below, coral) -->
+      <line x1="860" y1="240" x2="860" y2="296" stroke="#eb6c36" stroke-width="1"/>
+      <circle cx="860" cy="240" r="6" fill="#eb6c36"/>
+      <text x="860" y="312" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">2029/30 · PHASE 4</text>
+      <text x="860" y="328" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Central data platform</text>
+      <text x="860" y="344" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">BNR: private partner sought</text>
+
+      <!-- MVP window band (coral tint under baseline, NOW-ish) -->
+      <rect x="400" y="360" width="120" height="20" rx="4" fill="rgba(235,108,54,0.10)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="460" y="374" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">MVP WINDOW</text>
+
+      <!-- Legend -->
+      <line x1="40" y1="400" x2="960" y2="400" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="40" y="416" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND</text>
+
+      <circle cx="52" cy="432" r="4" fill="#2d3142"/>
+      <text x="68" y="436" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Event</text>
+
+      <circle cx="148" cy="432" r="6" fill="#eb6c36"/>
+      <text x="164" y="436" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Major milestone</text>
+
+      <text x="296" y="436" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif" font-style="italic">Spacing is proportional to real elapsed time.</text>
+    </svg>
+    </section>
+    <footer>EmbeddedLend · 01–07 · individual files remain independently linkable</footer>
+  </div>
+</body>
+</html>
