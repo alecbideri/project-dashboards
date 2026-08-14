@@ -873,9 +873,9 @@
       {
         "stream": "Prototype",
         "status": "In progress",
-        "date": "2026-08-13",
-        "notes": "Interactive underwriting simulation — model-box walkthrough of a loan decision on dummy data (consent → data → score → decision → disburse → repay → AI narration)",
-        "link": "https://project-dashboards-122.netlify.app/#/demo"
+        "date": "2026-08-14",
+        "notes": "Standalone interactive product demo — 3 persona screens (NDFSP workbench, MFI/SACCO scoring, Vertical SaaS widget) on one decision engine, LLM narration",
+        "link": "https://embeddedlend-demo.netlify.app"
       }
     ],
     "totalClaims": 51

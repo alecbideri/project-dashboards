@@ -1,0 +1,66 @@
+name: Deploy demo to Netlify
+
+on:
+  push:
+    branches: [main]
+    paths: ["demo/**"]
+  workflow_dispatch:
+
+concurrency:
+  group: netlify-demo
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: demo/package-lock.json
+
+      - name: Install dependencies
+        working-directory: demo
+        run: npm ci
+
+      - name: Build demo
+        working-directory: demo
+        run: npm run build
+
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
+
+      - name: Create site if NETLIFY_DEMO_SITE_ID not set
+        shell: bash
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: |
+          if [ -z "$NETLIFY_DEMO_SITE_ID" ]; then
+            echo "No site id secret yet, creating a new site."
+            CREATE_OUTPUT=$(netlify sites:create --name embeddedlend-demo --json 2>/dev/null)
+            SITE_ID=$(echo "$CREATE_OUTPUT" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const j=JSON.parse(s);process.stdout.write(j.id)})")
+            echo "SITE_ID=$SITE_ID" >> "$GITHUB_ENV"
+            echo "NETLIFY_DEMO_SITE_ID=$SITE_ID" >> "$GITHUB_ENV"
+            echo "Created site $SITE_ID"
+          else
+            echo "Using existing site $NETLIFY_DEMO_SITE_ID"
+            echo "NETLIFY_DEMO_SITE_ID=$NETLIFY_DEMO_SITE_ID" >> "$GITHUB_ENV"
+          fi
+
+      - name: Persist site id secret for future runs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh secret set NETLIFY_DEMO_SITE_ID --repo "$GITHUB_REPOSITORY" --body "$NETLIFY_DEMO_SITE_ID"
+
+      - name: Deploy to Netlify
+        working-directory: demo
+        run: netlify deploy --prod --dir dist --site "$NETLIFY_DEMO_SITE_ID" --auth "$NETLIFY_AUTH_TOKEN"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}

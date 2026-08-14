@@ -5,3 +5,6 @@ Thumbs.db
 # Node (if any tooling lands later)
 node_modules/
 .env
+
+# Local verification artifacts
+shots/

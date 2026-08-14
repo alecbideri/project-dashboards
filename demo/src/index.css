@@ -1,0 +1,55 @@
+@import "tailwindcss";
+@import "@fontsource-variable/geist";
+
+/* Design tokens - light product-proof, scoped to the demo */
+:root {
+  /* one cool signal color, locked across the page */
+  --signal: #2563eb;
+  --signal-soft: #eef4ff;
+  --signal-border: #c9dcff;
+
+  /* neutrals */
+  --ink: #0b1220;
+  --body: #2f3a4d;
+  --muted: #5b6572;
+  --paper: #f8fafc;
+  --panel: #ffffff;
+  --hairline: #e4e8ee;
+
+  /* radius scale (documented rule: cards 16, buttons 12, inputs 8, pills 999) */
+  --r-card: 16px;
+  --r-btn: 12px;
+  --r-input: 8px;
+  --r-pill: 999px;
+
+  --font-sans: "Geist Variable", system-ui, sans-serif;
+}
+
+@theme inline {
+  --color-signal: var(--signal);
+  --color-signal-soft: var(--signal-soft);
+  --color-ink: var(--ink);
+  --color-body: var(--body);
+  --color-muted: var(--muted);
+  --color-paper: var(--paper);
+  --color-panel: var(--panel);
+  --color-hairline: var(--hairline);
+  --font-sans: "Geist Variable", system-ui, sans-serif;
+}
+
+html,
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -43,7 +43,6 @@ import {
 } from "@/lib/data"
 import { Markdown } from "@/lib/markdown"
 import { cn } from "@/lib/utils"
-import DemoApp from "@/demo/DemoApp"
 
 function StatusBadge({ status }: { status: string }) {
   const variant =
@@ -231,7 +230,7 @@ function MasterGrid({
         onRowClick={(row: TreeRow) => {
           if (row.kind === "project") return
           if (row.kind === "stream") {
-            if (row.link && row.link.includes("project-dashboards-122.netlify.app")) {
+            if (row.link && row.link.includes("netlify.app")) {
               window.open(row.link, "_blank", "noopener")
             } else {
               onSelect(projects.find((p) => p.name === row.projectName)!)
@@ -527,14 +526,7 @@ export default function App() {
   const [projects, setProjects] = useState<Project[] | null>(null)
   const [selected, setSelected] = useState<Project | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [hash, setHash] = useState(window.location.hash)
   const { theme, toggle } = useTheme()
-
-  useEffect(() => {
-    const onHash = () => setHash(window.location.hash)
-    window.addEventListener("hashchange", onHash)
-    return () => window.removeEventListener("hashchange", onHash)
-  }, [])
 
   const load = useCallback(async () => {
     try {
@@ -547,8 +539,6 @@ export default function App() {
   useEffect(() => {
     load()
   }, [load])
-
-  if (hash === "#/demo") return <DemoApp />
 
   if (error)
     return (
