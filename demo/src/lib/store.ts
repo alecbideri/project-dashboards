@@ -189,3 +189,87 @@ export function selectMember(state: MfiState, id: string | null) {
   const borrower = borrowerOf(member.borrowerId)
   return borrower ? { member, borrower } : null
 }
+
+// ---- Vertical SaaS embedded widget ----
+// The merchant never leaves the SaaS product. The widget walks a merchant
+// through: request -> consent -> score -> accept (disburse over eKash) or
+// decline. This is the borrower-facing surface; the lender's brain is behind it.
+
+export type SaasStatus = "new" | "consent" | "scored" | "accepted" | "declined"
+
+export interface SaasMerchant {
+  borrowerId: string
+  status: SaasStatus
+  decision?: Decision
+  terms: SuggestedTerms
+}
+
+export interface SaasState {
+  merchants: SaasMerchant[]
+  selectedId: string | null
+}
+
+export type SaasAction =
+  | { type: "SAAS_OPEN"; id: string }
+  | { type: "SAAS_CONSENT"; id: string }
+  | { type: "SAAS_SCORE"; id: string }
+  | { type: "SAAS_ACCEPT"; id: string }
+  | { type: "SAAS_DECLINE"; id: string }
+
+export const emptySaasState: SaasState = {
+  merchants: borrowers.map((b) => ({
+    borrowerId: b.id,
+    status: "new",
+    terms: b.suggested,
+  })),
+  selectedId: borrowers[0]?.id ?? null,
+}
+
+export function saasReducer(state: SaasState, action: SaasAction): SaasState {
+  switch (action.type) {
+    case "SAAS_OPEN":
+      return { ...state, selectedId: action.id }
+    case "SAAS_CONSENT":
+      return {
+        ...state,
+        merchants: state.merchants.map((m) =>
+          m.borrowerId === action.id ? { ...m, status: "consent" as const } : m,
+        ),
+      }
+    case "SAAS_SCORE":
+      return {
+        ...state,
+        merchants: state.merchants.map((m) =>
+          m.borrowerId === action.id ? { ...m, status: "scored" as const } : m,
+        ),
+      }
+    case "SAAS_ACCEPT":
+      return {
+        ...state,
+        merchants: state.merchants.map((m) =>
+          m.borrowerId === action.id
+            ? { ...m, status: "accepted" as const, decision: "Approve" as const }
+            : m,
+        ),
+      }
+    case "SAAS_DECLINE":
+      return {
+        ...state,
+        merchants: state.merchants.map((m) =>
+          m.borrowerId === action.id
+            ? { ...m, status: "declined" as const, decision: "Decline" as const }
+            : m,
+        ),
+      }
+    default:
+      return state
+  }
+}
+
+export function selectMerchant(state: SaasState, id: string | null) {
+  if (!id) return null
+  const merchant = state.merchants.find((m) => m.borrowerId === id)
+  if (!merchant) return null
+  const borrower = borrowerOf(merchant.borrowerId)
+  return borrower ? { merchant, borrower } : null
+}

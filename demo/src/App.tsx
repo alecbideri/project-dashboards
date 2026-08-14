@@ -192,7 +192,9 @@ export default function App() {
           {activeView.intro}{" "}
           {view === "mfi"
             ? "Members are the SACCO's own; EmbeddedLend only adds the score."
-            : "Requests arrive live. Open one, review the cash-flow evidence, adjust the offer, and decide."}
+            : view === "saas"
+              ? "The widget runs inside the merchant app; the borrower never leaves it."
+              : "Requests arrive live. Open one, review the cash-flow evidence, adjust the offer, and decide."}
         </p>
       </header>
 
@@ -220,15 +222,17 @@ export default function App() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-12">
-        {view !== "mfi" && (
+        {view !== "mfi" && view !== "saas" && (
           <aside className="lg:col-span-3">
             <QueueRail requests={state.requests} selectedId={state.selectedId} now={now} onOpen={(id) => dispatch({ type: "OPEN", id })} />
           </aside>
         )}
 
-        <main className={view === "mfi" ? "lg:col-span-12" : "lg:col-span-9"}>
+        <main className={view === "mfi" || view === "saas" ? "lg:col-span-12" : "lg:col-span-9"}>
           {view === "mfi" ? (
             <MFISACCO />
+          ) : view === "saas" ? (
+            <VerticalSaaS />
           ) : !selectedBorrower ? (
             <div className="rounded-2xl border p-10 text-center" style={{ borderColor: "var(--hairline)", background: "var(--panel)" }}>
               <p className="text-sm" style={{ color: "var(--muted)" }}>
@@ -253,8 +257,6 @@ export default function App() {
                   }}
                 />
               )}
-              {view === "saas" && <VerticalSaaS borrower={selectedBorrower} terms={terms} decision={decision} />}
-
               <div className="mt-6 rounded-2xl border p-5" style={{ borderColor: "var(--hairline)", background: "var(--panel)" }}>
                 <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--ink)" }}>
                   <span className="mt-0.5 inline-block size-2 rounded-full" style={{ background: "var(--signal)" }} />

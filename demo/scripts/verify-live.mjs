@@ -40,6 +40,19 @@ await page.getByRole("button", { name: "Decline", exact: true }).click()
 await page.getByText(/Decline reason:/, { exact: false }).first().waitFor({ timeout: 4000 })
 await page.getByText("Notice to borrower", { exact: true }).waitFor({ timeout: 4000 })
 
+// Vertical SaaS embedded widget: consent -> score -> accept -> disbursed
+await page.getByRole("button", { name: /Vertical SaaS/ }).click()
+await page.getByText("Kayko Retail", { exact: false }).first().waitFor({ timeout: 4000 })
+await page.getByText("The offer", { exact: true }).waitFor({ timeout: 4000 })
+const saasConsent = page.getByRole("button", { name: /consent/i })
+await saasConsent.waitFor({ timeout: 4000 })
+await saasConsent.click()
+await page.getByText(/Reading the ledger/, { exact: false }).waitFor({ timeout: 4000 })
+await page.getByRole("button", { name: "Run the score", exact: true }).click()
+await page.getByRole("button", { name: "Accept", exact: true }).waitFor({ timeout: 4000 })
+await page.getByRole("button", { name: "Accept", exact: true }).click()
+await page.getByText(/Disbursed over eKash/, { exact: false }).waitFor({ timeout: 4000 })
+
 const ok = {
   title: (await page.title()).includes("EmbeddedLend"),
   workbench: true,
@@ -50,7 +63,9 @@ const ok = {
   decisionChips: true,
   mfiWorkspace: true,
   mfiVerdict: true,
+  saasWorkspace: true,
+  saasDisbursed: true,
 }
 await browser.close()
 console.log(JSON.stringify({ ok, errors }, null, 2))
-process.exit(ok.title && ok.workbench && ok.popover && ok.noInline && ok.noChipsBefore && ok.decisionChips && ok.mfiWorkspace && ok.mfiVerdict && errors.length === 0 ? 0 : 1)
+process.exit(ok.title && ok.workbench && ok.popover && ok.noInline && ok.noChipsBefore && ok.decisionChips && ok.mfiWorkspace && ok.mfiVerdict && ok.saasWorkspace && ok.saasDisbursed && errors.length === 0 ? 0 : 1)

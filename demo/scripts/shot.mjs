@@ -93,6 +93,30 @@ await step("mfi-workspace", async () => {
   await page.screenshot({ path: "../shots/workbench-mfi.png", fullPage: true })
 })
 
+// Vertical SaaS embedded widget workspace
+await step("saas-frame", async () => {
+  await page.getByRole("button", { name: /Vertical SaaS/ }).click()
+  await page.waitForTimeout(800)
+  await page.getByText("Kayko Retail", { exact: false }).first().waitFor({ timeout: 4000 })
+  await page.getByText("Working capital for", { exact: false }).first().waitFor({ timeout: 4000 })
+  await page.getByText("The offer", { exact: true }).waitFor({ timeout: 4000 })
+})
+
+await step("saas-consent-flow", async () => {
+  const consent = page.getByRole("button", { name: /consent/i })
+  await consent.waitFor({ timeout: 4000 })
+  await consent.click()
+  await page.getByText(/Reading the ledger/, { exact: false }).waitFor({ timeout: 4000 })
+  const runScore = page.getByRole("button", { name: "Run the score", exact: true })
+  await runScore.waitFor({ timeout: 4000 })
+  await runScore.click()
+  const accept = page.getByRole("button", { name: "Accept", exact: true })
+  await accept.waitFor({ timeout: 4000 })
+  await accept.click()
+  await page.getByText(/Disbursed over eKash/, { exact: false }).waitFor({ timeout: 4000 })
+  await page.screenshot({ path: "../shots/workbench-saas.png", fullPage: true })
+})
+
 // back to NDFSP, open a fresh request
 await step("open-fresh-request", async () => {
   await page.getByRole("button", { name: /^NDFSP$/ }).click()
