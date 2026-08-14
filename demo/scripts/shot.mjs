@@ -87,8 +87,8 @@ await step("mfi-view", async () => {
   await page.screenshot({ path: "../shots/workbench-mfi.png", fullPage: true })
 })
 
-// back to NDFSP, open a fresh request, verify cash-flow analysis and decline notice
-await step("analysis-and-decline", async () => {
+// back to NDFSP, open a fresh request
+await step("open-fresh-request", async () => {
   await page.getByRole("button", { name: /^NDFSP$/ }).click()
   const fresh = page
     .locator("button", { hasText: "ago" })
@@ -99,24 +99,37 @@ await step("analysis-and-decline", async () => {
   await fresh.click()
   await page.getByText("Cash-flow analysis", { exact: true }).waitFor({ timeout: 3000 })
   await page.getByText("Inflow by source", { exact: true }).waitFor({ timeout: 3000 })
+})
+
+// no inline explanation; no suggestion chips before deciding
+await step("pre-decision-state", async () => {
+  const inline = await page.getByText(/Average of inflow minus outflow/, { exact: false }).count()
+  if (inline > 0) throw new Error("explanation is still inline")
+  await page.getByText("Suggestions appear after you decide", { exact: false }).waitFor({ timeout: 3000 })
+  const chipsBefore = await page.locator("button", { hasText: /Decline reason|Refer for manual review|Anchor the approval/ }).count()
+  if (chipsBefore > 0) throw new Error("suggestion chips visible before decision")
+})
+
+// "?" popover explains the monthly net metric
+await step("help-popover", async () => {
+  await page.getByLabel("About Monthly net").click()
+  await page.getByText(/Average of inflow minus outflow/, { exact: false }).waitFor({ timeout: 3000 })
+  await page.keyboard.press("Escape")
+})
+
+// decide decline, then decision-specific chips appear
+await step("decline-and-chips", async () => {
   await page.getByRole("button", { name: "Decline", exact: true }).click()
   await page.getByText("Notice to borrower", { exact: true }).waitFor({ timeout: 3000 })
   await page.getByText("was declined", { exact: false }).waitFor({ timeout: 3000 })
+  await page.getByText(/Decline reason:/, { exact: false }).waitFor({ timeout: 3000 })
   await page.screenshot({ path: "../shots/workbench-declined.png", fullPage: true })
 })
 
-// checkpoint explanations on cash-flow metrics
-await step("checkpoint-explanations", async () => {
-  await page.getByText("Monthly net", { exact: true }).waitFor({ timeout: 3000 })
-  await page.getByText(/Average of inflow minus outflow/, { exact: false }).first().waitFor({ timeout: 3000 })
-  await page.getByText("Liquidity", { exact: true }).waitFor({ timeout: 3000 })
-  await page.getByText(/Total inflow as a share of total outflow/, { exact: false }).first().waitFor({ timeout: 3000 })
-})
-
-// lender note: pick a suggestion and save it
+// lender note: pick a decline-specific suggestion and save it
 await step("lender-note", async () => {
   await page.getByText("Lender note", { exact: false }).first().waitFor({ timeout: 3000 })
-  const suggestion = page.locator("button", { hasText: /Red flag|weak point|binding constraint|Check whether requested amount/ }).first()
+  const suggestion = page.locator("button", { hasText: /Decline reason:|data-correction/ }).first()
   await suggestion.click()
   await page.getByRole("button", { name: "Save note", exact: true }).click()
   await page.getByRole("button", { name: "Saved", exact: true }).waitFor({ timeout: 3000 })

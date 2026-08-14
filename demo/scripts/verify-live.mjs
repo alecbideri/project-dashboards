@@ -17,29 +17,29 @@ await page.getByText("Offer terms", { exact: true }).waitFor({ timeout: 4000 })
 await page.getByText("Cash-flow analysis", { exact: true }).waitFor({ timeout: 4000 })
 await page.getByText("Analyst narration", { exact: true }).waitFor({ timeout: 4000 })
 
-// checkpoint explanations
-await page.getByText(/Average of inflow minus outflow/, { exact: false }).first().waitFor({ timeout: 4000 })
+// "?" popover explains monthly net; no inline explanation
+const inlineCount = await page.getByText(/Average of inflow minus outflow/, { exact: false }).count()
+await page.getByLabel("About Monthly net").click()
+await page.getByText(/Average of inflow minus outflow/, { exact: false }).waitFor({ timeout: 4000 })
+await page.keyboard.press("Escape")
 
-// lender note: suggestion + save
-await page.getByText("Lender note", { exact: false }).first().waitFor({ timeout: 4000 })
-const suggestion = page
-  .locator("button", { hasText: /Red flag|weak point|binding constraint|Check whether requested amount/ })
-  .first()
-await suggestion.click()
-await page.getByRole("button", { name: "Save note", exact: true }).click()
-await page.getByRole("button", { name: "Saved", exact: true }).waitFor({ timeout: 4000 })
+// no suggestion chips before deciding
+const chipsBefore = await page.locator("button", { hasText: /Decline reason|Refer for manual review|Anchor the approval/ }).count()
 
-// decision trace below offer terms
-await page.getByText("Decision trace", { exact: true }).waitFor({ timeout: 4000 })
+// decide refer, then refer-specific chips appear
+await page.getByRole("button", { name: "Refer", exact: true }).click()
+await page.getByText("Notice to borrower", { exact: true }).waitFor({ timeout: 4000 })
+await page.getByText(/Refer for manual review/, { exact: false }).first().waitFor({ timeout: 4000 })
 
 const ok = {
   title: (await page.title()).includes("EmbeddedLend"),
   workbench: true,
   analysis: true,
-  checkpoint: true,
-  lenderNote: true,
-  decisionTrace: true,
+  popover: true,
+  noInline: inlineCount === 0,
+  noChipsBefore: chipsBefore === 0,
+  decisionChips: true,
 }
 await browser.close()
 console.log(JSON.stringify({ ok, errors }, null, 2))
-process.exit(ok.title && ok.workbench && ok.checkpoint && ok.lenderNote && ok.decisionTrace && errors.length === 0 ? 0 : 1)
+process.exit(ok.title && ok.workbench && ok.popover && ok.noInline && ok.noChipsBefore && ok.decisionChips && errors.length === 0 ? 0 : 1)

@@ -43,24 +43,41 @@ export function affordability(terms: SuggestedTerms, cashFlow: CashFlowRow[]): {
   return { level, monthlySurplus, utilization }
 }
 
-// Context-aware suggested notes for the lender, driven by the weakest and
-// strongest signals. The lender can pick one or type their own.
-export function suggestedNotes(borrower: import("./data").Borrower): string[] {
+// Decision-aware suggested notes for the lender, driven by the decision they
+// just made and the borrower's signals. The lender can pick one or type their
+// own. Generated only after a decision so the file leads with intent.
+export function suggestedNotes(
+  borrower: import("./data").Borrower,
+  decision: import("./data").Decision,
+): string[] {
   const sorted = [...borrower.signals].sort((a, b) => a.value - b.value)
   const weakest = sorted[0]
   const strongest = sorted[sorted.length - 1]
-  const out: string[] = []
-  if (weakest.value < 40)
-    out.push(`Red flag: ${weakest.label.toLowerCase()} sits at ${weakest.value}/100. Ask for supporting evidence before deciding.`)
-  else if (weakest.value < 60)
-    out.push(`${weakest.label} (${weakest.value}/100) is the weak point. Verify the ledger before approving.`)
-  else
-    out.push(`${weakest.label} (${weakest.value}/100) is the binding constraint on this request.`)
-  if (strongest.value >= 80)
-    out.push(`${strongest.label} (${strongest.value}/100) is a genuine strength; lean on it in the approval note.`)
-  out.push("Check whether requested amount matches the business cycle before finalizing terms.")
-  out.push("Confirm consent is current and the mobile-money pull is the same account as the disbursal.")
-  return out.slice(0, 4)
+
+  if (decision === "Decline") {
+    return [
+      `Decline reason: ${weakest.label.toLowerCase()} at ${weakest.value}/100. ${weakest.reason}`,
+      "Offer the borrower a data-correction and reapplication path.",
+      "Log the decline with the trace so the borrower gets a full explanation.",
+      `Note if ${strongest.label.toLowerCase()} (${strongest.value}/100) could support a future request.`,
+    ]
+  }
+
+  if (decision === "Refer") {
+    return [
+      `Refer for manual review: verify ${weakest.label.toLowerCase()} (${weakest.value}/100) beyond the ledger.`,
+      `Check whether ${strongest.label.toLowerCase()} (${strongest.value}/100) is repeatable before approval.`,
+      "Confirm the requested amount fits the business cycle before finalizing terms.",
+      "Ask the field officer to validate the borrower's stated business use.",
+    ]
+  }
+
+  return [
+    `Anchor the approval on ${strongest.label.toLowerCase()} (${strongest.value}/100): ${strongest.reason}`,
+    `Confirm the installment stays inside ${weakest.label.toLowerCase()} (${weakest.value}/100) headroom.`,
+    "Set the disburse date to the peak of the borrower's cash-flow cycle.",
+    "Re-confirm consent and that the disbursal account matches the data pull.",
+  ]
 }
 
 export interface CategorySplit {

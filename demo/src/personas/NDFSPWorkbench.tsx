@@ -153,12 +153,14 @@ function LenderNotes({
   comment,
   onComment,
   borrower,
+  decision,
 }: {
   comment: string
   onComment: (comment: string) => void
   borrower: Borrower
+  decision: Decision | null
 }) {
-  const suggestions = suggestedNotes(borrower)
+  const suggestions = decision ? suggestedNotes(borrower, decision) : []
   const [draft, setDraft] = useState(comment)
   const saved = draft === comment
   return (
@@ -171,24 +173,30 @@ function LenderNotes({
         </span>
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2">
-        {suggestions.map((s) => (
-          <button
-            key={s}
-            onClick={() => setDraft(s)}
-            className="rounded-full border px-2.5 py-1 text-left text-xs leading-relaxed transition-colors"
-            style={{ borderColor: "var(--signal-border)", background: "var(--signal-soft)", color: "var(--signal)" }}
-          >
-            {s}
-          </button>
-        ))}
-      </div>
+      {decision ? (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {suggestions.map((s) => (
+            <button
+              key={s}
+              onClick={() => setDraft(s)}
+              className="rounded-full border px-2.5 py-1 text-left text-xs leading-relaxed transition-colors"
+              style={{ borderColor: "var(--signal-border)", background: "var(--signal-soft)", color: "var(--signal)" }}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-3 text-xs leading-relaxed" style={{ color: "var(--muted)" }}>
+          Suggestions appear after you decide. You can still write a note now.
+        </p>
+      )}
 
       <textarea
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
         rows={3}
-        placeholder="Write a note for the file, or pick a suggestion above. It is kept with the request and visible to the reviewer."
+        placeholder="Write a note for the file. It is kept with the request and visible to the reviewer."
         className={`${signalStyle.input} mt-3 w-full resize-none py-2 leading-relaxed`}
         style={{ minHeight: "88px" }}
       />
@@ -409,7 +417,7 @@ export function NDFSPWorkbench({
           </div>
         </div>
 
-        <LenderNotes comment={comment} onComment={handlers.onComment} borrower={borrower} />
+        <LenderNotes comment={comment} onComment={handlers.onComment} borrower={borrower} decision={decision} />
 
         {decided && decision && <BorrowerNotice borrower={borrower} decision={decision} />}
       </div>

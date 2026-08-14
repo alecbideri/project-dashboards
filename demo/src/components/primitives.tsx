@@ -1,5 +1,5 @@
-import type { ReactNode } from "react"
-import { Check, ArrowRight } from "@phosphor-icons/react"
+import { useEffect, useRef, useState, type ReactNode } from "react"
+import { Check, ArrowRight, Question } from "@phosphor-icons/react"
 import type { Decision } from "../lib/data"
 import type { RequestStatus } from "../lib/store"
 
@@ -56,11 +56,65 @@ export function ScoreBar({ value }: { value: number }) {
   )
 }
 
+function HelpPopover({ label, explain }: { label: string; explain: string }) {
+  const [open, setOpen] = useState(false)
+  const popRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e: MouseEvent) => {
+      if (popRef.current && !popRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false)
+    }
+    document.addEventListener("mousedown", onDown)
+    document.addEventListener("keydown", onKey)
+    return () => {
+      document.removeEventListener("mousedown", onDown)
+      document.removeEventListener("keydown", onKey)
+    }
+  }, [open])
+
+  return (
+    <span className="relative inline-flex">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-label={`About ${label}`}
+        aria-expanded={open}
+        className="inline-flex size-4 items-center justify-center rounded-full border transition-colors"
+        style={{ borderColor: "var(--signal-border)", color: "var(--signal)", background: "transparent" }}
+      >
+        <Question className="size-2.5" weight="bold" />
+      </button>
+      {open && (
+        <div
+          ref={popRef}
+          role="tooltip"
+          className="absolute right-0 top-5 z-30 w-60 rounded-xl border p-3 text-xs leading-relaxed shadow-lg"
+          style={{
+            borderColor: "var(--hairline)",
+            background: "var(--panel)",
+            color: "var(--body)",
+            boxShadow: "0 8px 24px rgba(11,18,32,0.10)",
+          }}
+        >
+          {explain}
+        </div>
+      )}
+    </span>
+  )
+}
+
 export function StatCell({ label, value, sub, explain }: { label: string; value: string; sub?: string; explain?: string }) {
   return (
-    <div className="rounded-xl border p-3.5" style={{ borderColor: "var(--hairline)", background: "var(--paper)" }}>
-      <div className="font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--muted)" }}>
-        {label}
+    <div className="relative rounded-xl border p-3.5" style={{ borderColor: "var(--hairline)", background: "var(--paper)" }}>
+      <div className="flex items-center justify-between gap-1">
+        <span className="font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--muted)" }}>
+          {label}
+        </span>
+        {explain && <HelpPopover label={label} explain={explain} />}
       </div>
       <div className="mt-1 font-mono text-lg font-semibold" style={{ color: "var(--ink)" }}>
         {value}
@@ -69,11 +123,6 @@ export function StatCell({ label, value, sub, explain }: { label: string; value:
         <div className="mt-0.5 text-xs" style={{ color: "var(--muted)" }}>
           {sub}
         </div>
-      )}
-      {explain && (
-        <p className="mt-2 border-t pt-2 text-xs leading-relaxed" style={{ borderColor: "var(--hairline)", color: "var(--muted)" }}>
-          {explain}
-        </p>
       )}
     </div>
   )
