@@ -5,64 +5,93 @@ import { readFileSync, existsSync } from "node:fs"
 import { extname, join } from "node:path"
 
 const root = fileURLToPath(new URL("../dist", import.meta.url))
-const types = {
-  ".html": "text/html",
-  ".js": "text/javascript",
-  ".css": "text/css",
-  ".woff2": "font/woff2",
-  ".svg": "image/svg+xml",
-  ".png": "image/png",
-}
+const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".woff2": "font/woff2" }
 
 const server = createServer((req, res) => {
   const path = req.url === "/" ? "/index.html" : req.url
   const file = join(root, decodeURIComponent(path))
-  if (!existsSync(file)) {
-    res.writeHead(404)
-    res.end("nf")
-    return
-  }
+  if (!existsSync(file)) { res.writeHead(404); res.end("nf"); return }
   res.writeHead(200, { "Content-Type": types[extname(file)] ?? "application/octet-stream" })
   res.end(readFileSync(file))
 })
-
 await new Promise((r) => server.listen(0, r))
 const port = server.address().port
 
 const browser = await chromium.launch({ channel: "chrome" })
-const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } })
+const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } })
 const errors = []
-page.on("console", (m) => {
-  if (m.type() === "error") errors.push(m.text())
-})
+page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()) })
 page.on("pageerror", (e) => errors.push(e.message))
 
-await page.goto(`http://127.0.0.1:${port}/`)
-await page.waitForTimeout(1200)
-
-const text = await page.locator("body").innerText()
-const checks = {
-  hasTitle: text.includes("EmbeddedLend"),
-  hasScore: /\/100/.test(text),
-  hasNarration: /Analyst narration/.test(text),
-  hasDecision: /Approve|Decline|Refer/.test(text),
-  hasPersonas: text.includes("MFI / SACCO") && text.includes("Vertical SaaS"),
-  sandboxFallback: text.includes("sandbox"),
+const checks = {}
+const step = async (name, fn) => {
+  try {
+    await fn()
+    checks[name] = "ok"
+  } catch (e) {
+    checks[name] = `FAIL: ${e.message.split("\n")[0]}`
+  }
 }
 
-await page.screenshot({ path: "../shots/demo-ndfsp.png", fullPage: true })
+await page.goto(`http://127.0.0.1:${port}/`)
+await page.waitForTimeout(2000)
 
-// switch borrower to the Refer case and capture
-await page.getByText("Aline Uwase", { exact: true }).click()
-await page.waitForTimeout(700)
-await page.screenshot({ path: "../shots/demo-refer.png", fullPage: true })
+// queue rail rendered
+await step("queue-populated", async () => {
+  await page.getByText("Incoming loan requests will appear here.").waitFor({ timeout: 5000 })
+})
 
-// switch to Vertical SaaS persona
-await page.getByRole("button", { name: /Vertical SaaS/ }).click()
-await page.waitForTimeout(700)
-await page.screenshot({ path: "../shots/demo-saas.png", fullPage: true })
+// wait for first arrival and open it
+await step("first-arrival", async () => {
+  await page.locator("button", { hasText: "RWF 2,000,000" }).first().waitFor({ timeout: 15000 })
+  await page.locator("button", { hasText: "RWF 2,000,000" }).first().click()
+  await page.getByText("Offer terms", { exact: true }).waitFor({ timeout: 3000 })
+})
+
+// edit terms: bump amount
+await step("edit-terms", async () => {
+  const amount = page.locator('input[type="number"]').first()
+  await amount.fill("2500000")
+  await page.getByText("Monthly installment", { exact: true }).waitFor({ timeout: 2000 })
+})
+
+// decide approve
+await step("decide-approve", async () => {
+  await page.getByRole("button", { name: "Approve", exact: true }).click()
+  await page.getByText("Disbursed", { exact: true }).waitFor({ timeout: 2000 }).catch(() => {})
+  await page.getByRole("button", { name: /Disburse over eKash/ }).waitFor({ timeout: 3000 })
+})
+
+// disburse
+await step("disburse", async () => {
+  await page.getByRole("button", { name: /Disburse over eKash/ }).click()
+  await page.getByText("Disbursed", { exact: true }).waitFor({ timeout: 3000 })
+})
+
+// narration present
+await step("narration", async () => {
+  await page.getByText("Analyst narration", { exact: true }).waitFor({ timeout: 3000 })
+})
+
+await page.screenshot({ path: "../shots/workbench-disbursed.png", fullPage: true })
+
+// switch to MFI read-only view
+await step("mfi-view", async () => {
+  await page.getByRole("button", { name: /MFI \/ SACCO/ }).click()
+  await page.getByText("Verdict for the loan committee", { exact: true }).waitFor({ timeout: 3000 })
+  await page.screenshot({ path: "../shots/workbench-mfi.png", fullPage: true })
+})
+
+// back to workbench, open a new request
+await step("second-request", async () => {
+  await page.getByRole("button", { name: /Lender workbench/ }).click()
+  const firstRow = page.locator("button", { hasText: "ago" }).first()
+  await firstRow.waitFor({ timeout: 5000 })
+  await firstRow.click()
+})
 
 await browser.close()
 server.close()
 
+const body = await Promise.resolve()
 console.log(JSON.stringify({ checks, errors }, null, 2))

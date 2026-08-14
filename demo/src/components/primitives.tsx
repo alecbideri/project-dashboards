@@ -1,11 +1,32 @@
 import type { ReactNode } from "react"
 import { Check, ArrowRight } from "@phosphor-icons/react"
 import type { Decision } from "../lib/data"
+import type { RequestStatus } from "../lib/store"
 
 const decisionTone: Record<Decision, { fg: string; bg: string; ring: string }> = {
   Approve: { fg: "#0f7a3d", bg: "#e8f7ee", ring: "#b7e6c9" },
   Decline: { fg: "#b42318", bg: "#fdecea", ring: "#f5c1bd" },
   Refer: { fg: "#9a6700", bg: "#fdf5e2", ring: "#efdcb0" },
+}
+
+const statusTone: Record<RequestStatus, { fg: string; bg: string; ring: string }> = {
+  new: { fg: "var(--body)", bg: "var(--paper)", ring: "var(--hairline)" },
+  reviewing: { fg: "var(--signal)", bg: "var(--signal-soft)", ring: "var(--signal-border)" },
+  decided: { fg: "#9a6700", bg: "#fdf5e2", ring: "#efdcb0" },
+  disbursed: { fg: "#0f7a3d", bg: "#e8f7ee", ring: "#b7e6c9" },
+}
+
+export function StatusChip({ status }: { status: RequestStatus }) {
+  const t = statusTone[status]
+  const label = status === "reviewing" ? "in review" : status
+  return (
+    <span
+      className="inline-flex items-center rounded-full px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em]"
+      style={{ color: t.fg, background: t.bg, border: `1px solid ${t.ring}` }}
+    >
+      {label}
+    </span>
+  )
 }
 
 export function DecisionBadge({ decision }: { decision: Decision }) {

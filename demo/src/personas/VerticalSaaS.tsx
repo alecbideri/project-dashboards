@@ -1,10 +1,18 @@
 import { Globe, Lightning, LockKey } from "@phosphor-icons/react"
-import type { Borrower } from "../lib/data"
+import type { Borrower, Decision, SuggestedTerms } from "../lib/data"
 import { scoreOf, summarize } from "../lib/data"
 import { fmt } from "../lib/utils"
 import { DecisionBadge, ScoreBar } from "../components/primitives"
 
-export function VerticalSaaS({ borrower }: { borrower: Borrower }) {
+export function VerticalSaaS({
+  borrower,
+  terms,
+  decision,
+}: {
+  borrower: Borrower
+  terms: SuggestedTerms
+  decision: Decision | null
+}) {
   const score = scoreOf(borrower)
   const sum = summarize(borrower.cashFlow)
   return (
@@ -49,7 +57,7 @@ export function VerticalSaaS({ borrower }: { borrower: Borrower }) {
               Term
             </div>
             <div className="mt-1 font-mono text-lg font-semibold" style={{ color: "var(--ink)" }}>
-              {borrower.decision === "Decline" ? "n/a" : "6-9 mo"}
+              {terms.amount > 0 ? `${terms.termMonths} mo` : "n/a"}
             </div>
           </div>
         </div>
@@ -61,7 +69,7 @@ export function VerticalSaaS({ borrower }: { borrower: Borrower }) {
             <h4 className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
               Decision
             </h4>
-            <DecisionBadge decision={borrower.decision} />
+            <DecisionBadge decision={decision ?? borrower.decision} />
           </div>
           <div className="mt-4 space-y-3">
             {borrower.signals.map((s) => (

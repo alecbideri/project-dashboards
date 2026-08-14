@@ -1,12 +1,22 @@
 import { Users, HandCoins, TrendUp } from "@phosphor-icons/react"
-import type { Borrower } from "../lib/data"
+import type { Borrower, Decision, SuggestedTerms } from "../lib/data"
 import { scoreOf, summarize } from "../lib/data"
+import { monthlyPayment } from "../lib/engine"
 import { fmt } from "../lib/utils"
 import { DecisionBadge, ScoreBar, TraceList } from "../components/primitives"
 
-export function MFISACCO({ borrower }: { borrower: Borrower }) {
+export function MFISACCO({
+  borrower,
+  terms,
+  decision,
+}: {
+  borrower: Borrower
+  terms: SuggestedTerms
+  decision: Decision | null
+}) {
   const score = scoreOf(borrower)
   const sum = summarize(borrower.cashFlow)
+  const pay = monthlyPayment(terms)
   return (
     <div className="grid gap-6 lg:grid-cols-12">
       <div className="lg:col-span-5">
@@ -20,7 +30,7 @@ export function MFISACCO({ borrower }: { borrower: Borrower }) {
                 {borrower.business}
               </p>
             </div>
-            <DecisionBadge decision={borrower.decision} />
+            <DecisionBadge decision={decision ?? borrower.decision} />
           </div>
           <div className="mt-4 space-y-3">
             {borrower.signals.map((s) => (
@@ -64,7 +74,9 @@ export function MFISACCO({ borrower }: { borrower: Borrower }) {
             Verdict for the loan committee
           </div>
           <p className="text-sm leading-relaxed" style={{ color: "var(--body)" }}>
-            {borrower.limit}
+            {terms.amount > 0
+              ? `RWF ${fmt(terms.amount)} at ${terms.rateMonthly}%/mo over ${terms.termMonths} months, installment RWF ${fmt(pay.installment)}.`
+              : "No live offer; scoring only."}
           </p>
           <div className="mt-4">
             <TraceList items={borrower.trace} />
