@@ -17,18 +17,29 @@ await page.getByText("Offer terms", { exact: true }).waitFor({ timeout: 4000 })
 await page.getByText("Cash-flow analysis", { exact: true }).waitFor({ timeout: 4000 })
 await page.getByText("Analyst narration", { exact: true }).waitFor({ timeout: 4000 })
 
-// Decision drives a borrower notice.
-await page.getByRole("button", { name: "Refer", exact: true }).click()
-await page.getByText("Notice to borrower", { exact: true }).waitFor({ timeout: 4000 })
-await page.getByText("queued for manual review", { exact: false }).waitFor({ timeout: 4000 })
+// checkpoint explanations
+await page.getByText(/Average of inflow minus outflow/, { exact: false }).first().waitFor({ timeout: 4000 })
+
+// lender note: suggestion + save
+await page.getByText("Lender note", { exact: false }).first().waitFor({ timeout: 4000 })
+const suggestion = page
+  .locator("button", { hasText: /Red flag|weak point|binding constraint|Check whether requested amount/ })
+  .first()
+await suggestion.click()
+await page.getByRole("button", { name: "Save note", exact: true }).click()
+await page.getByRole("button", { name: "Saved", exact: true }).waitFor({ timeout: 4000 })
+
+// decision trace below offer terms
+await page.getByText("Decision trace", { exact: true }).waitFor({ timeout: 4000 })
 
 const ok = {
   title: (await page.title()).includes("EmbeddedLend"),
   workbench: true,
   analysis: true,
-  narration: true,
-  borrowerNotice: true,
+  checkpoint: true,
+  lenderNote: true,
+  decisionTrace: true,
 }
 await browser.close()
 console.log(JSON.stringify({ ok, errors }, null, 2))
-process.exit(ok.title && ok.workbench && ok.analysis && ok.borrowerNotice && errors.length === 0 ? 0 : 1)
+process.exit(ok.title && ok.workbench && ok.checkpoint && ok.lenderNote && ok.decisionTrace && errors.length === 0 ? 0 : 1)
