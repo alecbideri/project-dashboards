@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
-import { Clock, Database, Sparkle } from "@phosphor-icons/react"
+import { Clock, Database } from "@phosphor-icons/react"
 import { borrowers, type Borrower, type Decision, type SuggestedTerms } from "./lib/data"
 import { narrate, hasLiveKey } from "./lib/narration"
 import type { Narration } from "./lib/narration"
@@ -15,7 +15,7 @@ import { fmt } from "./lib/utils"
 type View = "workbench" | "mfi" | "saas"
 
 const views: Array<{ id: View; label: string; intro: string }> = [
-  { id: "workbench", label: "Lender workbench", intro: ndfspIntro },
+  { id: "workbench", label: "NDFSP", intro: ndfspIntro },
   { id: "mfi", label: "MFI / SACCO", intro: mfiIntro },
   { id: "saas", label: "Vertical SaaS", intro: saasIntro },
 ]
@@ -175,15 +175,15 @@ export default function App() {
             </span>
             EmbeddedLend
             <span className="font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--muted)" }}>
-              lender workbench
+              NDFSP workbench
             </span>
           </div>
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em]"
-            style={{ background: "var(--signal-soft)", color: "var(--signal)", border: "1px solid var(--signal-border)" }}
-          >
-            <Sparkle className="size-3.5" weight="fill" /> narration {hasLiveKey ? "LLM" : "sandbox"}
-          </span>
+            <span
+              className="inline-flex items-center rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em]"
+              style={{ background: "var(--signal-soft)", color: "var(--signal)", border: "1px solid var(--signal-border)" }}
+            >
+              narration {hasLiveKey ? "LLM" : "sandbox"}
+            </span>
         </div>
         <h1 className="mt-4 max-w-2xl text-2xl font-semibold leading-snug sm:text-3xl" style={{ color: "var(--ink)" }}>
           SME credit, decided by cash flow, delivered inside the tools lenders already use.
@@ -249,7 +249,7 @@ export default function App() {
 
               <div className="mt-6 rounded-2xl border p-5" style={{ borderColor: "var(--hairline)", background: "var(--panel)" }}>
                 <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--ink)" }}>
-                  <Sparkle className="size-4" weight="fill" style={{ color: "var(--signal)" }} />
+                  <span className="mt-0.5 inline-block size-2 rounded-full" style={{ background: "var(--signal)" }} />
                   Analyst narration
                   {thinking && (
                     <span className="font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--muted)" }}>

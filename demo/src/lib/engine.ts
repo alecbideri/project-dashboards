@@ -42,3 +42,35 @@ export function affordability(terms: SuggestedTerms, cashFlow: CashFlowRow[]): {
   const level: Affordability = utilization > 40 ? "over" : utilization > 30 ? "tight" : "ok"
   return { level, monthlySurplus, utilization }
 }
+
+export interface CategorySplit {
+  category: string
+  amount: number
+}
+
+export interface LedgerAnalysis {
+  inflowByCategory: CategorySplit[]
+  outflowByCategory: CategorySplit[]
+  monthlyNet: number
+  liquidityRatio: number // inflow / outflow
+}
+
+// Slices the observed ledger into what the lender can actually argue with:
+// where money comes from, where it goes, and whether the month nets positive.
+export function analyzeLedger(cashFlow: CashFlowRow[]): LedgerAnalysis {
+  const inflowMap = new Map<string, number>()
+  const outflowMap = new Map<string, number>()
+  for (const r of cashFlow) {
+    const target = r.type === "in" ? inflowMap : outflowMap
+    target.set(r.category, (target.get(r.category) ?? 0) + Math.abs(r.amount))
+  }
+  const sort = (m: Map<string, number>): CategorySplit[] =>
+    [...m.entries()].sort((a, b) => b[1] - a[1]).map(([category, amount]) => ({ category, amount }))
+  const { inflow, outflow } = summarize(cashFlow)
+  return {
+    inflowByCategory: sort(inflowMap),
+    outflowByCategory: sort(outflowMap),
+    monthlyNet: Math.round((inflow - outflow) / 4),
+    liquidityRatio: outflow > 0 ? Math.round((inflow / outflow) * 100) : 0,
+  }
+}

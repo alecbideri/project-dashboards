@@ -73,6 +73,11 @@ await step("narration", async () => {
   await page.getByText("Analyst narration", { exact: true }).waitFor({ timeout: 3000 })
 })
 
+// borrower notice after approval
+await step("approve-notice", async () => {
+  await page.getByText("Notice to borrower", { exact: true }).waitFor({ timeout: 3000 })
+})
+
 await page.screenshot({ path: "../shots/workbench-disbursed.png", fullPage: true })
 
 // switch to MFI read-only view
@@ -82,12 +87,22 @@ await step("mfi-view", async () => {
   await page.screenshot({ path: "../shots/workbench-mfi.png", fullPage: true })
 })
 
-// back to workbench, open a new request
-await step("second-request", async () => {
-  await page.getByRole("button", { name: /Lender workbench/ }).click()
-  const firstRow = page.locator("button", { hasText: "ago" }).first()
-  await firstRow.waitFor({ timeout: 5000 })
-  await firstRow.click()
+// back to NDFSP, open a fresh request, verify cash-flow analysis and decline notice
+await step("analysis-and-decline", async () => {
+  await page.getByRole("button", { name: /^NDFSP$/ }).click()
+  const fresh = page
+    .locator("button", { hasText: "ago" })
+    .filter({ hasNotText: "disbursed" })
+    .filter({ hasNotText: "decided" })
+    .first()
+  await fresh.waitFor({ timeout: 16000 })
+  await fresh.click()
+  await page.getByText("Cash-flow analysis", { exact: true }).waitFor({ timeout: 3000 })
+  await page.getByText("Inflow by source", { exact: true }).waitFor({ timeout: 3000 })
+  await page.getByRole("button", { name: "Decline", exact: true }).click()
+  await page.getByText("Notice to borrower", { exact: true }).waitFor({ timeout: 3000 })
+  await page.getByText("was declined", { exact: false }).waitFor({ timeout: 3000 })
+  await page.screenshot({ path: "../shots/workbench-declined.png", fullPage: true })
 })
 
 await browser.close()
