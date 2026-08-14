@@ -105,6 +105,23 @@ await step("analysis-and-decline", async () => {
   await page.screenshot({ path: "../shots/workbench-declined.png", fullPage: true })
 })
 
+// checkpoint explanations on cash-flow metrics
+await step("checkpoint-explanations", async () => {
+  await page.getByText("Monthly net", { exact: true }).waitFor({ timeout: 3000 })
+  await page.getByText(/Average of inflow minus outflow/, { exact: false }).first().waitFor({ timeout: 3000 })
+  await page.getByText("Liquidity", { exact: true }).waitFor({ timeout: 3000 })
+  await page.getByText(/Total inflow as a share of total outflow/, { exact: false }).first().waitFor({ timeout: 3000 })
+})
+
+// lender note: pick a suggestion and save it
+await step("lender-note", async () => {
+  await page.getByText("Lender note", { exact: false }).first().waitFor({ timeout: 3000 })
+  const suggestion = page.locator("button", { hasText: /Red flag|weak point|binding constraint|Check whether requested amount/ }).first()
+  await suggestion.click()
+  await page.getByRole("button", { name: "Save note", exact: true }).click()
+  await page.getByRole("button", { name: "Saved", exact: true }).waitFor({ timeout: 3000 })
+})
+
 await browser.close()
 server.close()
 

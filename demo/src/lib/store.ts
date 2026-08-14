@@ -14,6 +14,7 @@ export interface QueueRequest {
   status: RequestStatus
   decision?: Decision
   terms?: SuggestedTerms
+  comment?: string
 }
 
 export interface QueueState {
@@ -29,6 +30,7 @@ export type QueueAction =
   | { type: "EDIT_TERMS"; id: string; terms: SuggestedTerms }
   | { type: "DECIDE"; id: string; decision: Decision }
   | { type: "DISBURSE"; id: string }
+  | { type: "COMMENT"; id: string; comment: string }
   | { type: "RESET" }
 
 export const emptyState: QueueState = {
@@ -91,6 +93,13 @@ export function reducer(state: QueueState, action: QueueAction): QueueState {
         ...state,
         requests: state.requests.map((r) =>
           r.id === action.id ? { ...r, status: "disbursed" as const } : r,
+        ),
+      }
+    case "COMMENT":
+      return {
+        ...state,
+        requests: state.requests.map((r) =>
+          r.id === action.id ? { ...r, comment: action.comment } : r,
         ),
       }
     case "RESET":

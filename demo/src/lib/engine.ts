@@ -43,6 +43,26 @@ export function affordability(terms: SuggestedTerms, cashFlow: CashFlowRow[]): {
   return { level, monthlySurplus, utilization }
 }
 
+// Context-aware suggested notes for the lender, driven by the weakest and
+// strongest signals. The lender can pick one or type their own.
+export function suggestedNotes(borrower: import("./data").Borrower): string[] {
+  const sorted = [...borrower.signals].sort((a, b) => a.value - b.value)
+  const weakest = sorted[0]
+  const strongest = sorted[sorted.length - 1]
+  const out: string[] = []
+  if (weakest.value < 40)
+    out.push(`Red flag: ${weakest.label.toLowerCase()} sits at ${weakest.value}/100. Ask for supporting evidence before deciding.`)
+  else if (weakest.value < 60)
+    out.push(`${weakest.label} (${weakest.value}/100) is the weak point. Verify the ledger before approving.`)
+  else
+    out.push(`${weakest.label} (${weakest.value}/100) is the binding constraint on this request.`)
+  if (strongest.value >= 80)
+    out.push(`${strongest.label} (${strongest.value}/100) is a genuine strength; lean on it in the approval note.`)
+  out.push("Check whether requested amount matches the business cycle before finalizing terms.")
+  out.push("Confirm consent is current and the mobile-money pull is the same account as the disbursal.")
+  return out.slice(0, 4)
+}
+
 export interface CategorySplit {
   category: string
   amount: number

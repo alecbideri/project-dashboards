@@ -237,10 +237,12 @@ export default function App() {
                   decision={decision}
                   decided={decided}
                   disbursed={disbursed}
+                  comment={selectedReq?.comment ?? ""}
                   handlers={{
                     onEditTerms: (t) => selectedReq && dispatch({ type: "EDIT_TERMS", id: selectedReq.id, terms: t }),
                     onDecide: handleDecide,
                     onDisburse: () => selectedReq && dispatch({ type: "DISBURSE", id: selectedReq.id }),
+                    onComment: (c) => selectedReq && dispatch({ type: "COMMENT", id: selectedReq.id, comment: c }),
                   }}
                 />
               )}

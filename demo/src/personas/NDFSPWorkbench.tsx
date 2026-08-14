@@ -1,7 +1,8 @@
-import { Bank, ChartLine, Coins, ShieldCheck, PaperPlaneTilt, SealWarning, Clock } from "@phosphor-icons/react"
+import { useState } from "react"
+import { Bank, ChartLine, Coins, ShieldCheck, PaperPlaneTilt, SealWarning, Clock, NotePencil } from "@phosphor-icons/react"
 import type { Borrower, Decision, SuggestedTerms } from "../lib/data"
 import { scoreOf, summarize } from "../lib/data"
-import { affordability, monthlyPayment, analyzeLedger } from "../lib/engine"
+import { affordability, monthlyPayment, analyzeLedger, suggestedNotes } from "../lib/engine"
 import { fmt } from "../lib/utils"
 import { DecisionBadge, ScoreBar, StatCell, TraceList } from "../components/primitives"
 
@@ -15,6 +16,7 @@ export interface ReviewHandlers {
   onEditTerms: (terms: SuggestedTerms) => void
   onDecide: (decision: Decision) => void
   onDisburse: () => void
+  onComment: (comment: string) => void
 }
 
 function BorrowerNotice({ borrower, decision }: { borrower: Borrower; decision: Decision }) {
@@ -81,9 +83,23 @@ function CashFlowAnalysis({ borrower }: { borrower: Borrower }) {
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-3">
-        <StatCell label="Monthly net" value={`RWF ${fmt(ledger.monthlyNet)}`} />
-        <StatCell label="Liquidity" value={`${ledger.liquidityRatio}%`} sub="inflow vs outflow" />
-        <StatCell label="Sources" value={`${ledger.inflowByCategory.length}`} sub="income streams" />
+        <StatCell
+          label="Monthly net"
+          value={`RWF ${fmt(ledger.monthlyNet)}`}
+          explain="Average of inflow minus outflow across the observed months. A positive value means the business earns more than it spends each month, which is the money available to service a loan."
+        />
+        <StatCell
+          label="Liquidity"
+          value={`${ledger.liquidityRatio}%`}
+          sub="inflow vs outflow"
+          explain="Total inflow as a share of total outflow. Above 100 means the business takes in more than it pays out over the window; far above 100 signals a healthier buffer."
+        />
+        <StatCell
+          label="Sources"
+          value={`${ledger.inflowByCategory.length}`}
+          sub="income streams"
+          explain="Distinct categories money arrives from. Fewer sources means the business depends on one stream, which raises concentration risk when that source slows."
+        />
       </div>
 
       <div className="mt-5 space-y-4">
@@ -133,12 +149,74 @@ function CashFlowAnalysis({ borrower }: { borrower: Borrower }) {
   )
 }
 
+function LenderNotes({
+  comment,
+  onComment,
+  borrower,
+}: {
+  comment: string
+  onComment: (comment: string) => void
+  borrower: Borrower
+}) {
+  const suggestions = suggestedNotes(borrower)
+  const [draft, setDraft] = useState(comment)
+  const saved = draft === comment
+  return (
+    <div className="rounded-2xl border p-5" style={{ borderColor: "var(--hairline)", background: "var(--panel)" }}>
+      <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--ink)" }}>
+        <NotePencil className="size-4" weight="fill" style={{ color: "var(--signal)" }} />
+        Lender note
+        <span className="font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--muted)" }}>
+          {saved ? "saved" : "unsaved"}
+        </span>
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        {suggestions.map((s) => (
+          <button
+            key={s}
+            onClick={() => setDraft(s)}
+            className="rounded-full border px-2.5 py-1 text-left text-xs leading-relaxed transition-colors"
+            style={{ borderColor: "var(--signal-border)", background: "var(--signal-soft)", color: "var(--signal)" }}
+          >
+            {s}
+          </button>
+        ))}
+      </div>
+
+      <textarea
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        rows={3}
+        placeholder="Write a note for the file, or pick a suggestion above. It is kept with the request and visible to the reviewer."
+        className={`${signalStyle.input} mt-3 w-full resize-none py-2 leading-relaxed`}
+        style={{ minHeight: "88px" }}
+      />
+
+      <div className="mt-2 flex justify-end">
+        <button
+          onClick={() => onComment(draft)}
+          disabled={saved}
+          className="rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors disabled:cursor-default"
+          style={{
+            background: saved ? "var(--paper)" : "var(--ink)",
+            color: saved ? "var(--muted)" : "#f7f9fc",
+          }}
+        >
+          {saved ? "Saved" : "Save note"}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export function NDFSPWorkbench({
   borrower,
   terms,
   decision,
   decided,
   disbursed,
+  comment,
   handlers,
 }: {
   borrower: Borrower
@@ -146,6 +224,7 @@ export function NDFSPWorkbench({
   decision: Decision | null
   decided: boolean
   disbursed: boolean
+  comment: string
   handlers: ReviewHandlers
 }) {
   const score = scoreOf(borrower)
@@ -185,15 +264,6 @@ export function NDFSPWorkbench({
         </div>
 
         <CashFlowAnalysis borrower={borrower} />
-
-        <div className="rounded-2xl border p-5" style={{ borderColor: "var(--hairline)", background: "var(--panel)" }}>
-          <h4 className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
-            Decision trace
-          </h4>
-          <div className="mt-4">
-            <TraceList items={borrower.trace} />
-          </div>
-        </div>
       </div>
 
       <div className="space-y-6 lg:col-span-5">
@@ -329,6 +399,17 @@ export function NDFSPWorkbench({
             Consent verified · Law 058/2021
           </div>
         </div>
+
+        <div className="rounded-2xl border p-5" style={{ borderColor: "var(--hairline)", background: "var(--panel)" }}>
+          <h4 className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
+            Decision trace
+          </h4>
+          <div className="mt-4">
+            <TraceList items={borrower.trace} />
+          </div>
+        </div>
+
+        <LenderNotes comment={comment} onComment={handlers.onComment} borrower={borrower} />
 
         {decided && decision && <BorrowerNotice borrower={borrower} decision={decision} />}
       </div>

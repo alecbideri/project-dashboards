@@ -56,7 +56,7 @@ export function ScoreBar({ value }: { value: number }) {
   )
 }
 
-export function StatCell({ label, value, sub }: { label: string; value: string; sub?: string }) {
+export function StatCell({ label, value, sub, explain }: { label: string; value: string; sub?: string; explain?: string }) {
   return (
     <div className="rounded-xl border p-3.5" style={{ borderColor: "var(--hairline)", background: "var(--paper)" }}>
       <div className="font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--muted)" }}>
@@ -69,6 +69,11 @@ export function StatCell({ label, value, sub }: { label: string; value: string; 
         <div className="mt-0.5 text-xs" style={{ color: "var(--muted)" }}>
           {sub}
         </div>
+      )}
+      {explain && (
+        <p className="mt-2 border-t pt-2 text-xs leading-relaxed" style={{ borderColor: "var(--hairline)", color: "var(--muted)" }}>
+          {explain}
+        </p>
       )}
     </div>
   )
