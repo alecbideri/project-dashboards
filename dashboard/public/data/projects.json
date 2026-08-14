@@ -869,6 +869,13 @@
         "date": "2026-08-13",
         "notes": "EmbeddedLend — one scrollable architecture page (7 diagrams): system, decision engine, swimlane, flywheel, journey, data topology, why now",
         "link": "https://project-dashboards-122.netlify.app/architecture-story.html"
+      },
+      {
+        "stream": "Prototype",
+        "status": "In progress",
+        "date": "2026-08-13",
+        "notes": "Interactive underwriting simulation — model-box walkthrough of a loan decision on dummy data (consent → data → score → decision → disburse → repay → AI narration)",
+        "link": "https://project-dashboards-122.netlify.app/#/demo"
       }
     ],
     "totalClaims": 51

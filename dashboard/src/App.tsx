@@ -12,7 +12,6 @@ import {
   FileText,
   Gauge,
   ListTree,
-  Play,
   Scale,
 } from "lucide-react"
 
@@ -231,7 +230,13 @@ function MasterGrid({
         recordCount={projects.length}
         onRowClick={(row: TreeRow) => {
           if (row.kind === "project") return
-          if (row.kind === "stream") onSelect(projects.find((p) => p.name === row.projectName)!)
+          if (row.kind === "stream") {
+            if (row.link && row.link.includes("project-dashboards-122.netlify.app")) {
+              window.open(row.link, "_blank", "noopener")
+            } else {
+              onSelect(projects.find((p) => p.name === row.projectName)!)
+            }
+          }
         }}
         tableLayout={{
           headerSticky: true,
@@ -511,12 +516,6 @@ function Header({
               ))}
             </SelectContent>
           </Select>
-          <button
-            onClick={() => (window.location.hash = "/demo")}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted"
-          >
-            <Play className="size-3.5 text-primary" /> Demo
-          </button>
           <ThemeToggle theme={theme} onToggle={onToggleTheme} />
         </div>
       </div>
@@ -537,8 +536,6 @@ export default function App() {
     return () => window.removeEventListener("hashchange", onHash)
   }, [])
 
-  if (hash === "#/demo") return <DemoApp />
-
   const load = useCallback(async () => {
     try {
       setProjects(await loadProjects())
@@ -550,6 +547,8 @@ export default function App() {
   useEffect(() => {
     load()
   }, [load])
+
+  if (hash === "#/demo") return <DemoApp />
 
   if (error)
     return (
