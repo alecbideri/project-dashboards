@@ -9,15 +9,17 @@ import type { QueueRequest, RequestStatus } from "./lib/store"
 import { NDFSPWorkbench, ndfspIntro } from "./personas/NDFSPWorkbench"
 import { MFISACCO, mfiIntro } from "./personas/MFISACCO"
 import { VerticalSaaS, saasIntro } from "./personas/VerticalSaaS"
+import { BNR, bnrIntro } from "./personas/BNR"
 import { StatusChip } from "./components/primitives"
 import { fmt } from "./lib/utils"
 
-type View = "workbench" | "mfi" | "saas"
+type View = "workbench" | "mfi" | "saas" | "bnr"
 
 const views: Array<{ id: View; label: string; intro: string }> = [
   { id: "workbench", label: "NDFSP", intro: ndfspIntro },
   { id: "mfi", label: "MFI / SACCO", intro: mfiIntro },
   { id: "saas", label: "Vertical SaaS", intro: saasIntro },
+  { id: "bnr", label: "BNR / Regulator", intro: bnrIntro },
 ]
 
 const statusOrder: Record<RequestStatus, number> = { new: 0, reviewing: 1, decided: 2, disbursed: 3 }
@@ -175,7 +177,7 @@ export default function App() {
             </span>
             EmbeddedLend
             <span className="font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--muted)" }}>
-              {view === "workbench" ? "NDFSP workbench" : view === "mfi" ? "MFI / SACCO committee" : "vertical SaaS"}
+              {view === "workbench" ? "NDFSP workbench" : view === "mfi" ? "MFI / SACCO committee" : view === "saas" ? "vertical SaaS" : "BNR supervisory"}
             </span>
           </div>
             <span
@@ -194,7 +196,9 @@ export default function App() {
             ? "Members are the SACCO's own; EmbeddedLend only adds the score."
             : view === "saas"
               ? "The widget runs inside the merchant app; the borrower never leaves it."
-              : "Requests arrive live. Open one, review the cash-flow evidence, adjust the offer, and decide."}
+              : view === "bnr"
+                ? "The ledger is read-only; the regulator only watches and flags."
+                : "Requests arrive live. Open one, review the cash-flow evidence, adjust the offer, and decide."}
         </p>
       </header>
 
@@ -222,17 +226,19 @@ export default function App() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-12">
-        {view !== "mfi" && view !== "saas" && (
+        {view !== "mfi" && view !== "saas" && view !== "bnr" && (
           <aside className="lg:col-span-3">
             <QueueRail requests={state.requests} selectedId={state.selectedId} now={now} onOpen={(id) => dispatch({ type: "OPEN", id })} />
           </aside>
         )}
 
-        <main className={view === "mfi" || view === "saas" ? "lg:col-span-12" : "lg:col-span-9"}>
+        <main className={view === "mfi" || view === "saas" || view === "bnr" ? "lg:col-span-12" : "lg:col-span-9"}>
           {view === "mfi" ? (
             <MFISACCO />
           ) : view === "saas" ? (
             <VerticalSaaS />
+          ) : view === "bnr" ? (
+            <BNR />
           ) : !selectedBorrower ? (
             <div className="rounded-2xl border p-10 text-center" style={{ borderColor: "var(--hairline)", background: "var(--panel)" }}>
               <p className="text-sm" style={{ color: "var(--muted)" }}>

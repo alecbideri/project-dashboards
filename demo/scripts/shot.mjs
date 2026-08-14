@@ -117,6 +117,21 @@ await step("saas-consent-flow", async () => {
   await page.screenshot({ path: "../shots/workbench-saas.png", fullPage: true })
 })
 
+// BNR supervisory oversight workspace
+await step("bnr-workspace", async () => {
+  await page.getByRole("button", { name: /BNR \/ Regulator/ }).click()
+  await page.getByText("Policy in force", { exact: true }).waitFor({ timeout: 3000 })
+  await page.getByText("Decision ledger", { exact: true }).waitFor({ timeout: 3000 })
+  await page.getByText("Ecosystem", { exact: false }).first().waitFor({ timeout: 3000 })
+  await page.getByText("Zamuka Digital", { exact: true }).waitFor({ timeout: 3000 })
+  await page.getByText("Ikibiri SACCO", { exact: true }).waitFor({ timeout: 3000 })
+  await page.getByText(/requests/, { exact: false }).first().waitFor({ timeout: 3000 })
+  await page.screenshot({ path: "../shots/workbench-bnr.png", fullPage: true })
+  // filter by institution narrows the ledger
+  await page.getByRole("button", { name: /Zamuka \(NDFSP\)/ }).click()
+  await page.getByText("Zamuka Digital", { exact: true }).waitFor({ timeout: 3000 })
+})
+
 // back to NDFSP, open a fresh request
 await step("open-fresh-request", async () => {
   await page.getByRole("button", { name: /^NDFSP$/ }).click()

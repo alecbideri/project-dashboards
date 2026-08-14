@@ -53,6 +53,13 @@ await page.getByRole("button", { name: "Accept", exact: true }).waitFor({ timeou
 await page.getByRole("button", { name: "Accept", exact: true }).click()
 await page.getByText(/Disbursed over eKash/, { exact: false }).waitFor({ timeout: 4000 })
 
+// BNR supervisory oversight
+await page.getByRole("button", { name: /BNR \/ Regulator/ }).click()
+await page.getByText("Policy in force", { exact: true }).waitFor({ timeout: 4000 })
+await page.getByText("Decision ledger", { exact: true }).waitFor({ timeout: 4000 })
+await page.getByText("Zamuka Digital", { exact: true }).waitFor({ timeout: 4000 })
+await page.getByText("Ikibiri SACCO", { exact: true }).waitFor({ timeout: 4000 })
+
 const ok = {
   title: (await page.title()).includes("EmbeddedLend"),
   workbench: true,
@@ -65,7 +72,9 @@ const ok = {
   mfiVerdict: true,
   saasWorkspace: true,
   saasDisbursed: true,
+  bnrWorkspace: true,
+  bnrLedger: true,
 }
 await browser.close()
 console.log(JSON.stringify({ ok, errors }, null, 2))
-process.exit(ok.title && ok.workbench && ok.popover && ok.noInline && ok.noChipsBefore && ok.decisionChips && ok.mfiWorkspace && ok.mfiVerdict && ok.saasWorkspace && ok.saasDisbursed && errors.length === 0 ? 0 : 1)
+process.exit(ok.title && ok.workbench && ok.popover && ok.noInline && ok.noChipsBefore && ok.decisionChips && ok.mfiWorkspace && ok.mfiVerdict && ok.saasWorkspace && ok.saasDisbursed && ok.bnrWorkspace && ok.bnrLedger && errors.length === 0 ? 0 : 1)
