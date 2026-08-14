@@ -116,3 +116,76 @@ export function selectRequest(state: QueueState, id: string | null) {
   const borrower = borrowerOf(req.borrowerId)
   return borrower ? { request: req, borrower } : null
 }
+
+// ---- MFI / SACCO committee workspace ----
+// A fixed list of the SACCO's own members with submitted requests. The MFI
+// already knows these people (distribution is theirs); it only needs the
+// scoring brain. No arrivals, no eKash disbursement.
+
+export type MfiStatus = "new" | "decided"
+
+export interface MfiRequest {
+  borrowerId: string
+  status: MfiStatus
+  decision?: Decision
+  terms: SuggestedTerms
+  comment?: string
+}
+
+export interface MfiState {
+  members: MfiRequest[]
+  selectedId: string | null
+}
+
+export type MfiAction =
+  | { type: "MFI_OPEN"; id: string }
+  | { type: "MFI_EDIT_TERMS"; id: string; terms: SuggestedTerms }
+  | { type: "MFI_DECIDE"; id: string; decision: Decision }
+  | { type: "MFI_COMMENT"; id: string; comment: string }
+
+export const emptyMfiState: MfiState = {
+  members: borrowers.map((b) => ({
+    borrowerId: b.id,
+    status: "new",
+    terms: b.suggested,
+  })),
+  selectedId: borrowers[0]?.id ?? null,
+}
+
+export function mfiReducer(state: MfiState, action: MfiAction): MfiState {
+  switch (action.type) {
+    case "MFI_OPEN":
+      return { ...state, selectedId: action.id }
+    case "MFI_EDIT_TERMS":
+      return {
+        ...state,
+        members: state.members.map((m) =>
+          m.borrowerId === action.id ? { ...m, terms: action.terms } : m,
+        ),
+      }
+    case "MFI_DECIDE":
+      return {
+        ...state,
+        members: state.members.map((m) =>
+          m.borrowerId === action.id ? { ...m, decision: action.decision, status: "decided" as const } : m,
+        ),
+      }
+    case "MFI_COMMENT":
+      return {
+        ...state,
+        members: state.members.map((m) =>
+          m.borrowerId === action.id ? { ...m, comment: action.comment } : m,
+        ),
+      }
+    default:
+      return state
+  }
+}
+
+export function selectMember(state: MfiState, id: string | null) {
+  if (!id) return null
+  const member = state.members.find((m) => m.borrowerId === id)
+  if (!member) return null
+  const borrower = borrowerOf(member.borrowerId)
+  return borrower ? { member, borrower } : null
+}

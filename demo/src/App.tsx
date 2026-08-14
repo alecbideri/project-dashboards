@@ -175,7 +175,7 @@ export default function App() {
             </span>
             EmbeddedLend
             <span className="font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--muted)" }}>
-              NDFSP workbench
+              {view === "workbench" ? "NDFSP workbench" : view === "mfi" ? "MFI / SACCO committee" : "vertical SaaS"}
             </span>
           </div>
             <span
@@ -189,7 +189,10 @@ export default function App() {
           SME credit, decided by cash flow, delivered inside the tools lenders already use.
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--muted)" }}>
-          {activeView.intro} Requests arrive live. Open one, review the cash-flow evidence, adjust the offer, and decide.
+          {activeView.intro}{" "}
+          {view === "mfi"
+            ? "Members are the SACCO's own; EmbeddedLend only adds the score."
+            : "Requests arrive live. Open one, review the cash-flow evidence, adjust the offer, and decide."}
         </p>
       </header>
 
@@ -217,12 +220,16 @@ export default function App() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-12">
-        <aside className="lg:col-span-3">
-          <QueueRail requests={state.requests} selectedId={state.selectedId} now={now} onOpen={(id) => dispatch({ type: "OPEN", id })} />
-        </aside>
+        {view !== "mfi" && (
+          <aside className="lg:col-span-3">
+            <QueueRail requests={state.requests} selectedId={state.selectedId} now={now} onOpen={(id) => dispatch({ type: "OPEN", id })} />
+          </aside>
+        )}
 
-        <main className="lg:col-span-9">
-          {!selectedBorrower ? (
+        <main className={view === "mfi" ? "lg:col-span-12" : "lg:col-span-9"}>
+          {view === "mfi" ? (
+            <MFISACCO />
+          ) : !selectedBorrower ? (
             <div className="rounded-2xl border p-10 text-center" style={{ borderColor: "var(--hairline)", background: "var(--panel)" }}>
               <p className="text-sm" style={{ color: "var(--muted)" }}>
                 Waiting for the first request to arrive.
@@ -246,7 +253,6 @@ export default function App() {
                   }}
                 />
               )}
-              {view === "mfi" && <MFISACCO borrower={selectedBorrower} terms={terms} decision={decision} />}
               {view === "saas" && <VerticalSaaS borrower={selectedBorrower} terms={terms} decision={decision} />}
 
               <div className="mt-6 rounded-2xl border p-5" style={{ borderColor: "var(--hairline)", background: "var(--panel)" }}>

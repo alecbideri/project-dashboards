@@ -80,10 +80,16 @@ await step("approve-notice", async () => {
 
 await page.screenshot({ path: "../shots/workbench-disbursed.png", fullPage: true })
 
-// switch to MFI read-only view
-await step("mfi-view", async () => {
+// MFI / SACCO committee workspace
+await step("mfi-workspace", async () => {
   await page.getByRole("button", { name: /MFI \/ SACCO/ }).click()
-  await page.getByText("Verdict for the loan committee", { exact: true }).waitFor({ timeout: 3000 })
+  await page.getByText("Field-officer context", { exact: true }).waitFor({ timeout: 3000 })
+  await page.getByText("Committee verdict", { exact: true }).waitFor({ timeout: 3000 })
+  await page.getByText(/sacco member/i).first().waitFor({ timeout: 3000 })
+  // decide on the first member, then committee note chips appear
+  await page.getByRole("button", { name: "Refer", exact: true }).click()
+  await page.getByText(/Refer for manual review/, { exact: false }).first().waitFor({ timeout: 3000 })
+  await page.getByText("Notice to borrower", { exact: true }).waitFor({ timeout: 3000 })
   await page.screenshot({ path: "../shots/workbench-mfi.png", fullPage: true })
 })
 

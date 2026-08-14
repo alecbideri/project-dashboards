@@ -19,7 +19,7 @@ export interface ReviewHandlers {
   onComment: (comment: string) => void
 }
 
-function BorrowerNotice({ borrower, decision }: { borrower: Borrower; decision: Decision }) {
+export function BorrowerNotice({ borrower, decision }: { borrower: Borrower; decision: Decision }) {
   const weakest = [...borrower.signals].sort((a, b) => a.value - b.value)[0]
   const strongest = [...borrower.signals].sort((a, b) => b.value - a.value)[0]
 
@@ -73,7 +73,7 @@ function BorrowerNotice({ borrower, decision }: { borrower: Borrower; decision: 
   )
 }
 
-function CashFlowAnalysis({ borrower }: { borrower: Borrower }) {
+export function CashFlowAnalysis({ borrower }: { borrower: Borrower }) {
   const ledger = analyzeLedger(borrower.cashFlow)
   return (
     <div className="rounded-2xl border p-5" style={{ borderColor: "var(--hairline)", background: "var(--panel)" }}>
