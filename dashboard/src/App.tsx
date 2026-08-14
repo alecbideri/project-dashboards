@@ -12,6 +12,7 @@ import {
   FileText,
   Gauge,
   ListTree,
+  Play,
   Scale,
 } from "lucide-react"
 
@@ -43,6 +44,7 @@ import {
 } from "@/lib/data"
 import { Markdown } from "@/lib/markdown"
 import { cn } from "@/lib/utils"
+import DemoApp from "@/demo/DemoApp"
 
 function StatusBadge({ status }: { status: string }) {
   const variant =
@@ -509,6 +511,12 @@ function Header({
               ))}
             </SelectContent>
           </Select>
+          <button
+            onClick={() => (window.location.hash = "/demo")}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted"
+          >
+            <Play className="size-3.5 text-primary" /> Demo
+          </button>
           <ThemeToggle theme={theme} onToggle={onToggleTheme} />
         </div>
       </div>
@@ -520,7 +528,16 @@ export default function App() {
   const [projects, setProjects] = useState<Project[] | null>(null)
   const [selected, setSelected] = useState<Project | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [hash, setHash] = useState(window.location.hash)
   const { theme, toggle } = useTheme()
+
+  useEffect(() => {
+    const onHash = () => setHash(window.location.hash)
+    window.addEventListener("hashchange", onHash)
+    return () => window.removeEventListener("hashchange", onHash)
+  }, [])
+
+  if (hash === "#/demo") return <DemoApp />
 
   const load = useCallback(async () => {
     try {
