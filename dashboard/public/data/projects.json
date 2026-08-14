@@ -876,6 +876,13 @@
         "date": "2026-08-14",
         "notes": "Standalone lender workbench — live request queue (12-profile pool), cash-flow review, editable terms with affordability check, approve/refer/decline, eKash disbursement, LLM narration",
         "link": "https://embeddedlend-demo.netlify.app"
+      },
+      {
+        "stream": "Deck",
+        "status": "Done",
+        "date": "2026-08-14",
+        "notes": "The Missing Middle — 13-slide Swiss-style problem-statement deck (cover, dead zone, why now, eKash, missing bridge, solution, closing)",
+        "link": "https://embeddedlend-demo.netlify.app/ppt/index.html"
       }
     ],
     "totalClaims": 51
