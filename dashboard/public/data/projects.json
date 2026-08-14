@@ -874,8 +874,8 @@
         "stream": "Prototype",
         "status": "In progress",
         "date": "2026-08-14",
-        "notes": "Standalone interactive product demo — 3 persona screens (NDFSP workbench, MFI/SACCO scoring, Vertical SaaS widget) on one decision engine, LLM narration",
-        "link": "https://embeddedlend-demo-943.netlify.app"
+        "notes": "Standalone lender workbench — live request queue (12-profile pool), cash-flow review, editable terms with affordability check, approve/refer/decline, eKash disbursement, LLM narration",
+        "link": "https://embeddedlend-demo.netlify.app"
       }
     ],
     "totalClaims": 51

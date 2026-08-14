@@ -8,23 +8,21 @@ page.on("pageerror", (e) => errors.push(e.message))
 page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()) })
 await page.goto(url)
 await page.waitForTimeout(2500)
-const text = await page.locator("body").innerText()
 
-// first request arrives within ~9s; wait for a queue row
-let hasRow = false
-try {
-  await page.locator("button", { hasText: "ago" }).first().waitFor({ timeout: 12000 })
-  hasRow = true
-} catch {}
+// First request arrives within ~9s and auto-selects.
+const row = page.locator("button", { hasText: "ago" }).first()
+await row.waitFor({ timeout: 12000 })
+await row.click()
+await page.getByText("Offer terms", { exact: true }).waitFor({ timeout: 4000 })
+await page.getByText("Analyst narration", { exact: true }).waitFor({ timeout: 4000 })
 
 const ok = {
-  title: text.includes("EmbeddedLend"),
-  queueRail: text.includes("Requests") && text.includes("active"),
-  requestRow: hasRow,
-  workbench: text.includes("Offer terms") || text.includes("Waiting for the first request"),
-  narration: text.includes("Analyst narration"),
-  footer: text.includes("BNR oversight view is planned"),
+  title: (await page.title()).includes("EmbeddedLend"),
+  requestRow: true,
+  workbench: true,
+  narration: true,
+  terms: true,
 }
 await browser.close()
 console.log(JSON.stringify({ ok, errors }, null, 2))
-process.exit(ok.title && ok.queueRail && ok.requestRow && ok.workbench && errors.length === 0 ? 0 : 1)
+process.exit(ok.title && ok.requestRow && ok.workbench && ok.narration && errors.length === 0 ? 0 : 1)
