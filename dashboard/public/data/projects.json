@@ -883,6 +883,13 @@
         "date": "2026-08-14",
         "notes": "The Missing Middle — 13-slide Swiss-style problem-statement deck (cover, dead zone, why now, eKash, missing bridge, solution, closing)",
         "link": "https://embeddedlend-demo.netlify.app/ppt/index.html"
+      },
+      {
+        "stream": "Imara Meeting",
+        "status": "Ready",
+        "date": "2026-08-14",
+        "notes": "Discovery interview with Imarafinance — 11 open-ended questions in 4 evidence sections (underwriting, data & consent, BNR & compliance, disbursement) to run after the deck + demo",
+        "link": "https://embeddedlend-demo.netlify.app/pdf/imara-questions.pdf"
       }
     ],
     "totalClaims": 51
