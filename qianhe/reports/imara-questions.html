@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Imarafinance Meeting - Discovery Questions</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Geist", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #0b1220;
+    font-size: 11pt;
+    line-height: 1.55;
+  }
+  .kicker {
+    font-family: "Geist Mono", Consolas, monospace;
+    font-size: 8.5pt;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #2563eb;
+    margin-bottom: 4mm;
+  }
+  h1 {
+    font-size: 24pt;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 3mm;
+  }
+  .sub {
+    font-size: 11.5pt;
+    color: #2f3a4d;
+    margin-bottom: 8mm;
+  }
+  .meta {
+    font-family: "Geist Mono", Consolas, monospace;
+    font-size: 8pt;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #5b6572;
+    border-top: 1px solid #e4e8ee;
+    border-bottom: 1px solid #e4e8ee;
+    padding: 3mm 0;
+    margin-bottom: 8mm;
+  }
+  .note {
+    background: #eef4ff;
+    border: 1px solid #c9dcff;
+    border-left: 3px solid #2563eb;
+    border-radius: 3px;
+    padding: 4mm 5mm;
+    font-size: 10pt;
+    color: #2f3a4d;
+    margin-bottom: 8mm;
+  }
+  .note b { color: #0b1220; }
+  .section {
+    margin-bottom: 8mm;
+    page-break-inside: avoid;
+  }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 4mm;
+    border-bottom: 2px solid #0b1220;
+    padding-bottom: 1.5mm;
+    margin-bottom: 4mm;
+  }
+  .section-num {
+    font-family: "Geist Mono", Consolas, monospace;
+    font-size: 14pt;
+    font-weight: 700;
+    color: #2563eb;
+  }
+  .section-title {
+    font-size: 13pt;
+    font-weight: 700;
+  }
+  .section-purpose {
+    font-family: "Geist Mono", Consolas, monospace;
+    font-size: 8pt;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #5b6572;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+  .q {
+    display: flex;
+    gap: 4mm;
+    padding: 3mm 0;
+    border-bottom: 1px solid #eef1f5;
+    page-break-inside: avoid;
+  }
+  .q:last-child { border-bottom: none; }
+  .q-num {
+    font-family: "Geist Mono", Consolas, monospace;
+    font-weight: 700;
+    color: #2563eb;
+    width: 6mm;
+    flex-shrink: 0;
+  }
+  .q-body { flex: 1; }
+  .q-text { font-weight: 600; color: #0b1220; }
+  .q-hint {
+    font-size: 9.5pt;
+    color: #5b6572;
+    margin-top: 1mm;
+  }
+  .q-hint b { color: #2f3a4d; font-weight: 600; }
+  .footer {
+    margin-top: 10mm;
+    border-top: 1px solid #e4e8ee;
+    padding-top: 3mm;
+    font-family: "Geist Mono", Consolas, monospace;
+    font-size: 7.5pt;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #5b6572;
+  }
+</style>
+</head>
+<body>
+
+  <div class="kicker">EmbeddedLend · Discovery Interview</div>
+  <h1>Imarafinance Meeting</h1>
+  <div class="sub">Structured questions to gather evidence for the Missing Middle problem statement and the BNR case.</div>
+
+  <div class="meta">For interviewer use · Ask after the 15-20 min deck + demo · Questions are open-ended, do not read them verbatim</div>
+
+  <div class="note">
+    <b>How to run this.</b> Present first (the Swiss deck: problem frame, then the live NDFSP demo), so Imarafinance can connect each answer to the wider system. Then use these questions to steer the conversation, not to read it. Every answer becomes evidence: their numbers support the problem statement, and their compliance answers support the BNR conversation later.
+  </div>
+
+  <!-- Section 1 -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <span class="section-title">Underwriting today</span>
+      <span class="section-purpose">proves the dead zone</span>
+    </div>
+
+    <div class="q">
+      <span class="q-num">1</span>
+      <div class="q-body">
+        <div class="q-text">Walk me through how you underwrite an SME loan today.</div>
+        <div class="q-hint"><b>Probe:</b> documents requested, data sources used, time to decision, who signs off.</div>
+      </div>
+    </div>
+
+    <div class="q">
+      <span class="q-num">2</span>
+      <div class="q-body">
+        <div class="q-text">Of the SME applications you receive, how many do you decline — and how many of those are declined purely because there is no verifiable record, not because the business looks bad?</div>
+        <div class="q-hint"><b>Why:</b> this number is the dead zone made visible. If you can get a rough share, that is a headline statistic.</div>
+      </div>
+    </div>
+
+    <div class="q">
+      <span class="q-num">3</span>
+      <div class="q-body">
+        <div class="q-text">Is your typical SME loan size and tenor capped by policy, or by what you can actually verify about the borrower?</div>
+        <div class="q-hint"><b>Probe:</b> would you lend larger / longer if you had better evidence? This tests the "pricing around risk" claim.</div>
+      </div>
+    </div>
+
+    <div class="q">
+      <span class="q-num">4</span>
+      <div class="q-body">
+        <div class="q-text">How does your repayment performance on SME loans compare to your consumer loans?</div>
+        <div class="q-hint"><b>Why:</b> if SMEs perform fine but are rationed anyway, that proves lenders are cautious, not lazy — and the problem is the missing underwriting layer.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2 -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-num">02</span>
+      <span class="section-title">Data and consent</span>
+      <span class="section-purpose">proves the overlooked asset</span>
+    </div>
+
+    <div class="q">
+      <span class="q-num">5</span>
+      <div class="q-body">
+        <div class="q-text">If you could pull six months of a borrower's consented mobile-money history in a single API call, what would that change about your underwriting?</div>
+        <div class="q-hint"><b>Probe:</b> speed, loan sizing, approval rate, risk. Have they ever used a mobile-money statement manually?</div>
+      </div>
+    </div>
+
+    <div class="q">
+      <span class="q-num">6</span>
+      <div class="q-body">
+        <div class="q-text">Have you integrated with any data provider — a credit bureau, a bank API, a mobile-money provider?</div>
+        <div class="q-hint"><b>Probe:</b> what did you try, what worked, what is missing. This maps the current data-access reality for NDFSPs.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3 -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-num">03</span>
+      <span class="section-title">BNR and compliance</span>
+      <span class="section-purpose">feeds the BNR case</span>
+    </div>
+
+    <div class="q">
+      <span class="q-num">7</span>
+      <div class="q-body">
+        <div class="q-text">What does preparing BNR reporting and audits around your lending decisions cost you today — time, people, money?</div>
+        <div class="q-hint"><b>Why:</b> this is the compliance burden BNR wants to see reduced responsibly. Their answer shows demand for auditable decisioning.</div>
+      </div>
+    </div>
+
+    <div class="q">
+      <span class="q-num">8</span>
+      <div class="q-body">
+        <div class="q-text">BNR revoked several NDFSP licenses in 2026 while the sector grew. How did that change how you approach compliance?</div>
+        <div class="q-hint"><b>Probe:</b> defensible decisions, audit trails, consent records. This is sensitive — let them lead.</div>
+      </div>
+    </div>
+
+    <div class="q">
+      <span class="q-num">9</span>
+      <div class="q-body">
+        <div class="q-text">Are you tracking the BNR Open Finance roadmap? When mandatory data sharing arrives for Tier-1 banks and mobile-money operators, would you participate if reciprocity existed?</div>
+        <div class="q-hint"><b>Why:</b> their position on data sharing is the strongest evidence for the Phase 4 central-platform argument.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4 -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-num">04</span>
+      <span class="section-title">Disbursement</span>
+      <span class="section-purpose">proves the money rail</span>
+    </div>
+
+    <div class="q">
+      <span class="q-num">10</span>
+      <div class="q-body">
+        <div class="q-text">How do you disburse loans today — cash, mobile money, bank transfer?</div>
+        <div class="q-hint"><b>Probe:</b> what does each disbursement cost you, and how long does it take to reach the borrower?</div>
+      </div>
+    </div>
+
+    <div class="q">
+      <span class="q-num">11</span>
+      <div class="q-body">
+        <div class="q-text">If disbursement ran over eKash at a flat RWF20 and settled instantly, what would that change about your loan sizing and unit economics?</div>
+        <div class="q-hint"><b>Probe:</b> this connects the money rail to their bottom line and validates eKash as the disbursement plumbing.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">EmbeddedLend · Confidential · For interviewer use · 11 questions · 4 sections</div>
+
+</body>
+</html>
