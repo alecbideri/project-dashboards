@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light" />
+<title>The Missing Middle · EmbeddedLend Handover</title>
+<style>
+  :root {
+    --paper: #FAFAF7;
+    --ink: #0b1220;
+    --body: #2f3a4d;
+    --muted: #5b6572;
+    --hairline: #e2e4e0;
+    --cobalt: #2148B8;
+    --terracotta: #C65F38;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--paper); color: var(--ink); }
+  body {
+    font-family: "Geist Variable", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.55;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 72px; }
+  header.mast {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 20px 0 12px;
+    font-family: Consolas, "SF Mono", monospace;
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--hairline);
+  }
+  header.mast b { color: var(--cobalt); }
+  .hero { margin: 28px 0 0; }
+  .hero img {
+    display: block; width: 100%; height: auto;
+    border: 1px solid var(--hairline);
+  }
+  .hero figcaption {
+    font-family: Consolas, "SF Mono", monospace;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted);
+    padding-top: 8px;
+  }
+  h1 {
+    font-size: clamp(34px, 6vw, 58px);
+    line-height: 1.02; letter-spacing: -0.025em;
+    margin: 26px 0 0; max-width: 16ch;
+  }
+  h1 em { font-style: italic; color: var(--cobalt); }
+  .lede { margin-top: 12px; max-width: 56ch; color: var(--body); font-size: 16px; }
+  .strip {
+    margin: 22px 0 0;
+    border-top: 2px solid var(--cobalt);
+    border-bottom: 1px solid var(--hairline);
+    padding: 10px 0;
+    font-family: Consolas, "SF Mono", monospace;
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--body);
+    display: flex; gap: 18px; flex-wrap: wrap;
+  }
+  .strip .t { color: var(--terracotta); font-weight: 700; }
+  h2 {
+    font-family: Consolas, "SF Mono", monospace;
+    font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted);
+    margin: 34px 0 12px;
+  }
+  .cards { display: grid; gap: 12px; }
+  @media (min-width: 640px) { .cards.two { grid-template-columns: 1fr 1fr; } }
+  a.card {
+    display: block; text-decoration: none; color: inherit;
+    background: #fff; border: 1px solid var(--hairline);
+    border-left: 3px solid var(--cobalt);
+    padding: 16px 18px;
+  }
+  a.card.live { border-left-color: var(--terracotta); }
+  a.card:hover { border-color: var(--cobalt); }
+  a.card .k {
+    font-family: Consolas, "SF Mono", monospace;
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--terracotta); margin-bottom: 6px;
+  }
+  a.card.doc .k { color: var(--cobalt); }
+  a.card h3 { font-size: 17px; letter-spacing: -0.01em; margin-bottom: 4px; }
+  a.card p { font-size: 13px; color: var(--muted); }
+  a.card .go {
+    display: inline-block; margin-top: 10px;
+    font-family: Consolas, "SF Mono", monospace;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--cobalt);
+  }
+  footer {
+    margin-top: 40px; padding-top: 14px;
+    border-top: 1px solid var(--hairline);
+    font-family: Consolas, "SF Mono", monospace;
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="mast"><span><b>EmbeddedLend</b> · Handover</span><span>Five artifacts · One bridge</span></header>
+
+    <figure class="hero">
+      <img src="mono/embedded.jpg" alt="The Missing Middle — mono-color editorial cover: a hand holding a phone with a mobile-money statement, money flowing in to out" />
+      <figcaption>Cover · Mono-color editorial print · Cobalt + Terracotta on neutral white</figcaption>
+    </figure>
+
+    <h1>The Missing <em>Middle.</em></h1>
+    <p class="lede">Rwanda's creditworthy small businesses can't borrow. The data to lend safely already exists. The bridge between them is empty — these five artifacts are the bridge, specified end to end.</p>
+
+    <div class="strip"><span><span class="t">01–03</span> Documents</span><span><span class="t">04</span> Prototype</span><span><span class="t">05</span> Architecture</span></div>
+
+    <h2>Documents</h2>
+    <div class="cards">
+      <a class="card doc" href="https://embeddedlend-demo.netlify.app/pdf/problem-embeddedlend.pdf">
+        <div class="k">01 · Document</div>
+        <h3>Problem — The Missing Middle</h3>
+        <p>Credit dead zone, overlooked MoMo asset, the two rails, why now. 8 pages.</p>
+        <span class="go">Open PDF →</span>
+      </a>
+      <a class="card doc" href="https://embeddedlend-demo.netlify.app/pdf/prd-embeddedlend.pdf">
+        <div class="k">02 · Document</div>
+        <h3>PRD — EmbeddedLend</h3>
+        <p>Full architecture (consent → signals → decision → loans → eKash) + MVP slice. API-only. 8 pages.</p>
+        <span class="go">Open PDF →</span>
+      </a>
+      <a class="card doc" href="https://embeddedlend-demo.netlify.app/pdf/prd-architecture-hand.pdf">
+        <div class="k">03 · Document</div>
+        <h3>PRD Architecture — Hand panorama</h3>
+        <p>Hand-drawn system panorama companion to the PRD. 8 pages.</p>
+        <span class="go">Open PDF →</span>
+      </a>
+    </div>
+
+    <h2>Live</h2>
+    <div class="cards two">
+      <a class="card live" href="https://embeddedlend-demo.netlify.app">
+        <div class="k">04 · Live prototype</div>
+        <h3>NDFSP Workbench</h3>
+        <p>Live request queue, cash-flow review, editable terms, decide, disburse over eKash.</p>
+        <span class="go">Open demo →</span>
+      </a>
+      <a class="card live" href="https://project-dashboards-122.netlify.app/architecture-story.html">
+        <div class="k">05 · Live architecture</div>
+        <h3>Architecture Story</h3>
+        <p>Seven diagrams: system, decision engine, swimlane, flywheel, journey, data, why now.</p>
+        <span class="go">Open story →</span>
+      </a>
+    </div>
+
+    <footer><span>EmbeddedLend · Handover · 2026</span><span>BNR Open Finance • eKash 22 • RWF20</span></footer>
+  </div>
+</body>
+</html>
