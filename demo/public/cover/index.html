@@ -23,6 +23,7 @@
     line-height: 1.55;
   }
   .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px 72px; }
+  .wrap.wide { max-width: 1240px; }
   header.mast {
     display: flex; justify-content: space-between; align-items: baseline;
     padding: 20px 0 12px;
@@ -32,26 +33,37 @@
     border-bottom: 1px solid var(--hairline);
   }
   header.mast b { color: var(--cobalt); }
-  .hero { margin: 28px 0 0; }
+  .hero-band {
+    border-bottom: 1px solid var(--hairline);
+    margin-top: 8px;
+  }
+  .hero-inner {
+    max-width: 1240px; margin: 0 auto; padding: 48px 20px 56px;
+    display: grid; gap: 48px; align-items: center;
+  }
+  @media (min-width: 900px) { .hero-inner { grid-template-columns: 1fr 1.08fr; } }
+  .hero-copy { min-width: 0; }
+  .hero-kicker {
+    font-family: Consolas, "SF Mono", monospace;
+    font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--terracotta); font-weight: 700;
+    margin-bottom: 16px;
+  }
   .hero img {
     display: block; width: 100%; height: auto;
     border: 1px solid var(--hairline);
-  }
-  .hero figcaption {
-    font-family: Consolas, "SF Mono", monospace;
-    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--muted);
-    padding-top: 8px;
+    aspect-ratio: 10 / 11;
+    object-fit: cover; object-position: top center;
   }
   h1 {
-    font-size: clamp(34px, 6vw, 58px);
-    line-height: 1.02; letter-spacing: -0.025em;
-    margin: 26px 0 0; max-width: 16ch;
+    font-size: clamp(42px, 6.2vw, 84px);
+    line-height: 1.0; letter-spacing: -0.03em;
+    margin: 0; max-width: 12ch;
   }
   h1 em { font-style: italic; color: var(--cobalt); }
-  .lede { margin-top: 12px; max-width: 56ch; color: var(--body); font-size: 16px; }
+  .lede { margin-top: 18px; max-width: 44ch; color: var(--body); font-size: 17px; }
   .strip {
-    margin: 22px 0 0;
+    margin: 26px 0 0;
     border-top: 2px solid var(--cobalt);
     border-bottom: 1px solid var(--hairline);
     padding: 10px 0;
@@ -69,7 +81,16 @@
   }
   .cards { display: grid; gap: 12px; }
   @media (min-width: 640px) { .cards.two { grid-template-columns: 1fr 1fr; } }
+  .artifacts { display: grid; gap: 12px; }
+  @media (min-width: 700px) { .artifacts { grid-template-columns: repeat(3, 1fr); } }
   a.card {
+    display: block; text-decoration: none; color: inherit;
+    background: #fff; border: 1px solid var(--hairline);
+    border-left: 3px solid var(--cobalt);
+    padding: 16px 18px;
+  }
+  a.card.live { border-left-color: var(--terracotta); }
+  a.card:hover { border-color: var(--cobalt); }
     display: block; text-decoration: none; color: inherit;
     background: #fff; border: 1px solid var(--hairline);
     border-left: 3px solid var(--cobalt);
@@ -102,21 +123,30 @@
 </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="wrap wide">
     <header class="mast"><span><b>EmbeddedLend</b> · Handover</span><span>Five artifacts · One bridge</span></header>
+  </div>
 
-    <figure class="hero">
-      <img src="mono/embedded.jpg" alt="The Missing Middle — mono-color editorial cover: a hand holding a phone with a mobile-money statement, money flowing in to out" />
-      <figcaption>Cover · Mono-color editorial print · Cobalt + Terracotta on neutral white</figcaption>
-    </figure>
+  <section class="hero-band">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <div class="hero-kicker">The Missing Middle · Briefing index</div>
+        <h1>The Missing <em>Middle.</em></h1>
+        <p class="lede">Rwanda's creditworthy small businesses can't borrow. The data to lend safely already exists. The bridge between them is empty — these five artifacts are the bridge, specified end to end.</p>
 
-    <h1>The Missing <em>Middle.</em></h1>
-    <p class="lede">Rwanda's creditworthy small businesses can't borrow. The data to lend safely already exists. The bridge between them is empty — these five artifacts are the bridge, specified end to end.</p>
+        <div class="strip"><span><span class="t">01–03</span> Documents</span><span><span class="t">04</span> Prototype</span><span><span class="t">05</span> Architecture</span></div>
+      </div>
 
-    <div class="strip"><span><span class="t">01–03</span> Documents</span><span><span class="t">04</span> Prototype</span><span><span class="t">05</span> Architecture</span></div>
+      <figure class="hero">
+        <img src="mono/embedded.jpg" alt="The Missing Middle — mono-color editorial cover: a hand holding a phone with a mobile-money statement, money flowing in to out" />
+      </figure>
+    </div>
+  </section>
 
-    <h2>Documents</h2>
-    <div class="cards">
+  <div class="wrap">
+
+    <h2>The five artifacts</h2>
+    <div class="artifacts">
       <a class="card doc" href="https://embeddedlend-demo.netlify.app/pdf/problem-embeddedlend.pdf">
         <div class="k">01 · Document</div>
         <h3>Problem — The Missing Middle</h3>
@@ -135,10 +165,6 @@
         <p>Hand-drawn system panorama companion to the PRD. 8 pages.</p>
         <span class="go">Open PDF →</span>
       </a>
-    </div>
-
-    <h2>Live</h2>
-    <div class="cards two">
       <a class="card live" href="https://embeddedlend-demo.netlify.app">
         <div class="k">04 · Live prototype</div>
         <h3>NDFSP Workbench</h3>
@@ -153,7 +179,7 @@
       </a>
     </div>
 
-    <footer><span>EmbeddedLend · Handover · 2026</span><span>BNR Open Finance • eKash 22 • RWF20</span></footer>
+    <footer><span>EmbeddedLend · Handover · 2026</span><span>Created by <a href="https://b-alec.dev/" style="color:var(--cobalt)">Bideri Alec</a></span><span>BNR Open Finance • eKash 22 • RWF20</span></footer>
   </div>
 </body>
 </html>
