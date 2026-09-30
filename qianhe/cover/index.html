@@ -91,13 +91,25 @@
   }
   a.card.live { border-left-color: var(--terracotta); }
   a.card:hover { border-color: var(--cobalt); }
-    display: block; text-decoration: none; color: inherit;
+  .video-row {
+    grid-column: 1 / -1;
     background: #fff; border: 1px solid var(--hairline);
-    border-left: 3px solid var(--cobalt);
+    border-left: 3px solid var(--terracotta);
     padding: 16px 18px;
   }
-  a.card.live { border-left-color: var(--terracotta); }
-  a.card:hover { border-color: var(--cobalt); }
+  .video-row .k {
+    font-family: Consolas, "SF Mono", monospace;
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--terracotta); margin-bottom: 6px;
+  }
+  .video-row h3 { font-size: 17px; letter-spacing: -0.01em; }
+  .video-frame {
+    position: relative; aspect-ratio: 16 / 9;
+    margin-top: 14px; background: #000;
+    border: 1px solid var(--hairline);
+  }
+  .video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .video-note { margin-top: 12px; font-size: 13px; color: var(--muted); }
   a.card .k {
     font-family: Consolas, "SF Mono", monospace;
     font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
@@ -134,7 +146,7 @@
         <h1>The Missing <em>Middle.</em></h1>
         <p class="lede">Rwanda's creditworthy small businesses can't borrow. The data to lend safely already exists. The bridge between them is empty — these five artifacts are the bridge, specified end to end.</p>
 
-        <div class="strip"><span><span class="t">01–03</span> Documents</span><span><span class="t">04</span> Prototype</span><span><span class="t">05</span> Architecture</span></div>
+        <div class="strip"><span><span class="t">01–03</span> Documents</span><span><span class="t">04</span> Video</span><span><span class="t">05</span> Diagrams</span></div>
       </div>
 
       <figure class="hero">
@@ -147,35 +159,44 @@
 
     <h2>The five artifacts</h2>
     <div class="artifacts">
-      <a class="card doc" href="https://embeddedlend-demo.netlify.app/pdf/problem-embeddedlend.pdf" target="_blank" rel="noopener">
+      <a class="card doc" href="../pdf/problem-embeddedlend.pdf" target="_blank" rel="noopener">
         <div class="k">01 · Document</div>
         <h3>Problem — The Missing Middle</h3>
         <p>Credit dead zone, overlooked MoMo asset, the two rails, why now. 8 pages.</p>
         <span class="go">Open PDF →</span>
       </a>
-      <a class="card doc" href="https://embeddedlend-demo.netlify.app/pdf/prd-embeddedlend.pdf" target="_blank" rel="noopener">
+      <a class="card doc" href="../pdf/prd-embeddedlend.pdf" target="_blank" rel="noopener">
         <div class="k">02 · Document</div>
         <h3>PRD — EmbeddedLend</h3>
         <p>Full architecture (consent → signals → decision → loans → eKash) + MVP slice. API-only. 8 pages.</p>
         <span class="go">Open PDF →</span>
       </a>
-      <a class="card doc" href="https://embeddedlend-demo.netlify.app/pdf/prd-architecture-hand.pdf" target="_blank" rel="noopener">
+      <a class="card doc" href="../pdf/prd-architecture-hand.pdf" target="_blank" rel="noopener">
         <div class="k">03 · Document</div>
         <h3>PRD Architecture — Hand panorama</h3>
-        <p>Hand-drawn system panorama companion to the PRD. 8 pages.</p>
+        <p>Hand-drawn system panorama companion to the PRD. 4 pages.</p>
         <span class="go">Open PDF →</span>
       </a>
-      <a class="card live" href="https://embeddedlend-demo.netlify.app">
-        <div class="k">04 · Live prototype</div>
-        <h3>NDFSP Workbench</h3>
-        <p>Live request queue, cash-flow review, editable terms, decide, disburse over eKash.</p>
-        <span class="go">Open demo →</span>
-      </a>
-      <a class="card live" href="https://project-dashboards-122.netlify.app/architecture-story.html">
-        <div class="k">05 · Live architecture</div>
+
+      <div class="video-row">
+        <div class="k">04 · Video walkthrough</div>
+        <h3>EmbeddedLend — system walkthrough</h3>
+        <div class="video-frame">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/t_2vTKr6Ndo?rel=0"
+            title="EmbeddedLend system walkthrough"
+            loading="lazy"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
+        </div>
+        <p class="video-note">Data in, decision out — the consent-to-eKash flow end to end. 4:43.</p>
+      </div>
+
+      <a class="card doc" href="../diagrams/" target="_blank" rel="noopener">
+        <div class="k">05 · Diagrams</div>
         <h3>Architecture Story</h3>
         <p>Seven diagrams: system, decision engine, swimlane, flywheel, journey, data, why now.</p>
-        <span class="go">Open story →</span>
+        <span class="go">Open diagrams →</span>
       </a>
     </div>
 
